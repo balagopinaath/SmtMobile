@@ -1,28 +1,20 @@
 import React from 'react'
-import type { PropsWithChildren } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Home from './Screens/Home';
-import Login from './Screens/Login';
+import StartScreen from './Screens/StartScreen';
+import LoginScreen from './Screens/LoginScreen';
+import HomeScreen from './Screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ title: 'Login to SMT' }}
-        />
-
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{ title: 'SMT' }}
-        />
+      <Stack.Navigator initialRouteName="StartScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="StartScreen" component={StartScreen} />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
