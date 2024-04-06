@@ -68,40 +68,38 @@ const LoginScreen = () => {
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={Colors.black} />
+            <Text style={styles.title}>Welcome to SMT</Text>
 
-            <ScrollView>
-                <View style={{ alignItems: "center" }}>
-                    <Text style={styles.welcome}>Welcome to <Text style={styles.logo}>SMT</Text></Text>
+            <Text style={styles.subtitle}>Let's start to manage your attendance more effectively with us!</Text>
 
-                    <Text style={styles.subtitle}>To get started, log in to your account!</Text>
-                </View>
+            <View style={styles.inputContainer}>
+                <CustomIcon name="logout" size={25} style={styles.inputIcon} color={Colors.accent} />
+                <TextInput
+                    style={styles.textInput}
+                    textAlign='left'
+                    placeholder='Enter your UserId'
+                    value={loginId}
+                    onChangeText={(val) => setLoginId(val)}
+                    autoCapitalize="none"
+                />
+            </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <CustomIcon name="user" size={30} color="green" />
-                    <TextInput
-                        textAlign='left'
-                        placeholder='Enter your UserId'
-                        value={loginId}
-                        onChangeText={(val) => setLoginId(val)}
-                    />
-                </View>
+            <View style={styles.inputContainer}>
+                <CustomIcon name="lock" size={25} style={styles.inputIcon} color={Colors.accent} />
+                <TextInput
+                    style={styles.textInput}
+                    placeholder='Enter your Password'
+                    value={password}
+                    onChangeText={(val) => setPassword(val)}
+                    inlineImageLeft='user_icon'
+                    secureTextEntry={true}
+                    autoCapitalize="none"
+                />
+            </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <CustomIcon name="lock" size={30} color="green" />
-                    <TextInput
-                        inputMode='text'
-                        textAlign='center'
-                        placeholder='Enter your Password'
-                        value={password}
-                        onChangeText={(val) => setPassword(val)}
-                        inlineImageLeft='user_icon'
-                    />
-                </View>
-
-                <TouchableOpacity activeOpacity={0.9} onPressOut={loginFunction} style={styles.loginButton}>
-                    <Text>Login</Text>
-                </TouchableOpacity>
-            </ScrollView>
+            <TouchableOpacity style={styles.loginButton} onPressOut={loginFunction} >
+                <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -112,23 +110,47 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.background
+        backgroundColor: Colors.background,
+        padding: 20
     },
-    welcome: {
+    title: {
         fontFamily: Fonts.plusJakartaSansSemiBold,
-        fontSize: 32,
-        color: Colors.text
-    },
-    logo: {
-        fontFamily: Fonts.plusJakartaSansSemiBold,
-        fontSize: 32,
-        color: Colors.primary
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     subtitle: {
         fontFamily: Fonts.plusJakartaSansMedium,
-        fontSize: 18,
-        color: Colors.text
+        fontSize: 16,
+        color: '#777',
+        marginBottom: 20,
     },
-    loginButton: {}
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff', // White input fields
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 10,
+    },
+    inputIcon: {
+        marginRight: 10,
+    },
+    textInput: {
+        flex: 1,
+        fontSize: 16,
+    },
+    loginButton: {
+        backgroundColor: Colors.accent,
+        padding: 15,
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        borderRadius: 30
+    },
+    loginButtonText: {
+        color: Colors.secondary,
+        fontSize: 18
+    }
 });

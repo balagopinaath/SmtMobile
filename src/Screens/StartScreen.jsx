@@ -13,7 +13,7 @@ const StartScreen = () => {
     useEffect(() => {
         setTimeout(() => {
             checkUserToken();
-        }, 3000)
+        }, 2500)
     }, []);
 
     const checkUserToken = async () => {
