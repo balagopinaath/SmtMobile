@@ -66,7 +66,7 @@ const HomeScreen = () => {
                         <Text style={styles.actionButtonText}>Get</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => { navigation.push('AddCustomer') }}>
                         <CustomIcon name="plus" color={Colors.white} size={25} />
                         <Text style={styles.actionButtonText}>Add</Text>
                     </TouchableOpacity>
