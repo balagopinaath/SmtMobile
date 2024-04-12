@@ -2,13 +2,18 @@ import { Button, Image, Linking, StyleSheet, Text, TouchableOpacity, Vibration, 
 import React, { useEffect, useRef, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
+import CustomIcon from '../Components/CustomIcon';
+import Colors from '../Config/Colors';
+import Fonts from '../Config/Fonts';
 
 const CustomersDetails = ({ route }) => {
+    const navigation = useNavigation();
     const { item } = route.params;
 
-    const latitude = item.latitude;
-    const longitude = item.longitude;
-    const phoneNumber = item.mobile_No;
+    const latitude = item.Latitude;
+    const longitude = item.Longitude;
+    const phoneNumber = item.Mobile_No;
     const [userId, setUserId] = useState('');
     const [location, setLocation] = useState(false);
     const [refresh, setRefresh] = useState(false)
@@ -18,7 +23,6 @@ const CustomersDetails = ({ route }) => {
             try {
                 const id = await AsyncStorage.getItem('UserId');
                 setUserId(id);
-                // console.log('userId', id)
             } catch (e) {
                 console.log(e)
             }
@@ -97,10 +101,8 @@ const CustomersDetails = ({ route }) => {
         );
     };
 
-
     const handleUpdateLocation = async (lat, long) => {
-
-        fetch("http://192.168.1.10:5000/api/saniForce/retailers", {
+        fetch("http://192.168.1.10:9001/api/masters/retailers?Company_Id=1", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -128,54 +130,62 @@ const CustomersDetails = ({ route }) => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.pop()}>
+                    <CustomIcon name="arrow-left" color={Colors.white} size={25} />
+                </TouchableOpacity>
+                <Text style={styles.headerText}>Details</Text>
+            </View>
+
             <View style={styles.detailsContainer}>
-                <Text style={styles.tableHeader}>Constomer Details</Text>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Name:</Text>
-                    <Text style={styles.value}>{item.retailer_Name}</Text>
+                    <Text style={styles.value}>{item.Retailer_Name}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Address:</Text>
-                    <Text style={styles.value}>{`${item.address}, ${item.city}, ${item.stateName} - ${item.pinCode}`}</Text>
+                    <Text style={styles.value}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
                 </View>
                 <View style={styles.tableRow}>
-                    <Text style={styles.label}>Designation:</Text>
-                    <Text style={styles.value}>{item.designation}</Text>
+                    <Text style={styles.label}>Contact Person:</Text>
+                    <Text style={styles.value}>{item.Contact_Person}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Channel:</Text>
-                    <Text style={styles.value}>{item.retailer_Channel}</Text>
+                    <Text style={styles.value}>{item.Retailer_Channel_Id}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Distributor:</Text>
-                    <Text style={styles.value}>{item.distributorName}</Text>
+                    <Text style={styles.value}>{item.Distributor_Id}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Contact:</Text>
                     <TouchableOpacity onPress={handleCall}>
-                        <Text style={[styles.value, styles.link]}>{item.mobile_No}</Text>
+                        <Text style={[styles.value, styles.link]}>{item.Mobile_No}</Text>
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={styles.messageButton}
                     onPress={() => {
-                        Linking.openURL(`https://wa.me/+91${item.mobile_No}/?text=Hi`)
+                        Linking.openURL(`https://wa.me/+91${item.Mobile_No}/?text=Hi`)
                     }}>
                     <Text style={styles.messageButtonText}>WhatsApp</Text>
                 </TouchableOpacity>
                 {latitude !== null && longitude !== null && (
-                    <Button
-                        title="Location"
-                        type="solid"
-                        onPress={handleLocation}
-                        buttonStyle={styles.locationButton}
-                    />
+                    <>
+                        <TouchableOpacity onPress={handleLocation} style={styles.directionButton}>
+                            <Text style={styles.directionButtonText}>Direction</Text>
+                        </TouchableOpacity>
+                    </>
                 )}
-                <Button
-                    title="Update Location"
-                    type="solid"
-                    onPress={() => requestLocationPermission()}
-                    buttonStyle={styles.updateLocation}
-                />
+
+                <TouchableOpacity onPress={() => navigation.push('EditCustomer', { item })} style={styles.editButton}>
+                    <Text style={styles.directionButtonText}>Edit Retailers</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={requestLocationPermission} style={styles.directionButton}>
+                    <Text style={styles.directionButtonText}>Update Location</Text>
+                </TouchableOpacity>
+
             </View>
         </View>
     )
@@ -186,63 +196,77 @@ export default CustomersDetails
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        flexDirection: 'column',
+        backgroundColor: Colors.background,
+    },
+    headerContainer: {
         flexDirection: 'row',
-        backgroundColor: '#fff',
-        borderRadius: 10,
+        alignItems: 'center',
         padding: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        marginBottom: 10,
+        backgroundColor: Colors.primary,
+    },
+    headerText: {
+        fontFamily: Fonts.plusJakartaSansMedium,
+        fontSize: 15,
+        color: Colors.white,
+        marginLeft: 10
+    },
+    detailsContainer: {
+        padding: 20,
         marginVertical: 15,
         marginHorizontal: 15
     },
-    detailsContainer: {
-        flex: 1,
-    },
-    tableHeader: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        marginTop: 10,
-        color: '#000'
-    },
     tableRow: {
         flexDirection: 'row',
-        marginBottom: 15,
+        marginBottom: 20,
     },
     label: {
         flex: 1,
-        fontWeight: 'bold',
-        color: '#000'
+        fontFamily: Fonts.plusJakartaSansMedium,
+        fontWeight: '700',
+        color: Colors.black
     },
     value: {
         flex: 2,
-        color: '#000'
+        fontFamily: Fonts.plusJakartaSansRegular,
+        fontWeight: '600',
+        color: Colors.black
     },
     link: {
         color: 'blue',
         textDecorationLine: 'underline',
+        fontFamily: Fonts.plusJakartaSansBold,
     },
     messageButton: {
         backgroundColor: '#25D366',
         padding: 10,
         borderRadius: 5,
         marginTop: 25,
-        marginBottom: 25
     },
     messageButtonText: {
-        color: '#fff',
+        fontFamily: Fonts.plusJakartaSansMedium,
+        fontWeight: '700',
+        color: Colors.white,
         textAlign: 'center',
     },
-    locationButton: {
-        marginTop: 10,
+    directionButton: {
+        marginTop: 15,
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
         backgroundColor: '#3498db',
     },
-    updateLocation: {
-        marginTop: 10,
-        backgroundColor: '#25D366',
+    directionButtonText: {
+        fontFamily: Fonts.plusJakartaSansMedium,
+        color: Colors.white,
+        fontWeight: '700'
+    },
+
+    editButton: {
+        marginTop: 15,
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        backgroundColor: Colors.secondary,
     },
 });

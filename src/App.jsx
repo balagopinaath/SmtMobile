@@ -7,9 +7,10 @@ import LoginScreen from './Screens/LoginScreen';
 import HomeScreen from './Screens/HomeScreen';
 import Customers from './Screens/Customers';
 import CustomersDetails from './Screens/CustomersDetails';
-import Dashboard from './Screens/Dashboard';
 import AddCustomer from './Screens/AddCustomer';
 import OpenCamera from './Components/OpenCamera';
+import EditCustomer from './Screens/EditCustomer';
+import TakePhoto from './Components/TakePhoto';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,13 +20,14 @@ const App = () => {
       <Stack.Navigator initialRouteName="StartScreen" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="StartScreen" component={StartScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
         <Stack.Screen name="Customers" component={Customers} />
         <Stack.Screen name="CustomersDetails" component={CustomersDetails} />
         <Stack.Screen name="AddCustomer" component={AddCustomer} />
+        <Stack.Screen name="EditCustomer" component={EditCustomer} />
         <Stack.Screen name="OpenCamera" component={OpenCamera} />
+        <Stack.Screen name="TakePhoto" component={TakePhoto} />
       </Stack.Navigator>
     </NavigationContainer>
   );

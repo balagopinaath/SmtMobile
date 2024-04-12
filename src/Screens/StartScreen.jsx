@@ -44,7 +44,7 @@ const StartScreen = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={Colors.black} />
+            <StatusBar backgroundColor={Colors.primary} />
             <Text style={styles.logo}>SMT</Text>
         </View>
     );

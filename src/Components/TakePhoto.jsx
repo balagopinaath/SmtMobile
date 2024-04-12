@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, LogBox } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission, } from 'react-native-vision-camera';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native'
 import Colors from '../Config/Colors';
 
-const OpenCamera = () => {
+const TakePhoto = ({ route }) => {
     const navigation = useNavigation();
+    const { item } = route.params;
 
     const device = useCameraDevice('back');
     const camera = useRef(null);
@@ -42,7 +43,7 @@ const OpenCamera = () => {
 
     const savePhoto = () => {
         if (capturedPhotoPath) {
-            navigation.navigate('AddCustomer', { imageUri: capturedPhotoPath });
+            navigation.push('EditCustomer', { imageUri: capturedPhotoPath, item: item });
         }
     };
 
@@ -77,7 +78,7 @@ const OpenCamera = () => {
     );
 }
 
-export default OpenCamera;
+export default TakePhoto
 
 const styles = StyleSheet.create({
     container: {
