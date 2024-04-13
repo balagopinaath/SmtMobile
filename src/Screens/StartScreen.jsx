@@ -28,7 +28,7 @@ const StartScreen = () => {
         } catch (error) {
             console.log(error);
         } finally {
-            setLoading(false); // Mark loading as complete after token retrieval
+            setLoading(false);
         }
     };
 
@@ -45,7 +45,7 @@ const StartScreen = () => {
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={Colors.primary} />
-            <Text style={styles.logo}>SMT</Text>
+            <Text style={styles.logo}>Shri Foods</Text>
         </View>
     );
 };

@@ -1,27 +1,31 @@
-import { View, Text, StyleSheet, ToastAndroid, StatusBar, ScrollView, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ToastAndroid, Alert, TextInput, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustomIcon from '../Components/CustomIcon'
+import CryptoJS from 'react-native-crypto-js';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Fonts from '../Config/Fonts'
 import Colors from '../Config/Colors'
-import Endpoint from '../Config/Endpoint'
 
 const LoginScreen = () => {
     const navigation = useNavigation();
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
-    const [visible, setVisible] = useState(false);
 
     const loginFunction = async () => {
         if (loginId && password) {
             try {
-                const response = await fetch(`${Endpoint}api/login?user=${loginId}&pass=${password}`, {
-                    method: 'GET',
+                const passHash = CryptoJS.AES.encrypt(password, 'ly4@&gr$vnh905RyB>?%#@-(KSMT').toString();
+
+                const response = await fetch(`http://192.168.1.10:9001/api/login`, {
+                    method: 'POST',
                     headers: {
-                        Accept: 'application/json',
                         'Content-Type': 'application/json',
                     },
+                    body: JSON.stringify({
+                        UserName: loginId,
+                        Password: passHash
+                    })
                 });
 
                 if (!response.ok) {
@@ -30,16 +34,16 @@ const LoginScreen = () => {
 
                 const data = await response.json();
 
-                if (data.status === 'Success') {
-                    console.log('data', data);
+                if (data.success) {
+                    await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
                     await setData(data);
                     navigation.replace("HomeScreen");
                 } else {
-                    alert(data);
+                    Alert.alert(data);
                 }
             } catch (error) {
                 console.error('Error during login:', error);
-                alert('Failed to log in. Please try again.');
+                Alert.alert('Failed to log in. Please try again.');
             }
         } else {
             if (!loginId || loginId === '') {
@@ -53,31 +57,34 @@ const LoginScreen = () => {
 
     const setData = async (data) => {
         try {
-            await AsyncStorage.setItem('userToken', data.user.Autheticate_Id);
-            await AsyncStorage.setItem('Name', data.user.Name);
-            await AsyncStorage.setItem('UserType', data.user.UserType);
-            await AsyncStorage.setItem('UserId', data.user.UserId);
-            await AsyncStorage.setItem('branchId', String(data.user.BranchId));
-            await AsyncStorage.setItem('loginResponse', JSON.stringify(data.sessionInfo));
-            await AsyncStorage.setItem('uType', data.user.UserTypeId);
+            await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
+            await AsyncStorage.setItem('UserId', data.data[0].UserId);
+            await AsyncStorage.setItem('userName', data.data[0].UserName);
+            await AsyncStorage.setItem('Name', data.data[0].Name);
+            await AsyncStorage.setItem('UserType', data.data[0].UserType);
+            await AsyncStorage.setItem('branchId', String(data.data[0].BranchId));
+            await AsyncStorage.setItem('branchName', data.data[0].BranchName);
+            await AsyncStorage.setItem('userType', data.data[0].UserType);
+            await AsyncStorage.setItem('userTypeId', data.data[0].UserTypeId);
+            // console.log('Data stored successfully.');
         } catch (e) {
-            console.log(e);
+            console.error('Error storing data:', e);
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={Colors.black} />
-            <Text style={styles.title}>Welcome to SMT</Text>
+            <StatusBar backgroundColor={Colors.primary} />
+            <Text style={styles.title}>Welcome to Shri Foods Sales App</Text>
 
             <Text style={styles.subtitle}>Let's start to manage your attendance more effectively with us!</Text>
 
             <View style={styles.inputContainer}>
-                <CustomIcon name="logout" size={25} style={styles.inputIcon} color={Colors.accent} />
+                <Icon name="mobile-phone" size={25} style={styles.inputIcon} color={Colors.accent} ></Icon>
                 <TextInput
                     style={styles.textInput}
                     textAlign='left'
-                    placeholder='Enter your UserId'
+                    placeholder='Enter your Mobile Number'
                     value={loginId}
                     onChangeText={(val) => setLoginId(val)}
                     autoCapitalize="none"
@@ -85,7 +92,7 @@ const LoginScreen = () => {
             </View>
 
             <View style={styles.inputContainer}>
-                <CustomIcon name="lock" size={25} style={styles.inputIcon} color={Colors.accent} />
+                <Icon name="lock" size={25} style={styles.inputIcon} color={Colors.accent} ></Icon>
                 <TextInput
                     style={styles.textInput}
                     placeholder='Enter your Password'
@@ -123,34 +130,35 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.plusJakartaSansMedium,
         fontSize: 16,
         color: '#777',
-        marginBottom: 20,
+        marginBottom: 40,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff', // White input fields
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        marginBottom: 10,
+        backgroundColor: Colors.secondary,
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        marginBottom: 20,
     },
     inputIcon: {
-        marginRight: 10,
+        marginRight: 12.5,
     },
     textInput: {
         flex: 1,
+        fontFamily: Fonts.plusJakartaSansMedium,
         fontSize: 16,
+        marginLeft: 2.5
     },
     loginButton: {
         backgroundColor: Colors.accent,
-        padding: 15,
-        borderRadius: 5,
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
-        borderRadius: 30
+        borderRadius: 10
     },
     loginButtonText: {
-        color: Colors.secondary,
+        color: Colors.white,
         fontSize: 18
     }
 });

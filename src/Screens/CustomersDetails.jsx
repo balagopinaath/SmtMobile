@@ -1,4 +1,4 @@
-import { Button, Image, Linking, StyleSheet, Text, TouchableOpacity, Vibration, View, PermissionsAndroid, Alert, ToastAndroid } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -132,7 +132,7 @@ const CustomersDetails = ({ route }) => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
-                    <CustomIcon name="arrow-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Details</Text>
             </View>
@@ -164,27 +164,36 @@ const CustomersDetails = ({ route }) => {
                         <Text style={[styles.value, styles.link]}>{item.Mobile_No}</Text>
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.messageButton}
-                    onPress={() => {
-                        Linking.openURL(`https://wa.me/+91${item.Mobile_No}/?text=Hi`)
-                    }}>
-                    <Text style={styles.messageButtonText}>WhatsApp</Text>
-                </TouchableOpacity>
-                {latitude !== null && longitude !== null && (
-                    <>
-                        <TouchableOpacity onPress={handleLocation} style={styles.directionButton}>
-                            <Text style={styles.directionButtonText}>Direction</Text>
-                        </TouchableOpacity>
-                    </>
-                )}
 
-                <TouchableOpacity onPress={() => navigation.push('EditCustomer', { item })} style={styles.editButton}>
-                    <Text style={styles.directionButtonText}>Edit Retailers</Text>
-                </TouchableOpacity>
+                <View style={styles.rowButton}>
+                    <TouchableOpacity style={styles.buttonStyle}
+                        onPress={() => {
+                            Linking.openURL(`https://wa.me/+91${item.Mobile_No}/?text=Hi`)
+                        }}>
+                        <CustomIcon name="whatsapp" size={25} color={Colors.white} />
+                        <Text style={styles.buttonStyleText}>WhatsApp</Text>
+                    </TouchableOpacity>
+                    {latitude !== null && longitude !== null && (
+                        <>
+                            <TouchableOpacity onPress={handleLocation} style={[styles.buttonStyle, { backgroundColor: 'red', }]}>
+                                <CustomIcon name="map-marker" size={25} color={Colors.white} />
+                                <Text style={styles.buttonStyleText}>Direction</Text>
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
 
-                <TouchableOpacity onPress={requestLocationPermission} style={styles.directionButton}>
-                    <Text style={styles.directionButtonText}>Update Location</Text>
-                </TouchableOpacity>
+                <View style={styles.rowButton}>
+                    <TouchableOpacity onPress={() => navigation.push('EditCustomer', { item })} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                        <CustomIcon name="edit" size={25} color={Colors.white} />
+                        <Text style={styles.buttonStyleText}>Edit Retailers</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={requestLocationPermission} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                        <CustomIcon name="check" size={25} color={Colors.white} />
+                        <Text style={styles.buttonStyleText}>Update Location</Text>
+                    </TouchableOpacity>
+                </View>
 
             </View>
         </View>
@@ -209,12 +218,11 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.plusJakartaSansMedium,
         fontSize: 15,
         color: Colors.white,
-        marginLeft: 10
+        marginLeft: 15
     },
     detailsContainer: {
-        padding: 20,
-        marginVertical: 15,
-        marginHorizontal: 15
+        padding: 15,
+        marginHorizontal: 10
     },
     tableRow: {
         flexDirection: 'row',
@@ -230,43 +238,30 @@ const styles = StyleSheet.create({
         flex: 2,
         fontFamily: Fonts.plusJakartaSansRegular,
         fontWeight: '600',
-        color: Colors.black
+        color: Colors.black,
     },
     link: {
         color: 'blue',
         textDecorationLine: 'underline',
         fontFamily: Fonts.plusJakartaSansBold,
     },
-    messageButton: {
+    rowButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 25,
+    },
+    buttonStyle: {
+        width: "45%",
+        alignItems: 'center',
         backgroundColor: '#25D366',
         padding: 10,
         borderRadius: 5,
-        marginTop: 25,
     },
-    messageButtonText: {
+    buttonStyleText: {
+        paddingTop: 6,
         fontFamily: Fonts.plusJakartaSansMedium,
         fontWeight: '700',
         color: Colors.white,
         textAlign: 'center',
-    },
-    directionButton: {
-        marginTop: 15,
-        padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        backgroundColor: '#3498db',
-    },
-    directionButtonText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        color: Colors.white,
-        fontWeight: '700'
-    },
-
-    editButton: {
-        marginTop: 15,
-        padding: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-        backgroundColor: Colors.secondary,
     },
 });

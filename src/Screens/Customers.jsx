@@ -60,7 +60,7 @@ const Customers = () => {
             <View style={styles.row}>
                 <Text style={styles.cell}>{item.Retailer_Name}</Text>
                 <Text style={styles.cell}>{item.Mobile_No}</Text>
-                <CustomIcon name="arrow-right" size={25} color={Colors.black} />
+                <CustomIcon name="angle-right" size={25} color={Colors.black} />
             </View>
         </TouchableOpacity>
     );
@@ -69,18 +69,10 @@ const Customers = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
-                    <CustomIcon name="arrow-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Retailers Information</Text>
+                <Text style={styles.headerText}>Retailers</Text>
             </View>
-
-            {loading && (
-                <>
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View>
-                </>
-            )}
 
             <View style={styles.inputEvent}>
                 <TextInput
@@ -93,6 +85,14 @@ const Customers = () => {
                     <Text style={styles.addButtonText}>Add</Text>
                 </TouchableOpacity>
             </View>
+
+            {loading && (
+                <>
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                </>
+            )}
 
             {filteredData.length > 0 ? (
                 <FlatList
@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
-        color: Colors.black
     },
     headerContainer: {
         flexDirection: 'row',
@@ -125,37 +124,38 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontFamily: Fonts.plusJakartaSansMedium,
-        fontSize: 15,
         color: Colors.white,
-        marginLeft: 10
+        fontSize: 15,
+        marginLeft: 15
     },
     inputEvent: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
-        marginBottom: 10,
-
+        marginBottom: 15,
     },
     inputSearch: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        height: 40,
+        fontFamily: Fonts.plusJakartaSansRegular,
         color: Colors.black,
+        height: 40,
         borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 15,
     },
     addButton: {
-        backgroundColor: Colors.secondary,
+        flexDirection: 'row',
+        width: '16.5%',
+        backgroundColor: Colors.accent,
         borderRadius: 5,
-        height: 40,
-        paddingHorizontal: 20,
-        paddingVertical: 5,
+        padding: 10
     },
     addButtonText: {
+        textAlign: 'center',
         fontFamily: Fonts.plusJakartaSansMedium,
         color: Colors.white,
         fontSize: 16,
+        marginLeft: 5
     },
     row: {
         flexDirection: 'row',

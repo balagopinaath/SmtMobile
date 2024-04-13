@@ -206,7 +206,7 @@ const AddCustomer = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
-                    <CustomIcon name="arrow-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Add Retailer</Text>
             </View>
@@ -291,7 +291,6 @@ const AddCustomer = () => {
                                 onFocus={() => setIsFocus(true)}
                                 onBlur={() => setIsFocus(false)}
                                 onChange={(value) => {
-                                    // console.log(value)
                                     setFormValues({ ...formValues, Area_Id: value.Area_Id })
                                     setIsFocus(false)
                                 }}
@@ -376,7 +375,6 @@ const AddCustomer = () => {
                     )}
 
                     <Text style={styles.mobileLabel}>Mobile Number <Text style={{ color: "red" }}>*</Text></Text>
-                    {!isMobileNoValid && <Text style={styles.errorText}>Please enter a valid 10-digit mobile number.</Text>}
                     <TextInput
                         style={styles.input}
                         value={formValues.Mobile_No}
@@ -387,6 +385,7 @@ const AddCustomer = () => {
                             handleInputChange('Mobile_No', text)
                         }}
                     />
+                    {!isMobileNoValid && <Text style={styles.errorText}>Please enter a valid 10-digit mobile number.</Text>}
 
                     <TouchableOpacity style={styles.geoButton} onPress={handleSubmit}>
                         <Text style={styles.geoButtonText}>Save</Text>
@@ -414,7 +413,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.plusJakartaSansMedium,
         fontSize: 15,
         color: Colors.white,
-        marginLeft: 10
+        marginLeft: 15
     },
     inputSearchStyle: {
         height: 40,
