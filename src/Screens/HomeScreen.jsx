@@ -56,7 +56,7 @@ const HomeScreen = () => {
 
                     <TouchableOpacity style={styles.actionButton}>
                         <Icon name="shoppingcart" color={Colors.white} size={25} />
-                        <Text style={styles.actionButtonText}>Order</Text>
+                        <Text style={styles.actionButtonText}>Sales</Text>
                     </TouchableOpacity>
                 </View>
 

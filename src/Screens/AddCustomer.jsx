@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
+import { View, Text, TextInput, ToastAndroid, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Colors from '../Config/Colors';
@@ -197,6 +197,12 @@ const AddCustomer = () => {
                 .then((response) => response.text())
                 .then((result) => console.log(result))
                 .catch((error) => console.error(error));
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'HomeScreen' }]
+            })
+            ToastAndroid.show('New Customer Added}', ToastAndroid.LONG)
         }
 
     };
@@ -261,6 +267,7 @@ const AddCustomer = () => {
                         style={styles.input}
                         value={formValues.Gstno}
                         keyboardType='default'
+                        autoCapitalize='characters'
                         placeholder='GST Number'
                         onChangeText={(text) => handleInputChange('Gstno', text)}
                     />

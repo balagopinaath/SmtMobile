@@ -10,7 +10,6 @@ import CustomersDetails from './Screens/CustomersDetails';
 import AddCustomer from './Screens/AddCustomer';
 import OpenCamera from './Components/OpenCamera';
 import EditCustomer from './Screens/EditCustomer';
-import TakePhoto from './Components/TakePhoto';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +26,6 @@ const App = () => {
         <Stack.Screen name="AddCustomer" component={AddCustomer} />
         <Stack.Screen name="EditCustomer" component={EditCustomer} />
         <Stack.Screen name="OpenCamera" component={OpenCamera} />
-        <Stack.Screen name="TakePhoto" component={TakePhoto} />
       </Stack.Navigator>
     </NavigationContainer>
   );

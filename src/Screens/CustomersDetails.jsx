@@ -118,6 +118,7 @@ const CustomersDetails = ({ route }) => {
                 setRefresh(!refresh);
                 if (data.status === 'Success') {
                     Alert.alert(data.message);
+                    ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG)
                     console.log('successfully')
                 } else {
                     Alert.alert(data.message);
@@ -153,6 +154,10 @@ const CustomersDetails = ({ route }) => {
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Channel:</Text>
                     <Text style={styles.value}>{item.Retailer_Channel_Id}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={styles.label}>GST:</Text>
+                    <Text style={styles.value}>{item.Gstno}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={styles.label}>Distributor:</Text>

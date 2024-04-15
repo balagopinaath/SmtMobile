@@ -1,34 +1,33 @@
-import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
-import { useNavigation, useRoute } from '@react-navigation/native'
-import ImageViewer from 'react-native-image-viewing';
+import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
+import CameraComponent from '../Components/CameraComponent';
 
 const EditCustomer = ({ route }) => {
     const { item } = route.params;
     const navigation = useNavigation();
-    const routeParam = useRoute();
 
     const [editValue, setEditValue] = useState({
-        Retailer_Id: "",
-        Retailer_Name: "",
-        Contact_Person: "",
-        Mobile_No: "",
-        Retailer_Channel_Id: "",
-        Retailer_Class: "",
+        Retailer_Id: item.Retailer_Id,
+        Retailer_Name: item.Retailer_Name,
+        Contact_Person: item.Contact_Person,
+        Mobile_No: item.Mobile_No,
+        Retailer_Channel_Id: item.Retailer_Channel_Id,
+        Retailer_Class: item.Retailer_Class,
         Route_Id: "",
         Area_Id: "",
-        Reatailer_Address: "",
-        Reatailer_City: "",
-        PinCode: "",
+        Reatailer_Address: item.Reatailer_Address,
+        Reatailer_City: item.Reatailer_City,
+        PinCode: item.PinCode,
         State_Id: "",
-        Sales_Force_Id: "",
+        Sales_Force_Id: item.Sales_Force_Id,
         Distributor_Id: "",
-        Gstno: "",
-        Created_By: "",
+        Gstno: item.Gstno,
+        Created_By: item.Created_By,
         Profile_Pic: ""
     })
     const [routes, setRoutes] = useState(editValue.Route_Id)
@@ -38,18 +37,14 @@ const EditCustomer = ({ route }) => {
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
-    const [imageUri, setImageUri] = useState(null);
+    const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
 
     useEffect(() => {
         fetchRoutes()
         fetchAreas()
         fetchStates()
         fetchDistributors()
-
-        if (routeParam.params?.imageUri) {
-            setImageUri(routeParam.params.imageUri);
-        }
-    }, [routeParam.params?.imageUri])
+    }, [])
 
     const fetchRoutes = async () => {
         try {
@@ -138,41 +133,73 @@ const EditCustomer = ({ route }) => {
         setEditValue({ ...editValue, [field]: value });
     };
 
-    const handleImageCapture = (uri) => {
-        setImageUri(uri);
-        setEditValue({ ...editValue, profilePic: uri })
+    const handlePhotoCapture = (photoPath) => {
+        setCapturedPhotoPath(photoPath);
+        setEditValue({ ...editValue, Profile_Pic: photoPath });
     };
 
-    const handleOpenCamera = () => {
-        navigation.navigate('TakePhoto', { onImageCapture: handleImageCapture, item: item });
+    const savePhoto = () => {
+        if (capturedPhotoPath) {
+            console.log('Photo saved:', capturedPhotoPath);
+            setEditValue({ ...editValue, profilePic: capturedPhotoPath })
+        }
     };
 
     const handleSubmit = () => {
-        if (
-            !editValue.Retailer_Name ||
-            !editValue.Contact_Person ||
-            !editValue.Gstno ||
-            !editValue.Route_Id ||
-            !editValue.Area_Id ||
-            !editValue.Reatailer_Address ||
-            !editValue.Reatailer_City ||
-            !editValue.PinCode ||
-            !editValue.State_Id ||
-            !editValue.Mobile_No ||
-            !editValue.Distributor_Id
-        ) {
-            Alert.alert('Please fill in all required fields.');
+        if (!capturedPhotoPath) {
+            Alert.alert('Retailer Photo is required.');
             return;
         }
+        console.log('gst', editValue.Gstno)
 
-        console.log('Form submitted successfully:', editValue);
-    }
+        var formData = new FormData();
+        formData.append("Retailer_Id", editValue.Retailer_Id)
+        formData.append("Retailer_Name", editValue.Retailer_Name);
+        formData.append("Contact_Person", editValue.Contact_Person);
+        formData.append("Mobile_No", editValue.Mobile_No);
+        formData.append("Retailer_Channel_Id", editValue.Retailer_Channel_Id)
+        formData.append("Retailer_Class", editValue.Retailer_Class)
+        formData.append("Route_Id", editValue.Route_Id);
+        formData.append("Area_Id", editValue.Area_Id);
+        formData.append("Reatailer_Address", editValue.Reatailer_Address);
+        formData.append("Reatailer_City", editValue.Reatailer_City);
+        formData.append("PinCode", editValue.PinCode);
+        formData.append("State_Id", editValue.State_Id);
+        formData.append("Gstno", editValue.Gstno);
+        formData.append("Profile_Pic", {
+            uri: `file://${capturedPhotoPath}`,
+            name: 'photo.jpg',
+            type: 'image/jpeg'
+        });
+        formData.append("Distributor_Id", editValue.Distributor_Id);
+        formData.append("Created_By", editValue.Created_By);
+
+        fetch(`http://192.168.1.10:9001/api/masters/retailers?Company_Id=1`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                console.log('Retailer updated successfully:', result);
+                ToastAndroid.show('Retailer updated successfully', ToastAndroid.LONG)
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'HomeScreen' }]
+                });
+            })
+            .catch(error => {
+                console.error('Error updating retailer:', error);
+            });
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
-                    <CustomIcon name="arrow-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Edit Retailer</Text>
             </View>
@@ -187,7 +214,9 @@ const EditCustomer = ({ route }) => {
                                 placeholderStyle={styles.placeholderStyle}
                                 inputSearchStyle={styles.inputSearchStyle}
                                 data={routes}
-                                value={value}
+                                value={null}
+                                valueField="Route_Id"
+                                labelField="Route_Name"
                                 search
                                 maxHeight={300}
                                 placeholder={!isFocus ? "Select Route" : "..."}
@@ -198,7 +227,6 @@ const EditCustomer = ({ route }) => {
                                     setEditValue({ ...editValue, Route_Id: selectedValue.Route_Id })
                                     setIsFocus(false)
                                 }}
-                                labelField="Route_Name"
                             />
                         </>
                     )}
@@ -206,7 +234,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.label}>Retailer Name <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Retailer_Name}
+                        value={editValue.Retailer_Name}
                         placeholder='Retailer Name'
                         onChangeText={(text) => handleInputChange('Retailer_Name', text)}
                     />
@@ -214,7 +242,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.label}>Contact Person <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Contact_Person}
+                        value={editValue.Contact_Person}
                         placeholder='Contact Person'
                         onChangeText={(text) => handleInputChange('Contact_Person', text)}
                     />
@@ -222,35 +250,35 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.mobileLabel}>GST Number <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Gstno}
+                        value={editValue.Gstno}
                         keyboardType='default'
                         placeholder='GST Number'
+                        autoCapitalize='characters'
                         onChangeText={(text) => handleInputChange('Gstno', text)}
                     />
 
-                    {imageUri && typeof imageUri === 'string' ? (
+                    {!capturedPhotoPath ? (
+                        <CameraComponent onPhotoCapture={handlePhotoCapture} />
+                    ) : (
                         <>
-                            <TouchableOpacity
-                                onPress={() => setImageUri(null)}
-                                style={styles.removeButton}>
-                                <CustomIcon name="close-circle" size={24} color={'red'} />
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Image source={`file://${imageUri}` ? { uri: 'file://' + imageUri } : null} style={styles.previewImage} />
-                            </TouchableOpacity>
+                            {capturedPhotoPath && typeof capturedPhotoPath === 'string' ? (
+                                <>
+                                    <Image
+                                        source={`file://${capturedPhotoPath}` ? { uri: 'file://' + capturedPhotoPath } : null}
+                                        style={styles.previewImage}
+                                    />
+                                </>
+                            ) : null}
                         </>
-                    ) : null}
-
-                    <TouchableOpacity style={styles.updateButton} onPress={handleOpenCamera}>
-                        <Text style={styles.updateButtonText}>Take Photo</Text>
-                    </TouchableOpacity>
+                    )}
 
                     {areas && (
                         <>
                             <Text style={styles.label}>Areas <Text style={{ color: "red" }}>*</Text></Text>
                             <Dropdown
                                 data={areas}
-                                value={value}
+                                value={null}
+                                valueField="Area_Name"
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 inputSearchStyle={styles.inputSearchStyle}
@@ -273,7 +301,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.mobileLabel}>Retailer Address <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Reatailer_Address}
+                        value={editValue.Reatailer_Address}
                         keyboardType='default'
                         placeholder='Reatailer Address'
                         onChangeText={(text) => handleInputChange('Reatailer_Address', text)}
@@ -282,7 +310,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.label}>City <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Reatailer_City}
+                        value={editValue.Reatailer_City}
                         keyboardType='default'
                         placeholder='City'
                         onChangeText={(text) => handleInputChange('Reatailer_City', text)}
@@ -291,7 +319,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.label}>PinCode <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.PinCode}
+                        value={editValue.PinCode}
                         keyboardType='number-pad'
                         placeholder='PinCode'
                         onChangeText={(text) => handleInputChange('PinCode', text)}
@@ -324,7 +352,7 @@ const EditCustomer = ({ route }) => {
                     <Text style={styles.mobileLabel}>Mobile Number <Text style={{ color: "red" }}>*</Text></Text>
                     <TextInput
                         style={styles.input}
-                        value={item.Mobile_No}
+                        value={editValue.Mobile_No}
                         keyboardType='phone-pad'
                         placeholder='Mobile Number'
                         onChangeText={(text) => handleInputChange('Mobile_No', text)}
@@ -336,6 +364,7 @@ const EditCustomer = ({ route }) => {
                             <Dropdown
                                 data={distributors}
                                 value={value}
+                                valueField="distributor_Name"
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 inputSearchStyle={styles.inputSearchStyle}
@@ -408,25 +437,19 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.plusJakartaSansBold
     },
     previewImage: {
-        width: '100',
-        height: 200,
+        alignSelf: 'flex-end',
+        width: '60%',
+        height: '15%',
         resizeMode: 'cover',
         borderRadius: 10,
         marginBottom: 20,
     },
-    removeButton: {
-        position: 'absolute',
-        color: Colors.white,
-        top: 378,
-        right: 10,
-        zIndex: 1,
-    },
     updateButton: {
-        backgroundColor: Colors.secondary,
+        backgroundColor: Colors.accent,
         borderRadius: 5,
         alignItems: 'center',
         padding: 10,
-        marginBottom: 10,
+        marginBottom: 250,
         marginTop: 10,
     },
     updateButtonText: {
