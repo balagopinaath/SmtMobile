@@ -19,8 +19,9 @@ const CameraComponent = ({ onPhotoCapture }) => {
     const takePhoto = async () => {
         try {
             const photo = await camera.current.takePhoto({
-                qualityPrioritization: 'quality',
+                qualityPrioritization: 'balanced',
                 enableAutoRedEyeReduction: true,
+                enableAutoStabilization: true,
                 flash: 'off',
                 enableShutterSound: true
             });

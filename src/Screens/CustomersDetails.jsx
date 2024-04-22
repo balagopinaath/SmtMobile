@@ -102,7 +102,7 @@ const CustomersDetails = ({ route }) => {
     };
 
     const handleUpdateLocation = async (lat, long) => {
-        fetch("http://192.168.1.10:9001/api/masters/retailers?Company_Id=1", {
+        fetch("http://192.168.1.10:9001/api/masters/retailersLocation", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

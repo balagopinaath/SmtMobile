@@ -22,7 +22,7 @@ const HomeScreen = () => {
     }, []);
 
     const logout = async () => {
-
+        AsyncStorage.removeItem()
     };
 
     return (
