@@ -54,23 +54,23 @@ export default CameraComponent
 
 const styles = StyleSheet.create({
     container: {
-        flex: 2,
-        marginBottom: 180,
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     cameraView: {
-        width: "55%",
-        height: "400%",
-        left: 160,
+        flex: 1,
+        width: '80%',
+        aspectRatio: 1,
     },
     captureButton: {
-        alignSelf: 'flex-start',
-        position: 'relative',
-        top: 160,
         backgroundColor: Colors.accent,
         borderRadius: 5,
         justifyContent: 'center',
+        alignItems: 'center',
         paddingVertical: 15,
         paddingHorizontal: 30,
+        marginBottom: 20,
     },
     captureButtonText: {
         color: Colors.white,

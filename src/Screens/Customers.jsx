@@ -27,7 +27,7 @@ const Customers = () => {
     const fetchCustomersData = async () => {
         try {
             const response = await fetch(
-                "http://192.168.1.10:9001/api/masters/retailers?Company_Id=1"
+                "http://192.168.1.2:9001/api/masters/retailers?Company_Id=1"
                 // `https://api.salesjump.in/api/MasterData/getRetailerDetails?senderID=shri`
             );
             const jsonData = await response.json();

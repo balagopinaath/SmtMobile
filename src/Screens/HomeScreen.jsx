@@ -5,10 +5,12 @@ import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
+import ModalWithCamera from '../Components/ModalWithCamera';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [name, setName] = useState('')
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -22,7 +24,28 @@ const HomeScreen = () => {
     }, []);
 
     const logout = async () => {
-        AsyncStorage.removeItem()
+        try {
+            await AsyncStorage.removeItem('userToken');
+            await AsyncStorage.removeItem('UserId');
+            await AsyncStorage.removeItem('userName');
+            await AsyncStorage.removeItem('Name');
+            await AsyncStorage.removeItem('UserType');
+            await AsyncStorage.removeItem('branchId');
+            await AsyncStorage.removeItem('branchName');
+            await AsyncStorage.removeItem('userType');
+            await AsyncStorage.removeItem('userTypeId');
+            navigation.replace("LoginScreen");
+        } catch (e) {
+            console.error('Error clearing AsyncStorage:', e);
+        }
+    };
+
+    const openModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsModalVisible(false);
     };
 
     return (
@@ -61,9 +84,9 @@ const HomeScreen = () => {
                 </View>
 
                 <View style={styles.row}>
-                    <TouchableOpacity style={styles.actionButton}>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => { navigation.push('Attendance') }} >
                         <Icon name="enviromento" color={Colors.white} size={25} />
-                        <Text style={styles.actionButtonText}>Routes</Text>
+                        <Text style={styles.actionButtonText}>Register</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.actionButton}>
@@ -72,6 +95,17 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+
+            <TouchableOpacity style={styles.floatingButton} onPressOut={openModal}>
+                {/* <Icon name="close" color={Colors.white} size={25} /> */}
+                <Text style={styles.floatingButtonText}>End Day</Text>
+            </TouchableOpacity>
+            <ModalWithCamera
+                isVisible={isModalVisible}
+                onClose={closeModal}
+                onSubmit={closeModal}
+            />
 
         </View>
     )
@@ -118,5 +152,19 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginLeft: 10,
     },
-
+    floatingButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: 'blue',
+        padding: 15,
+        borderRadius: 30,
+    },
+    floatingButtonText: {
+        fontFamily: Fonts.plusJakartaSansMedium,
+        fontSize: 16,
+        color: Colors.white,
+        marginLeft: 13,
+        marginTop: 5,
+    }
 });

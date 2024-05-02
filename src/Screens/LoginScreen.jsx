@@ -11,13 +11,14 @@ const LoginScreen = () => {
     const navigation = useNavigation();
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
+    const [userId, setUserId] = useState("");
 
     const loginFunction = async () => {
         if (loginId && password) {
             try {
                 const passHash = CryptoJS.AES.encrypt(password, 'ly4@&gr$vnh905RyB>?%#@-(KSMT').toString();
 
-                const response = await fetch(`http://192.168.1.10:9001/api/login`, {
+                const response = await fetch(`http://192.168.1.2:9001/api/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -37,7 +38,11 @@ const LoginScreen = () => {
                 if (data.success) {
                     await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
                     await setData(data);
-                    navigation.replace("HomeScreen");
+                    if (data.data[0].UserType === 'SALES PERSON') {
+                        navigation.replace("Attendance");
+                    } else {
+                        navigation.replace("HomeScreen");
+                    }
                 } else {
                     Alert.alert(data);
                 }
@@ -66,7 +71,7 @@ const LoginScreen = () => {
             await AsyncStorage.setItem('branchName', data.data[0].BranchName);
             await AsyncStorage.setItem('userType', data.data[0].UserType);
             await AsyncStorage.setItem('userTypeId', data.data[0].UserTypeId);
-            // console.log('Data stored successfully.');
+            setUserId(data.data[0].UserId)
         } catch (e) {
             console.error('Error storing data:', e);
         }
@@ -75,7 +80,7 @@ const LoginScreen = () => {
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={Colors.primary} />
-            <Text style={styles.title}>Welcome to Shri Foods Sales App</Text>
+            <Text style={styles.title}>Welcome to Sales App</Text>
 
             <Text style={styles.subtitle}>Let's start to manage your attendance more effectively with us!</Text>
 
