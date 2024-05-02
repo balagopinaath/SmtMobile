@@ -26,7 +26,7 @@ const CameraComponent = ({ onPhotoCapture }) => {
                 enableShutterSound: true
             });
 
-            onPhotoCapture(photo.path); // Callback to handle captured photo path
+            onPhotoCapture(photo.path);
         } catch (err) {
             console.log(err);
         }
@@ -36,16 +36,16 @@ const CameraComponent = ({ onPhotoCapture }) => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
-                <Text style={styles.captureButtonText}>Take Photo</Text>
-            </TouchableOpacity>
             <Camera
                 ref={camera}
                 photo={true}
-                style={[StyleSheet.absoluteFillObject, styles.cameraView]}
+                style={[styles.cameraView]}
                 device={device}
                 isActive={true}
             />
+            <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
+                <Text style={styles.captureButtonText}>Take Photo</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -60,17 +60,19 @@ const styles = StyleSheet.create({
     },
     cameraView: {
         flex: 1,
-        width: '80%',
+        width: '90%',
         aspectRatio: 1,
     },
     captureButton: {
         backgroundColor: Colors.accent,
         borderRadius: 5,
+        borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 15,
         paddingHorizontal: 30,
-        marginBottom: 20,
+        marginBottom: 30,
+        marginTop: 25,
     },
     captureButtonText: {
         color: Colors.white,

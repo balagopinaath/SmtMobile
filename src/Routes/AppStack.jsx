@@ -10,6 +10,7 @@ import AddCustomer from '../Screens/AddCustomer';
 import EditCustomer from '../Screens/EditCustomer';
 import Attendance from '../Screens/Attendance';
 import OpenCamera from '../Components/OpenCamera';
+import EndDay from '../Screens/EndDay';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ const AppStack = () => {
             <Stack.Screen name="OpenCamera" component={OpenCamera} />
 
             <Stack.Screen name="Attendance" component={Attendance} />
+            <Stack.Screen name="EndDay" component={EndDay} />
         </Stack.Navigator>
     )
 }

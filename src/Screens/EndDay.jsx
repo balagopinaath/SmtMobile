@@ -6,97 +6,43 @@ import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../Components/CameraComponent';
-import Geolocation from '@react-native-community/geolocation'
 
-const Attendance = () => {
+const EndDay = () => {
     const navigation = useNavigation();
     const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
     const [formValues, setFormValues] = useState({
-        UserId: '',
-        Start_KM: '',
-        Latitude: '',
-        Longitude: '',
-        Start_KM_Pic: ''
+        Id: '',
+        End_KM: '',
+        End_KM_Pic: ''
     })
 
     useEffect(() => {
         (async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
-                setFormValues({ ...formValues, UserId: userId });
+                setFormValues({ ...formValues, Id: userId });
             } catch (err) {
                 console.log(err);
             }
         })();
-
-        getAttendanceInfo(formValues.UserId)
-
     }, [])
 
-    const getAttendanceInfo = async (userId) => {
-        try {
-            const url = `http://192.168.1.2:9001/api/getMyLastAttendance?UserId=${userId}`;
-
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            const attendanceStatus = await response.json();
-
-            if (attendanceStatus.data[0].length > 0) {
-                if (attendanceStatus.data[0].Active_Status == 1) {
-                    navigation.replace('HomeScreen');
-                } else {
-                    // navigation.replace('');
-                }
-            }
-        } catch (error) {
-            console.log("Error fetching attendance data:", error);
-        }
-    }
-
     const handleInputChange = value => {
-        setFormValues({ ...formValues, Start_KM: value });
+        setFormValues({ ...formValues, End_KM: value });
     };
 
     const handlePhotoCapture = (photoPath) => {
         setCapturedPhotoPath(photoPath);
-        setFormValues({ ...formValues, Start_KM_Pic: photoPath });
+        setFormValues({ ...formValues, End_KM_Pic: photoPath });
     };
-
-    const handleGeoData = async () => {
-        try {
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude.toString();
-                    const longitude = position.coords.longitude.toString();
-                    console.log('form', formValues.Latitude, formValues.Longitude)
-
-                    setFormValues({
-                        ...formValues,
-                        Latitude: latitude,
-                        Longitude: longitude,
-                    });
-                }
-            )
-        } catch (error) {
-            console.error('Error fetching geolocation data:', error);
-        }
-    }
 
     const handleSubmit = async () => {
         try {
-            await handleGeoData();
             const formData = new FormData();
-            formData.append('UserId', formValues.UserId);
-            formData.append('Start_KM', formValues.Start_KM);
-            formData.append('Latitude', formValues.Latitude);
-            formData.append('Longitude', formValues.Longitude);
-            formData.append("Start_KM_Pic", {
-                uri: `file://${formValues.Start_KM_Pic}`,
+            formData.append('Id', formValues.Id);
+            formData.append('End_KM', formValues.End_KM);
+            formData.append("End_KM_Pic", {
+                uri: `file://${formValues.End_KM_Pic}`,
                 name: 'photo.jpg',
                 type: 'image/jpeg'
             })
@@ -104,7 +50,7 @@ const Attendance = () => {
             console.log(formValues)
 
             const response = await fetch('http://192.168.1.2:9001/api/attendance', {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -116,26 +62,28 @@ const Attendance = () => {
             }
 
             const responseData = await response.json();
-            navigation.replace('HomeScreen')
             console.log('Response from server:', responseData);
 
         } catch (error) {
             console.error('Error posting data:', error);
         }
-    };
+    }
 
     return (
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
-                <Text style={styles.headerText}>Attendance</Text>
+                <TouchableOpacity onPress={() => navigation.pop()}>
+                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                </TouchableOpacity>
+                <Text style={styles.headerText}>Close Attendance</Text>
             </View>
 
             <View>
                 <TextInput
                     style={styles.input}
-                    value={formValues.Start_KM}
+                    value={formValues.End_KM}
                     keyboardType='decimal-pad'
-                    placeholder='Starting Kilometers'
+                    placeholder='Ending Kilometers'
                     autoCapitalize='characters'
                     onChangeText={handleInputChange}
                 />
@@ -157,14 +105,14 @@ const Attendance = () => {
             )}
 
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Save</Text>
+                <Text style={styles.buttonText}>Close Attendance</Text>
             </TouchableOpacity>
 
         </ScrollView>
     )
 }
 
-export default Attendance
+export default EndDay
 
 const styles = StyleSheet.create({
     container: {
@@ -182,7 +130,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.plusJakartaSansMedium,
         color: Colors.white,
         fontSize: 15,
-        marginLeft: 5,
+        marginLeft: 10,
     },
     input: {
         borderWidth: 1,
