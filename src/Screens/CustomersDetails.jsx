@@ -1,5 +1,5 @@
 import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
@@ -30,7 +30,6 @@ const CustomersDetails = ({ route }) => {
 
         fetchUserId();
     }, [])
-
 
     const handleCall = () => {
         if (phoneNumber) {
@@ -197,6 +196,13 @@ const CustomersDetails = ({ route }) => {
                     <TouchableOpacity onPress={requestLocationPermission} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
                         <CustomIcon name="check" size={25} color={Colors.white} />
                         <Text style={styles.buttonStyleText}>Update Location</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.rowButton}>
+                    <TouchableOpacity onPress={() => { navigation.push('StockClosing', { item }) }} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                        <CustomIcon name="check" size={25} color={Colors.white} />
+                        <Text style={styles.buttonStyleText}>Stock Closing</Text>
                     </TouchableOpacity>
                 </View>
 
