@@ -1,3 +1,6 @@
-const Endpoint = "https://apiweb.erpsmt.in/" //http://192.168.1.10:9001/api/login
+const baseURL = "http://192.168.1.2:9001/" 
 
-export default Endpoint
+
+export const API = {
+    login: baseURL + 'api/login',
+}

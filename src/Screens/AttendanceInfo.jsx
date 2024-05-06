@@ -12,6 +12,8 @@ const AttendanceInfo = () => {
     const [userId, setUserId] = useState('')
     const [userType, setUserType] = useState('')
     const [startDate, setStartDate] = useState(false)
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
 
     useEffect(() => {
         (async () => {
@@ -22,11 +24,12 @@ const AttendanceInfo = () => {
                 setName(userName)
                 setUserId(UserId)
                 setUserType(UserType)
+                getAttendanceInfo(userId)
             } catch (err) {
                 console.log(err);
             }
         })();
-        getAttendanceInfo(userId)
+
     }, []);
 
     const getAttendanceInfo = async (userId) => {
@@ -45,7 +48,10 @@ const AttendanceInfo = () => {
             if (attendanceStatus.data.length > 0) {
                 const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
                 const lastStartDate = lastAttendance.Start_Date;
-                setStartDate(lastStartDate)
+                const [datePart, timePart] = lastStartDate.split('T');
+
+                setDate(datePart);
+                setTime(timePart.substring(0, 8));
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
@@ -77,7 +83,7 @@ const AttendanceInfo = () => {
                             <Icon name="clock-o" color={Colors.black} size={20} />
                             <Text style={styles.text}>Date</Text>
                         </View>
-                        <Text style={styles.text}>-: -: -</Text>
+                        <Text style={styles.text}>{date}</Text>
                     </View>
 
                     <View style={styles.cardItem}>
@@ -85,7 +91,7 @@ const AttendanceInfo = () => {
                             <Icon name="calendar-o" color={Colors.black} size={20} />
                             <Text style={styles.text}>Time In</Text>
                         </View>
-                        <Text style={styles.text}>-: -: -</Text>
+                        <Text style={styles.text}>{time}</Text>
                     </View>
 
                     <View style={styles.cardItem}>

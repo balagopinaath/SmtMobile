@@ -48,7 +48,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchRoutes = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/routes", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/routes", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchAreas = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/areas", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/areas", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchStates = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/state", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/state", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchDistributors = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/distributors", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/distributors", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const EditCustomer = ({ route }) => {
         formData.append("Distributor_Id", editValue.Distributor_Id);
         formData.append("Created_By", editValue.Created_By);
 
-        fetch(`http://192.168.1.10:9001/api/masters/retailers?Company_Id=1`, {
+        fetch(`http://192.168.1.2:9001/api/masters/retailers?Company_Id=1`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'multipart/form-data',

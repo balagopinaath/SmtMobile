@@ -13,7 +13,10 @@ const CameraComponent = ({ onPhotoCapture }) => {
     }, [hasPermission]);
 
     const checkPermission = async () => {
-        requestPermission(true);
+        const granted = await requestPermission(true);
+        if (!granted) {
+            console.log('Camera permission denied');
+        }
     };
 
     const takePhoto = async () => {
@@ -32,7 +35,7 @@ const CameraComponent = ({ onPhotoCapture }) => {
         }
     };
 
-    if (device == null) return (<ActivityIndicator />);
+    if (!hasPermission || device == null) return (<ActivityIndicator />);
 
     return (
         <View style={styles.container}>

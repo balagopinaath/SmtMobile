@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
@@ -10,6 +10,8 @@ import Geolocation from '@react-native-community/geolocation'
 
 const Attendance = () => {
     const navigation = useNavigation();
+    const [locationEnabled, setLocationEnabled] = useState(false);
+    const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
     const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
     const [formValues, setFormValues] = useState({
         UserId: '',
@@ -24,72 +26,101 @@ const Attendance = () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
                 setFormValues({ ...formValues, UserId: userId });
+                getAttendanceInfo(userId)
             } catch (err) {
                 console.log(err);
             }
         })();
 
-        getAttendanceInfo(formValues.UserId)
+        requestLocationPermission()
 
     }, [])
 
     const getAttendanceInfo = async (userId) => {
         try {
             const url = `http://192.168.1.2:9001/api/getMyLastAttendance?UserId=${userId}`;
-
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-
             const attendanceStatus = await response.json();
 
-            if (attendanceStatus.data[0].length > 0) {
-                if (attendanceStatus.data[0].Active_Status == 1) {
+            if (attendanceStatus && attendanceStatus.data && attendanceStatus.data.length > 0) {
+                const activeStatus = attendanceStatus.data[0].Active_Status;
+                if (activeStatus !== undefined && activeStatus === 1) {
                     navigation.replace('HomeScreen');
                 } else {
-                    // navigation.replace('');
+                    console.log('Attendance data found but inactive');
+                    // Handle other cases if needed
                 }
+            } else {
+                console.log('Attendance data not found or invalid format');
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
         }
     }
 
-    const handleInputChange = value => {
-        setFormValues({ ...formValues, Start_KM: value });
-    };
-
-    const handlePhotoCapture = (photoPath) => {
-        setCapturedPhotoPath(photoPath);
-        setFormValues({ ...formValues, Start_KM_Pic: photoPath });
-    };
-
-    const handleGeoData = async () => {
+    const requestLocationPermission = async () => {
         try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'The Sales App needs your location permission',
+                    message: 'Sales app needs access to your location ',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                setLocationPermissionGranted(true);
+                checkLocationStatus();
+            } else {
+                console.log('Location permission denied');
+            }
+        } catch (err) {
+            console.warn('Error requesting location permission:', err);
+        }
+    };
+
+    const checkLocationStatus = async () => {
+        const enabled = await Geolocation.requestAuthorization();
+        if (enabled === 'authorizedAlways' || enabled === 'authorizedWhenInUse') {
             Geolocation.getCurrentPosition(
                 (position) => {
-                    const latitude = position.coords.latitude.toString();
-                    const longitude = position.coords.longitude.toString();
-                    console.log('form', formValues.Latitude, formValues.Longitude)
-
+                    setLocationEnabled(true);
+                    const { latitude, longitude } = position.coords;
                     setFormValues({
                         ...formValues,
                         Latitude: latitude,
                         Longitude: longitude,
                     });
+                },
+                (error) => {
+                    setLocationEnabled(false);
+                    console.error('Error getting current position:', error);
                 }
-            )
-        } catch (error) {
-            console.error('Error fetching geolocation data:', error);
+            );
+        } else {
+            console.log('Location services disabled');
         }
-    }
+    };
+
+    const handleInputChange = value => {
+        setFormValues({ ...formValues, Start_KM: value });
+    };
+
+    const handlePhotoCapture = async (photoPath) => {
+        await requestLocationPermission()
+        setCapturedPhotoPath(photoPath);
+        setFormValues({ ...formValues, Start_KM_Pic: photoPath });
+    };
 
     const handleSubmit = async () => {
         try {
-            await handleGeoData();
             const formData = new FormData();
             formData.append('UserId', formValues.UserId);
             formData.append('Start_KM', formValues.Start_KM);

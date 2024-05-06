@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
-
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
@@ -53,9 +52,9 @@ const CustomersDetails = ({ route }) => {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                 {
-                    title: 'ERP App Location Permission',
+                    title: 'The Sales App needs your location permission',
                     message:
-                        'ERP App needs access to your camera ' +
+                        'Sales app needs access to your location ' +
                         'so you can register your attendance.',
                     buttonNeutral: 'Ask Me Later',
                     buttonNegative: 'Cancel',
@@ -101,7 +100,7 @@ const CustomersDetails = ({ route }) => {
     };
 
     const handleUpdateLocation = async (lat, long) => {
-        fetch("http://192.168.1.10:9001/api/masters/retailersLocation", {
+        fetch("http://192.168.1.2:9001/api/masters/retailersLocation", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -1,4 +1,4 @@
-import { Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import PagerView from 'react-native-pager-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
@@ -16,10 +17,34 @@ const StockClosing = ({ route }) => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
     const [tabs, setTabs] = useState([]);
+    const [userNameId, setUserNameId] = useState('')
+
+    const initialStockValue = {
+        Company_Id: 1,
+        ST_Date: new Date().toISOString().split('T')[0],
+        Retailer_Id: item.Retailer_Id,
+        Retailer_Name: item.Retailer_Name,
+        Narration: '',
+        Created_by: userNameId,
+        Product_Stock_List: []
+    }
+
+    const [stockValues, setStockValues] = useState({});
+    const [stockInputValue, setStockInputValue] = useState(initialStockValue)
 
     useEffect(() => {
+        (async () => {
+            try {
+                const UserId = await AsyncStorage.getItem('UserId');
+                setUserNameId(UserId)
+            } catch (err) {
+                console.log(err);
+            }
+        })();
+
         fetchGroupedproducts()
-    }, [])
+        updateInitialStockValue()
+    }, [stockValues])
 
     const fetchGroupedproducts = async () => {
         try {
@@ -37,6 +62,54 @@ const StockClosing = ({ route }) => {
         }
     };
 
+    const handleStockInputChange = (productId, value) => {
+        setStockValues(prevState => ({
+            ...prevState,
+            [productId]: value
+        }));
+        console.log(productId, value)
+    };
+
+    const updateInitialStockValue = () => {
+        const productStockList = Object.keys(stockValues).map(productId => ({
+            Product_Id: productId,
+            Stock_Value: stockValues[productId]
+        }));
+
+        setStockInputValue(prevState => ({
+            ...prevState,
+            Product_Stock_List: productStockList
+        }));
+    };
+
+    const postClosingStock = async () => {
+        updateInitialStockValue();  // Ensure stock values are up-to-date
+
+        if (stockInputValue.Product_Stock_List.length > 0 && stockInputValue.Retailer_Id) {
+            try {
+                const response = await fetch(`http://192.168.1.2:9001/api/masters/retailers/closingStock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(stockInputValue)
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                } else {
+                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                }
+            } catch (e) {
+                console.error(e);
+                ToastAndroid.show('Failed to post stock data', ToastAndroid.SHORT);
+            }
+        } else {
+            ToastAndroid.show('Please enter at least one valid stock value', ToastAndroid.SHORT);
+        }
+    }
+
     useEffect(() => {
         if (productData && productData.data && productData.data.length > 0) {
             const newTabs = productData.data.map(item => ({
@@ -45,15 +118,32 @@ const StockClosing = ({ route }) => {
                     <View>
                         {item.GroupedProductArray.map(product => (
                             <View key={`${product.Product_Id}_name`} style={styles.pagerViewContainer}>
-                                <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                <Text style={styles.pagerViewContainerText}>{product.UOM}</Text>
-                                <TextInput
-                                    style={styles.pagerViewContainerInputText}
-                                    // value={formValues.Retailer_Name}
-                                    placeholder='Closing Stock Value'
-                                    keyboardType='number-pad'
-                                // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
-                                />
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Image
+                                        style={{
+                                            width: 50,
+                                            height: 50,
+                                        }}
+                                        source={{
+                                            uri: product.productImageUrl,
+                                        }}
+                                    />
+                                    <View style={{ marginLeft: 15 }}>
+                                        <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
+                                        <Text style={styles.pagerViewContainerText}>{product.UOM}</Text>
+                                        <TextInput
+                                            style={styles.pagerViewContainerInputText}
+                                            // value={formValues.Retailer_Name}
+                                            placeholder='Closing Stock Value'
+                                            keyboardType='number-pad'
+                                            onChangeText={(text) => handleStockInputChange(product.Product_Id, text)}
+                                        />
+
+                                    </View>
+
+                                </View>
+
+
                                 <View
                                     style={{
                                         flex: 0.5,
@@ -158,15 +248,15 @@ const StockClosing = ({ route }) => {
             <View style={styles.narrationContainer}>
                 <TextInput
                     style={styles.narrationContainerInputText}
-                    // value={formValues.Retailer_Name}
+                    value={initialStockValue.Narration}
                     placeholder='Narration'
                 // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
                 />
                 <View style={styles.narrationContainerButtonGroup}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
                         <Text style={{ color: Colors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={postClosingStock}>
                         <Text style={{ color: Colors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
                     </TouchableOpacity>
                 </View>

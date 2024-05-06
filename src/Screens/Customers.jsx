@@ -84,6 +84,7 @@ const Customers = () => {
                 <TouchableOpacity style={styles.addButton} onPressOut={() => navigation.navigate('AddCustomer')}>
                     <Text style={styles.addButtonText}>Add</Text>
                 </TouchableOpacity>
+
             </View>
 
             {loading && (

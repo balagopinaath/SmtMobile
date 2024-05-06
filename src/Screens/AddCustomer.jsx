@@ -47,7 +47,7 @@ const AddCustomer = () => {
 
     const fetchRoutes = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/routes", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/routes", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const AddCustomer = () => {
 
     const fetchAreas = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/areas", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/areas", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,7 +88,7 @@ const AddCustomer = () => {
 
     const fetchStates = async () => {
         try {
-            const response = await fetch("http://192.168.1.10:9001/api/masters/state", {
+            const response = await fetch("http://192.168.1.2:9001/api/masters/state", {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -143,7 +143,6 @@ const AddCustomer = () => {
         setFormValues({ ...formValues, [field]: value });
     };
 
-
     const handleSubmit = async () => {
         // console.log("Created_By", `file://${imageUri}`)
         // console.log("Created_By", imageUri)
@@ -193,7 +192,7 @@ const AddCustomer = () => {
                 body: formData
             };
 
-            fetch("http://192.168.1.10:9001/api/masters/retailers?Company_Id=1", requestOptions)
+            fetch("http://192.168.1.2:9001/api/masters/retailers?Company_Id=1", requestOptions)
                 .then((response) => response.text())
                 .then((result) => console.log(result))
                 .catch((error) => console.error(error));
@@ -206,7 +205,6 @@ const AddCustomer = () => {
         }
 
     };
-
 
     return (
         <View style={styles.container}>

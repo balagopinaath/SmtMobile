@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Modal, Button } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
@@ -36,11 +36,6 @@ const HomeScreen = () => {
                 <TouchableOpacity style={styles.actionButton} onPress={() => { navigation.navigate('Customers') }}>
                     <Icon name="exclamationcircleo" color={Colors.white} size={25} />
                     <Text style={styles.actionButtonText}>Retailers</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.actionButton} onPress={() => { navigation.navigate('AddCustomer') }}>
-                    <Icon name="plus" color={Colors.white} size={25} />
-                    <Text style={styles.actionButtonText}>Add</Text>
                 </TouchableOpacity>
 
             </View>
