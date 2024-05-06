@@ -92,7 +92,7 @@ const StockClosing = ({ route }) => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.pop()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Closing Stock Report</Text>

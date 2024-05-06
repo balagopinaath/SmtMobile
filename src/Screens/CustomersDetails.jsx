@@ -131,7 +131,7 @@ const CustomersDetails = ({ route }) => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.pop()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Details</Text>
@@ -188,7 +188,7 @@ const CustomersDetails = ({ route }) => {
                 </View>
 
                 <View style={styles.rowButton}>
-                    <TouchableOpacity onPress={() => navigation.push('EditCustomer', { item })} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('EditCustomer', { item })} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
                         <CustomIcon name="edit" size={25} color={Colors.white} />
                         <Text style={styles.buttonStyleText}>Edit Retailers</Text>
                     </TouchableOpacity>
@@ -200,7 +200,7 @@ const CustomersDetails = ({ route }) => {
                 </View>
 
                 <View style={styles.rowButton}>
-                    <TouchableOpacity onPress={() => { navigation.push('StockClosing', { item }) }} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                    <TouchableOpacity onPress={() => { navigation.navigate('StockClosing', { item }) }} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
                         <CustomIcon name="check" size={25} color={Colors.white} />
                         <Text style={styles.buttonStyleText}>Stock Closing</Text>
                     </TouchableOpacity>

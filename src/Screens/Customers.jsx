@@ -56,7 +56,7 @@ const Customers = () => {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })}>
+        <TouchableOpacity onPress={() => navigation.navigate('CustomersDetails', { item })}>
             <View style={styles.row}>
                 <Text style={styles.cell}>{item.Retailer_Name}</Text>
                 <Text style={styles.cell}>{item.Mobile_No}</Text>
@@ -68,7 +68,7 @@ const Customers = () => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.pop()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Retailers</Text>
@@ -81,7 +81,7 @@ const Customers = () => {
                     onChangeText={handleSearch}
                     value={searchQuery}
                 />
-                <TouchableOpacity style={styles.addButton} onPressOut={() => navigation.push('AddCustomer')}>
+                <TouchableOpacity style={styles.addButton} onPressOut={() => navigation.navigate('AddCustomer')}>
                     <Text style={styles.addButtonText}>Add</Text>
                 </TouchableOpacity>
             </View>

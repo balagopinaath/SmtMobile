@@ -211,7 +211,7 @@ const AddCustomer = () => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.pop()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <CustomIcon name="angle-left" color={Colors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Add Retailer</Text>

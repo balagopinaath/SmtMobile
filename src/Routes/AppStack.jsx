@@ -1,5 +1,5 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import StartScreen from '../Screens/StartScreen';
 import LoginScreen from '../Screens/LoginScreen';
@@ -12,8 +12,9 @@ import Attendance from '../Screens/Attendance';
 import OpenCamera from '../Components/OpenCamera';
 import EndDay from '../Screens/EndDay';
 import StockClosing from '../Screens/StockClosing';
+import AttendanceInfo from '../Screens/AttendanceInfo';
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 const AppStack = () => {
     return (
@@ -21,18 +22,17 @@ const AppStack = () => {
             <Stack.Screen name="StartScreen" component={StartScreen} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
-
             <Stack.Screen name="Customers" component={Customers} />
             <Stack.Screen name="CustomersDetails" component={CustomersDetails} />
-            <Stack.Screen name="StockClosing" component={StockClosing} />
             <Stack.Screen name="AddCustomer" component={AddCustomer} />
             <Stack.Screen name="EditCustomer" component={EditCustomer} />
-            <Stack.Screen name="OpenCamera" component={OpenCamera} />
-
             <Stack.Screen name="Attendance" component={Attendance} />
+            <Stack.Screen name="AttendanceInfo" component={AttendanceInfo} />
+            <Stack.Screen name="OpenCamera" component={OpenCamera} />
             <Stack.Screen name="EndDay" component={EndDay} />
+            <Stack.Screen name="StockClosing" component={StockClosing} />
         </Stack.Navigator>
-    )
+    );
 }
 
-export default AppStack
+export default AppStack;
