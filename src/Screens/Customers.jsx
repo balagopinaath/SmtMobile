@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
+import { API } from '../Config/Endpoint';
 
 const Customers = () => {
     const navigation = useNavigation();
@@ -27,7 +28,7 @@ const Customers = () => {
     const fetchCustomersData = async () => {
         try {
             const response = await fetch(
-                "http://192.168.1.2:9001/api/masters/retailers?Company_Id=1"
+                `${API.retailers}${1}`
                 // `https://api.salesjump.in/api/MasterData/getRetailerDetails?senderID=shri`
             );
             const jsonData = await response.json();

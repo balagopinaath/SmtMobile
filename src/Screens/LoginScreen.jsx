@@ -6,6 +6,7 @@ import CryptoJS from 'react-native-crypto-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Fonts from '../Config/Fonts'
 import Colors from '../Config/Colors'
+import { API } from '../Config/Endpoint';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -18,7 +19,7 @@ const LoginScreen = () => {
             try {
                 const passHash = CryptoJS.AES.encrypt(password, 'ly4@&gr$vnh905RyB>?%#@-(KSMT').toString();
 
-                const response = await fetch(`http://192.168.1.2:9001/api/login`, {
+                const response = await fetch(API.login, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -39,7 +40,8 @@ const LoginScreen = () => {
                     await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
                     await setData(data);
                     if (data.data[0].UserType === 'SALES PERSON') {
-                        navigation.replace("Attendance");
+                        // navigation.replace("Attendance");
+                        checkAttendanceHistory(data.data[0].UserId);
                     } else {
                         navigation.replace("HomeScreen");
                     }
@@ -51,14 +53,35 @@ const LoginScreen = () => {
                 Alert.alert('Failed to log in. Please try again.');
             }
         } else {
-            if (!loginId || loginId === '') {
+            if (!loginId) {
                 ToastAndroid.show('Enter valid user id', ToastAndroid.LONG)
             }
-            else if (!password || password === '') {
+            else if (!password) {
                 ToastAndroid.show('Enter Password', ToastAndroid.LONG)
             }
         }
     }
+
+    const checkAttendanceHistory = async (userId) => {
+        try {
+            const response = await fetch(`${API.MyLastAttendance}${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const attendanceHistory = await response.json();
+            if (attendanceHistory.success && attendanceHistory.data.length === 0) {
+                navigation.replace("Attendance");
+            } else {
+                navigation.replace("HomeScreen");
+            }
+        } catch (error) {
+            console.log("Error fetching attendance data:", error);
+            navigation.replace("HomeScreen");
+        }
+    };
 
     const setData = async (data) => {
         try {

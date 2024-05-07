@@ -6,6 +6,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import CustomIcon from '../Components/CustomIcon';
 import Fonts from '../Config/Fonts';
 import Geolocation from '@react-native-community/geolocation'
+import { API } from '../Config/Endpoint';
 
 const AddCustomer = () => {
     const navigation = useNavigation();
@@ -47,7 +48,7 @@ const AddCustomer = () => {
 
     const fetchRoutes = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/routes", {
+            const response = await fetch(API.routes, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ const AddCustomer = () => {
 
     const fetchAreas = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/areas", {
+            const response = await fetch(API.areas, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ const AddCustomer = () => {
 
     const fetchStates = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/state", {
+            const response = await fetch(API.state, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,8 +145,6 @@ const AddCustomer = () => {
     };
 
     const handleSubmit = async () => {
-        // console.log("Created_By", `file://${imageUri}`)
-        // console.log("Created_By", imageUri)
 
         if (
             !formValues.Retailer_Name ||
@@ -192,7 +191,7 @@ const AddCustomer = () => {
                 body: formData
             };
 
-            fetch("http://192.168.1.2:9001/api/masters/retailers?Company_Id=1", requestOptions)
+            fetch(`${API.retailers}${1}`, requestOptions)
                 .then((response) => response.text())
                 .then((result) => console.log(result))
                 .catch((error) => console.error(error));

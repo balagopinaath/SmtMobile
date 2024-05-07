@@ -6,6 +6,7 @@ import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import CameraComponent from '../Components/CameraComponent';
+import { API } from '../Config/Endpoint';
 
 const EditCustomer = ({ route }) => {
     const { item } = route.params;
@@ -48,7 +49,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchRoutes = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/routes", {
+            const response = await fetch(API.routes, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchAreas = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/areas", {
+            const response = await fetch(API.areas, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchStates = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/state", {
+            const response = await fetch(API.state, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ const EditCustomer = ({ route }) => {
 
     const fetchDistributors = async () => {
         try {
-            const response = await fetch("http://192.168.1.2:9001/api/masters/distributors", {
+            const response = await fetch(API.distributors, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -174,7 +175,7 @@ const EditCustomer = ({ route }) => {
         formData.append("Distributor_Id", editValue.Distributor_Id);
         formData.append("Created_By", editValue.Created_By);
 
-        fetch(`http://192.168.1.2:9001/api/masters/retailers?Company_Id=1`, {
+        fetch(`${API.retailers}${1}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'multipart/form-data',

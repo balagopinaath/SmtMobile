@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
@@ -6,6 +6,7 @@ import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../Components/CameraComponent';
+import { API } from '../Config/Endpoint';
 
 const EndDay = () => {
     const navigation = useNavigation();
@@ -49,7 +50,7 @@ const EndDay = () => {
 
             console.log(formValues)
 
-            const response = await fetch('http://192.168.1.2:9001/api/attendance', {
+            const response = await fetch(API.attendance, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -63,6 +64,8 @@ const EndDay = () => {
 
             const responseData = await response.json();
             console.log('Response from server:', responseData);
+            ToastAndroid.show('Your attendance update successfully', ToastAndroid.SHORT);
+            navigation.navigate('HomeScreen')
 
         } catch (error) {
             console.error('Error posting data:', error);

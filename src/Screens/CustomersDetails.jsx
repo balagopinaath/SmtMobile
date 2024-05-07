@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
+import { API } from '../Config/Endpoint';
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
@@ -40,7 +41,7 @@ const CustomersDetails = ({ route }) => {
 
     const handleLocation = () => {
         if (latitude !== null && longitude !== null) {
-            const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
+            const url = `${API.google_map}${latitude},${longitude}`
             Linking.openURL(url);
         } else {
             console.log('Location not available');
@@ -72,60 +73,52 @@ const CustomersDetails = ({ route }) => {
         }
     };
 
-    const getCurrentLocation = () => {
+    const getCurrentLocation = (successCallback) => {
         Geolocation.getCurrentPosition(
-            (position) => {
+            position => {
                 const { latitude, longitude } = position.coords;
-                handleUpdateLocation(latitude, longitude)
+                successCallback(latitude, longitude);
             },
-            (error) => {
+            error => {
                 console.error('Error getting location:', error);
                 switch (error.code) {
-                    case 1:
-                        console.error('Location permission denied');
-                        break;
-                    case 2:
-                        console.error('Position unavailable');
-                        break;
-                    case 3:
-                        console.error('Request timeout');
-                        break;
-                    default:
-                        console.error('An unknown error occurred');
-                        break;
+                    case 1: console.error('Location permission denied'); break;
+                    case 2: console.error('Position unavailable'); break;
+                    case 3: console.error('Request timeout'); break;
+                    default: console.error('An unknown error occurred'); break;
                 }
             },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }
         );
     };
 
-    const handleUpdateLocation = async (lat, long) => {
-        fetch("http://192.168.1.2:9001/api/masters/retailersLocation", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                EntryBy: userId,
-                Latitude: lat.toString(),
-                Longitude: long.toString(),
-                retailer_code: item.retailer_code
-            })
-        }).then(res => res.json())
-            .then(data => {
-                setRefresh(!refresh);
-                if (data.status === 'Success') {
-                    Alert.alert(data.message);
-                    ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG)
-                    console.log('successfully')
-                } else {
-                    Alert.alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error in fetching data:', error);
-            });
-    }
+    const handleUpdateLocation = () => {
+        getCurrentLocation(async (lat, long) => {
+            fetch(API.retailerLocation, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    EntryBy: userId,
+                    Latitude: lat.toString(),
+                    Longitude: long.toString(),
+                    Retailer_Id: item.Retailer_Id
+                })
+            }).then(res => res.json())
+                .then(data => {
+                    setRefresh(!refresh);
+                    if (data.status === 'Success') {
+                        Alert.alert(data.message);
+                        ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG);
+                        console.log('Successfully updated location');
+                    } else {
+                        Alert.alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error in fetching data:', error);
+                });
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -171,7 +164,7 @@ const CustomersDetails = ({ route }) => {
                 <View style={styles.rowButton}>
                     <TouchableOpacity style={styles.buttonStyle}
                         onPress={() => {
-                            Linking.openURL(`https://wa.me/+91${item.Mobile_No}/?text=Hi`)
+                            Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
                         }}>
                         <CustomIcon name="whatsapp" size={25} color={Colors.white} />
                         <Text style={styles.buttonStyleText}>WhatsApp</Text>
@@ -192,7 +185,7 @@ const CustomersDetails = ({ route }) => {
                         <Text style={styles.buttonStyleText}>Edit Retailers</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={requestLocationPermission} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
+                    <TouchableOpacity onPress={handleUpdateLocation} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
                         <CustomIcon name="check" size={25} color={Colors.white} />
                         <Text style={styles.buttonStyleText}>Update Location</Text>
                     </TouchableOpacity>

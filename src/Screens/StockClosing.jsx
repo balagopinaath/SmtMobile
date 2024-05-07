@@ -7,6 +7,7 @@ import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API } from '../Config/Endpoint';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
@@ -16,6 +17,7 @@ const StockClosing = ({ route }) => {
     const pagerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
+    const [productClosingData, setProductClosingData] = useState([])
     const [tabs, setTabs] = useState([]);
     const [userNameId, setUserNameId] = useState('')
 
@@ -43,13 +45,14 @@ const StockClosing = ({ route }) => {
         })();
 
         fetchGroupedproducts()
+        fetchProductClosingStock(item.Retailer_Id)
         updateInitialStockValue()
     }, [stockValues])
 
     const fetchGroupedproducts = async () => {
         try {
             const response = await fetch(
-                "http://192.168.1.2:9001/api/masters/products/grouped"
+                API.groupedProducts
             );
             const jsonData = await response.json();
 
@@ -59,6 +62,33 @@ const StockClosing = ({ route }) => {
             }
         } catch (error) {
             console.error("Error fetching data:", error);
+        }
+    };
+
+    const fetchProductClosingStock = async (Retailer_Id) => {
+        try {
+            const response = await fetch(
+                `${API.productClosingStock}${Retailer_Id}`
+            );
+            const jsonData = await response.json();
+
+            if (jsonData.data) {
+                setProductClosingData(jsonData.data)
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const getStockCount = (productId) => {
+        if (!productClosingData || productClosingData.length === 0) {
+            return '';
+        }
+        const mergedData = productClosingData.filter(item => Number(item.Item_Id) === Number(productId));
+        if (mergedData.length > 0 && mergedData[0].Previous_Balance !== undefined) {
+            return `${mergedData[0].Previous_Balance}`;
+        } else {
+            return 'N/A';
         }
     };
 
@@ -83,11 +113,11 @@ const StockClosing = ({ route }) => {
     };
 
     const postClosingStock = async () => {
-        updateInitialStockValue();  // Ensure stock values are up-to-date
+        updateInitialStockValue();
 
         if (stockInputValue.Product_Stock_List.length > 0 && stockInputValue.Retailer_Id) {
             try {
-                const response = await fetch(`http://192.168.1.2:9001/api/masters/retailers/closingStock`, {
+                const response = await fetch(API.closingStock, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -118,31 +148,28 @@ const StockClosing = ({ route }) => {
                     <View>
                         {item.GroupedProductArray.map(product => (
                             <View key={`${product.Product_Id}_name`} style={styles.pagerViewContainer}>
-                                <View style={{ flexDirection: 'row' }}>
+                                <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
                                     <Image
                                         style={{
-                                            width: 50,
-                                            height: 50,
+                                            width: 125,
+                                            height: 125,
                                         }}
                                         source={{
                                             uri: product.productImageUrl,
                                         }}
                                     />
-                                    <View style={{ marginLeft: 15 }}>
+                                    <View style={{ marginLeft: 10 }}>
                                         <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                        <Text style={styles.pagerViewContainerText}>{product.UOM}</Text>
+                                        <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
                                         <TextInput
                                             style={styles.pagerViewContainerInputText}
-                                            // value={formValues.Retailer_Name}
-                                            placeholder='Closing Stock Value'
+                                            // value={product.Product_Id}
+                                            placeholder={`Previous: ${getStockCount(product.Product_Id)}`}
                                             keyboardType='number-pad'
                                             onChangeText={(text) => handleStockInputChange(product.Product_Id, text)}
                                         />
-
                                     </View>
-
                                 </View>
-
 
                                 <View
                                     style={{
@@ -253,7 +280,7 @@ const StockClosing = ({ route }) => {
                 // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
                 />
                 <View style={styles.narrationContainerButtonGroup}>
-                    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Text style={{ color: Colors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={postClosingStock}>
@@ -335,12 +362,17 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         paddingBottom: 5
     },
+    pagerViewContainerSubText: {
+        fontSize: 12,
+        fontWeight: '500',
+        paddingBottom: 20,
+    },
     pagerViewContainerInputText: {
         fontSize: 14,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-        padding: 10,
+        padding: 5,
         marginBottom: 20,
     },
     narrationContainer: {

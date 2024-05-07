@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, PermissionsAndroid } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Alert, Image, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
@@ -7,11 +7,13 @@ import Fonts from '../Config/Fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../Components/CameraComponent';
 import Geolocation from '@react-native-community/geolocation'
+import { API } from '../Config/Endpoint';
 
 const Attendance = () => {
     const navigation = useNavigation();
     const [locationEnabled, setLocationEnabled] = useState(false);
     const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
+    const [watchId, setWatchId] = useState(false);
     const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
     const [formValues, setFormValues] = useState({
         UserId: '',
@@ -31,14 +33,95 @@ const Attendance = () => {
                 console.log(err);
             }
         })();
-
-        requestLocationPermission()
-
     }, [])
+
+    useEffect(() => {
+        const checkPermission = async () => {
+            const granted = await PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+            )
+            setLocationPermissionGranted(granted)
+            return granted
+        }
+
+        const checkLocationStatus = () => {
+            Geolocation.getCurrentPosition(
+                (position) => {
+                    setLocationEnabled(true);
+                },
+                (error) => {
+                    setLocationEnabled(false);
+                }
+            );
+        };
+
+        const requestLocationPermission = async () => {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    {
+                        title: 'The Sales App needs your location permission',
+                        message: 'Sales app needs access to your location ',
+                        buttonNeutral: 'Ask Me Later',
+                        buttonNegative: 'Cancel',
+                        buttonPositive: 'OK',
+                    },
+                );
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    setLocationPermissionGranted(true);
+                    startWatchingPosition();
+                } else {
+                    console.log('Location permission denied');
+                }
+            } catch (err) {
+                console.warn('Error requesting location permission:', err);
+            }
+        };
+
+        const startWatchingPosition = () => {
+            const id = Geolocation.watchPosition(
+                newPosition => {
+                    const { latitude, longitude } = newPosition.coords;
+                    setFormValues(prevState => ({
+                        ...prevState,
+                        Latitude: latitude.toString(),
+                        Longitude: longitude.toString(),
+                    }));
+                },
+                error => {
+                    console.error('Error getting location:', error);
+                },
+                { enableHighAccuracy: true, distanceFilter: 2 } // Update interval in meters
+            );
+            setWatchId(id);
+        };
+
+        const stopWatchingPosition = () => {
+            if (watchId) {
+                Geolocation.clearWatch(watchId);
+            }
+        };
+
+        checkPermission().then(granted => {
+            if (granted) {
+                checkLocationStatus()
+                requestLocationPermission()
+            } else {
+                requestLocationPermission();
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+
+        return () => {
+            stopWatchingPosition(); // Make sure to stop watching when the component unmounts
+        };
+
+    }, [watchId])
 
     const getAttendanceInfo = async (userId) => {
         try {
-            const url = `http://192.168.1.2:9001/api/getMyLastAttendance?UserId=${userId}`;
+            const url = `${API.MyLastAttendance}${userId}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -63,64 +146,22 @@ const Attendance = () => {
         }
     }
 
-    const requestLocationPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                {
-                    title: 'The Sales App needs your location permission',
-                    message: 'Sales app needs access to your location ',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                setLocationPermissionGranted(true);
-                checkLocationStatus();
-            } else {
-                console.log('Location permission denied');
-            }
-        } catch (err) {
-            console.warn('Error requesting location permission:', err);
-        }
-    };
-
-    const checkLocationStatus = async () => {
-        const enabled = await Geolocation.requestAuthorization();
-        if (enabled === 'authorizedAlways' || enabled === 'authorizedWhenInUse') {
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    setLocationEnabled(true);
-                    const { latitude, longitude } = position.coords;
-                    setFormValues({
-                        ...formValues,
-                        Latitude: latitude,
-                        Longitude: longitude,
-                    });
-                },
-                (error) => {
-                    setLocationEnabled(false);
-                    console.error('Error getting current position:', error);
-                }
-            );
-        } else {
-            console.log('Location services disabled');
-        }
-    };
-
     const handleInputChange = value => {
         setFormValues({ ...formValues, Start_KM: value });
     };
 
     const handlePhotoCapture = async (photoPath) => {
-        await requestLocationPermission()
         setCapturedPhotoPath(photoPath);
         setFormValues({ ...formValues, Start_KM_Pic: photoPath });
     };
 
     const handleSubmit = async () => {
         try {
+            if (!formValues.Latitude || !formValues.Longitude) {
+                Alert.alert('Location Permission', 'Please enable location services.');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('UserId', formValues.UserId);
             formData.append('Start_KM', formValues.Start_KM);
@@ -130,11 +171,9 @@ const Attendance = () => {
                 uri: `file://${formValues.Start_KM_Pic}`,
                 name: 'photo.jpg',
                 type: 'image/jpeg'
-            })
+            });
 
-            console.log(formValues)
-
-            const response = await fetch('http://192.168.1.2:9001/api/attendance', {
+            const response = await fetch(API.attendance, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -147,11 +186,11 @@ const Attendance = () => {
             }
 
             const responseData = await response.json();
-            navigation.replace('HomeScreen')
+            navigation.replace('HomeScreen');
             console.log('Response from server:', responseData);
-
         } catch (error) {
             console.error('Error posting data:', error);
+            Alert.alert('Error', 'Failed to submit data. Please try again later.');
         }
     };
 

@@ -1,10 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
+import { API } from '../Config/Endpoint';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();
@@ -16,25 +17,52 @@ const AttendanceInfo = () => {
     const [time, setTime] = useState('');
 
     useEffect(() => {
-        (async () => {
+        const loadUserDetails = async () => {
             try {
                 const userName = await AsyncStorage.getItem('Name');
                 const UserId = await AsyncStorage.getItem('UserId');
                 const UserType = await AsyncStorage.getItem('UserType');
-                setName(userName)
-                setUserId(UserId)
-                setUserType(UserType)
-                getAttendanceInfo(userId)
+                setName(userName || '');
+                setUserId(UserId || '');
+                setUserType(UserType || '');
             } catch (err) {
                 console.log(err);
             }
-        })();
+        };
 
+        loadUserDetails();
     }, []);
+
+    useEffect(() => {
+        if (userId) {
+            getAttendanceInfo(userId);
+            getAttendanceHistory(userId);
+        }
+    }, [userId]);
 
     const getAttendanceInfo = async (userId) => {
         try {
-            const url = `http://192.168.1.2:9001/api/myTodayAttendance?UserId=${userId}`;
+            const url = `${API.myTodayAttendance}${userId}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const attendanceStatus = await response.json();
+            if (attendanceStatus.data.length > 0) {
+                const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
+                const lastStartDate = lastAttendance.Start_Date;
+                const [datePart, timePart] = lastStartDate.split('T');
+                setDate(datePart);
+                setTime(timePart.substring(0, 8));
+            }
+        } catch (error) {
+            console.log("Error fetching attendance data:", error);
+        }
+    };
+
+    const getAttendanceHistory = async (userId) => {
+        try {
+            const url = `${API.MyLastAttendance}${userId}`;
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -43,15 +71,10 @@ const AttendanceInfo = () => {
                 }
             });
 
-            const attendanceStatus = await response.json();
+            const attendanceHistory = await response.json();
 
-            if (attendanceStatus.data.length > 0) {
-                const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
-                const lastStartDate = lastAttendance.Start_Date;
-                const [datePart, timePart] = lastStartDate.split('T');
-
-                setDate(datePart);
-                setTime(timePart.substring(0, 8));
+            if (attendanceHistory.data.length > 0) {
+                // console.log('attendanceHistory', attendanceHistory)
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
@@ -67,13 +90,15 @@ const AttendanceInfo = () => {
                 <Text style={styles.headerText}>Attendance</Text>
             </View>
 
-            {userType === 'SALES PERSON' && <View style={styles.card}>
+            <View style={styles.card}>
                 <View style={styles.cardHeader}>
                     <Text style={styles.cardTitle}>Today Attendance</Text>
-                    <TouchableOpacity onPress={() => { navigation.navigate('Attendance') }} style={[styles.endDayButton, { opacity: startDate === false ? 0.5 : 1 }]}
-                        disabled={startDate === false}>
-                        <Text style={styles.endDayButtonText}>Start Day</Text>
-                    </TouchableOpacity>
+                    <Button
+                        disabled={!!date}
+                        color={Colors.primary}
+                        onPress={() => { navigation.navigate('Attendance') }}
+                        title='Start Day'
+                    />
                 </View>
 
                 {/* Content */}
@@ -111,10 +136,13 @@ const AttendanceInfo = () => {
                     </View>
                 </View>
 
-                <TouchableOpacity onPress={() => { navigation.navigate('EndDay') }} style={styles.endDayButton}>
-                    <Text style={styles.endDayButtonText}>End Day</Text>
-                </TouchableOpacity>
-            </View>}
+                <Button
+                    // disabled={!!date}
+                    color={Colors.primary}
+                    onPress={() => { navigation.navigate('EndDay') }}
+                    title='End Day'
+                />
+            </View>
         </View>
     )
 }
@@ -201,5 +229,6 @@ const styles = StyleSheet.create({
     endDayButtonText: {
         fontSize: 16,
         color: 'blue',
+        padding: 50
     },
 })
