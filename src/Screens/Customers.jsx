@@ -1,14 +1,7 @@
-import {
-    FlatList,
-    StyleSheet,
-    TouchableOpacity,
-    View,
-    Text,
-    TextInput,
-    ActivityIndicator,
-} from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Dropdown } from 'react-native-element-dropdown';
 import CustomIcon from '../Components/CustomIcon';
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
@@ -17,54 +10,64 @@ import { API } from '../Config/Endpoint';
 const Customers = () => {
     const navigation = useNavigation();
     const [data, setData] = useState([]);
+    const [area, setArea] = useState([]);
+    const [selectedArea, setSelectedArea] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState([]);
+    const [filteredRetailers, setFilteredRetailers] = useState([])
+    const [selectedRetailer, setSelectedRetailer] = useState(null);
 
     useEffect(() => {
-        fetchCustomersData()
-    }, [])
+        fetchCustomersData();
+        fetchAreas();
+    }, []);
 
     const fetchCustomersData = async () => {
         try {
-            const response = await fetch(
-                `${API.retailers}${1}`
-                // `https://api.salesjump.in/api/MasterData/getRetailerDetails?senderID=shri`
-            );
-            const jsonData = await response.json();
-
+            const response = await fetch(`${API.retailers}${1}`);
             if (!response.ok) {
                 throw new Error(`API request failed with status: ${response.status}`);
             }
+            const jsonData = await response.json();
             setData(jsonData.data);
             setFilteredData(jsonData.data);
-            setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
+        } finally {
             setLoading(false);
         }
     };
 
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        if (Array.isArray(data)) {
-            const filtered = data.filter(item => {
-                return item.Retailer_Name.toLowerCase().includes(query.toLowerCase()) ||
-                    item.Mobile_No.includes(query);
-            });
-            setFilteredData(filtered);
+    const fetchAreas = async () => {
+        try {
+            const response = await fetch(API.areas);
+            if (!response.ok) {
+                throw new Error(`API request failed with status: ${response.status}`);
+            }
+            const jsonData = await response.json();
+            setArea(jsonData.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
         }
     };
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('CustomersDetails', { item })}>
-            <View style={styles.row}>
-                <Text style={styles.cell}>{item.Retailer_Name}</Text>
-                <Text style={styles.cell}>{item.Mobile_No}</Text>
-                <CustomIcon name="angle-right" size={25} color={Colors.black} />
-            </View>
-        </TouchableOpacity>
-    );
+    useEffect(() => {
+        if (selectedArea) {
+            const filtered = data.filter(r => r.Area_Id === selectedArea.Area_Id);
+            setFilteredData(filtered);
+        } else {
+            setFilteredData(data);
+        }
+    }, [selectedArea, data]);
+
+    useEffect(() => {
+        if (selectedArea) {
+            const filteredRetailers = data.filter(r => r.Area_Id === selectedArea.Area_Id);
+            setFilteredRetailers(filteredRetailers);
+        } else {
+            setFilteredRetailers([]);
+        }
+    }, [selectedArea, data]);
 
     return (
         <View style={styles.container}>
@@ -75,42 +78,63 @@ const Customers = () => {
                 <Text style={styles.headerText}>Retailers</Text>
             </View>
 
-            <View style={styles.inputEvent}>
-                <TextInput
-                    style={styles.inputSearch}
-                    placeholder="Search by name or phone number"
-                    onChangeText={handleSearch}
-                    value={searchQuery}
-                />
-                <TouchableOpacity style={styles.addButton} onPressOut={() => navigation.navigate('AddCustomer')}>
-                    <Text style={styles.addButtonText}>Add</Text>
-                </TouchableOpacity>
-
-            </View>
-
-            {loading && (
+            {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
                 <>
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View>
+                    <Dropdown
+                        style={styles.dropdown}
+                        data={area}
+                        labelField="Area_Name"
+                        valueField="Area_Id"
+                        placeholder="Select area"
+                        value={selectedArea}
+                        onChange={item => {
+                            setSelectedArea(item);
+                            setSelectedRetailer(null);
+                        }}
+                        maxHeight={300}
+                        search
+                        searchPlaceholder="Search areas"
+                        inputSearchStyle={styles.inputSearchStyle}
+                    />
+                    <Dropdown
+                        style={styles.dropdown}
+                        data={filteredRetailers} // Use filteredRetailers state
+                        labelField="Retailer_Name"
+                        valueField="Retailer_Id"
+                        placeholder="Select retailer"
+                        value={selectedRetailer}
+                        onChange={item => setSelectedRetailer(item)}
+                        maxHeight={300}
+                        search
+                        searchPlaceholder="Search retailers"
+                        inputSearchStyle={styles.inputSearchStyle}
+                    />
+                    <Text style={styles.headerRetail}>Retailers in Selected Area:</Text>
+                    <ScrollView>
+                        {filteredData.map(item => (
+                            <TouchableOpacity key={item.Retailer_Id} onPress={() => navigation.navigate('CustomersDetails', { item })}>
+                                <View style={styles.itemContainer}>
+                                    <Image
+                                        source={{ uri: item.imageUrl }}
+                                        style={styles.itemImage}
+                                    />
+                                    <View style={{ flex: 1, }}>
+                                        <Text style={styles.itemText}>{item.Retailer_Name}</Text>
+                                        <Text style={styles.itemMobile}>{item.Mobile_No}</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
                 </>
             )}
+        </View >
+    );
+};
 
-            {filteredData.length > 0 ? (
-                <FlatList
-                    data={filteredData}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-
-            ) : (
-                <Text>No data found</Text>
-            )}
-        </View>
-    )
-}
-
-export default Customers
+export default Customers;
 
 const styles = StyleSheet.create({
     container: {
@@ -130,53 +154,41 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginLeft: 15
     },
-    inputEvent: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    inputSearch: {
-        fontFamily: Fonts.plusJakartaSansRegular,
-        color: Colors.black,
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 15,
-    },
-    addButton: {
-        flexDirection: 'row',
-        width: '16.5%',
-        backgroundColor: Colors.accent,
-        borderRadius: 5,
-        padding: 10
-    },
-    addButtonText: {
-        textAlign: 'center',
-        fontFamily: Fonts.plusJakartaSansMedium,
-        color: Colors.white,
-        fontSize: 16,
-        marginLeft: 5
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
-        paddingVertical: 10,
+    dropdown: {
         marginHorizontal: 20,
-        color: Colors.black,
+        marginVertical: 5,
+        height: 50,
+        padding: 10,
+        borderBottomColor: 'gray',
+        borderBottomWidth: 0.5,
     },
-    cell: {
-        flex: 1,
+    inputSearchStyle: {
+        height: 40,
         fontSize: 16,
-        fontFamily: Fonts.plusJakartaSansRegular,
-        paddingHorizontal: 5,
-        color: Colors.black,
     },
-    mapIcon: {
-        width: 25,
-        height: 25,
-    }
+    headerRetail: {
+        fontSize: 16,
+        fontWeight: '800',
+        marginHorizontal: 20,
+        marginTop: 20,
+        marginBottom: 10,
+    },
+    itemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 15,
+        borderBottomWidth: 0.5,
+        borderBottomColor: 'gray',
+    },
+    itemImage: {
+        width: 50,
+        height: 50,
+        marginRight: 15,
+        borderRadius: 5, // Optional: Add rounded corners
+    },
+    item: {
+        fontSize: 14,
+        marginVertical: 2,
+    },
 });
+

@@ -1,12 +1,14 @@
-import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import CustomIcon from '../Components/CustomIcon';
+import Icon from 'react-native-vector-icons/FontAwesome'
 import Colors from '../Config/Colors';
 import Fonts from '../Config/Fonts';
 import { API } from '../Config/Endpoint';
+import { customFonts, customColors } from '../Config/helper';
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
@@ -129,76 +131,76 @@ const CustomersDetails = ({ route }) => {
                 <Text style={styles.headerText}>Details</Text>
             </View>
 
-            <View style={styles.detailsContainer}>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Name:</Text>
-                    <Text style={styles.value}>{item.Retailer_Name}</Text>
+            <View style={styles.retailersContainer}>
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Name:</Text>
+                    <Text style={styles.infoText}>{item.Retailer_Name}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Address:</Text>
-                    <Text style={styles.value}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Address:</Text>
+                    <Text style={styles.infoText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Contact Person:</Text>
-                    <Text style={styles.value}>{item.Contact_Person}</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Contact Person:</Text>
+                    <Text style={styles.infoText}>{item.Contact_Person}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Channel:</Text>
-                    <Text style={styles.value}>{item.Retailer_Channel_Id}</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Channel:</Text>
+                    <Text style={styles.infoText}>{item.Retailer_Channel_Id}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>GST:</Text>
-                    <Text style={styles.value}>{item.Gstno}</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>GST:</Text>
+                    <Text style={styles.infoText}>{item.Gstno}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Distributor:</Text>
-                    <Text style={styles.value}>{item.Distributor_Id}</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Distributor:</Text>
+                    <Text style={styles.infoText}>{item.Distributor_Id}</Text>
                 </View>
-                <View style={styles.tableRow}>
-                    <Text style={styles.label}>Contact:</Text>
+
+                <View style={styles.retailersInner}>
+                    <Text style={styles.labelText}>Contact:</Text>
                     <TouchableOpacity onPress={handleCall}>
-                        <Text style={[styles.value, styles.link]}>{item.Mobile_No}</Text>
+                        <Text style={[styles.infoText, styles.link]}>{item.Mobile_No}</Text>
                     </TouchableOpacity>
                 </View>
-
-                <View style={styles.rowButton}>
-                    <TouchableOpacity style={styles.buttonStyle}
-                        onPress={() => {
-                            Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
-                        }}>
-                        <CustomIcon name="whatsapp" size={25} color={Colors.white} />
-                        <Text style={styles.buttonStyleText}>WhatsApp</Text>
-                    </TouchableOpacity>
-                    {latitude !== null && longitude !== null && (
-                        <>
-                            <TouchableOpacity onPress={handleLocation} style={[styles.buttonStyle, { backgroundColor: 'red', }]}>
-                                <CustomIcon name="map-marker" size={25} color={Colors.white} />
-                                <Text style={styles.buttonStyleText}>Direction</Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
-                </View>
-
-                <View style={styles.rowButton}>
-                    <TouchableOpacity onPress={() => navigation.navigate('EditCustomer', { item })} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
-                        <CustomIcon name="edit" size={25} color={Colors.white} />
-                        <Text style={styles.buttonStyleText}>Edit Retailers</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={handleUpdateLocation} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
-                        <CustomIcon name="check" size={25} color={Colors.white} />
-                        <Text style={styles.buttonStyleText}>Update Location</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.rowButton}>
-                    <TouchableOpacity onPress={() => { navigation.navigate('StockClosing', { item }) }} style={[styles.buttonStyle, { backgroundColor: Colors.accent, }]}>
-                        <CustomIcon name="check" size={25} color={Colors.white} />
-                        <Text style={styles.buttonStyleText}>Stock Closing</Text>
-                    </TouchableOpacity>
-                </View>
-
             </View>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={() => {
+                    Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
+                }}>
+                    <Icon name="whatsapp" size={20} color="green" />
+                    <Text style={styles.buttonText}>WhatsApp</Text>
+                </TouchableOpacity>
+
+                {latitude !== null && longitude !== null && (
+                    <TouchableOpacity style={styles.button} onPress={handleLocation}>
+                        <Icon name="map-marker" size={20} color="red" />
+                        <Text style={styles.buttonText}>Maps</Text>
+                    </TouchableOpacity>
+                )}
+
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
+                    <Icon name="edit" size={20} color="blue" />
+                    <Text style={styles.buttonText}>Edit Retailers</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={handleUpdateLocation}>
+                    <Icon name="check" size={20} color="blue" />
+                    <Text style={styles.buttonText}>Update Location</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('StockClosing', { item }) }}>
+                    <Icon name="check" size={20} color="blue" />
+                    <Text style={styles.buttonText}>Stock Update</Text>
+                </TouchableOpacity>
+            </View>
+
         </View>
     )
 }
@@ -223,48 +225,57 @@ const styles = StyleSheet.create({
         color: Colors.white,
         marginLeft: 15
     },
-    detailsContainer: {
-        padding: 15,
-        marginHorizontal: 10
+    retailersContainer: {
+        width: '90%',
+        alignSelf: 'center',
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        marginVertical: 25,
+        elevation: 3,
     },
-    tableRow: {
+    retailersInner: {
         flexDirection: 'row',
-        marginBottom: 20,
+        alignItems: 'center',
+        marginBottom: 10,
     },
-    label: {
+    labelText: {
+        fontWeight: 'bold',
+        marginRight: 10,
+        width: 100,
+    },
+    infoText: {
         flex: 1,
-        fontFamily: Fonts.plusJakartaSansMedium,
-        fontWeight: '700',
-        color: Colors.black
-    },
-    value: {
-        flex: 2,
-        fontFamily: Fonts.plusJakartaSansRegular,
-        fontWeight: '600',
-        color: Colors.black,
+        color: 'black',
     },
     link: {
+        fontFamily: Fonts.plusJakartaSansBold,
         color: 'blue',
         textDecorationLine: 'underline',
-        fontFamily: Fonts.plusJakartaSansBold,
     },
-    rowButton: {
+    buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 25,
+        justifyContent: 'space-around',
+        flexWrap: 'wrap',
+        marginTop: 20,
+        marginHorizontal: 2.5
     },
-    buttonStyle: {
-        width: "45%",
+    button: {
+        flexBasis: '48%',
+        flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#25D366',
+        backgroundColor: '#f0f0f0',
         padding: 10,
         borderRadius: 5,
+        marginVertical: 5,
     },
-    buttonStyleText: {
-        paddingTop: 6,
-        fontFamily: Fonts.plusJakartaSansMedium,
-        fontWeight: '700',
-        color: Colors.white,
-        textAlign: 'center',
+    buttonText: {
+        fontFamily: customFonts.plusJakartaSansBold,
+        marginLeft: 10,
+        fontSize: 16,
+        fontWeight: 'bold',
+        // color: '#333',
+        color: customColors.accent
     },
 });
