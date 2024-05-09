@@ -39,7 +39,7 @@ const LoginScreen = () => {
                 if (data.success) {
                     await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
                     await setData(data);
-                    if (data.data[0].UserType === 'SALES PERSON') {
+                    if (Number(data.data[0].UserTypeId) === Number(6)) {
                         // navigation.replace("Attendance");
                         checkAttendanceHistory(data.data[0].UserId);
                     } else {
@@ -72,14 +72,13 @@ const LoginScreen = () => {
             });
 
             const attendanceHistory = await response.json();
-            if (attendanceHistory.success && attendanceHistory.data.length === 0) {
+            if (Number(attendanceHistory.data[0].Active_Status) === 0) {
                 navigation.replace("Attendance");
             } else {
                 navigation.replace("HomeScreen");
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
-            navigation.replace("HomeScreen");
         }
     };
 

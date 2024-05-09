@@ -12,7 +12,7 @@ const AttendanceInfo = () => {
     const [name, setName] = useState('')
     const [userId, setUserId] = useState('')
     const [userType, setUserType] = useState('')
-    const [startDate, setStartDate] = useState(false)
+    const [activeStatus, setActiveStatus] = useState(0)
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
 
@@ -52,6 +52,7 @@ const AttendanceInfo = () => {
                 const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
                 const lastStartDate = lastAttendance.Start_Date;
                 const [datePart, timePart] = lastStartDate.split('T');
+                setActiveStatus(attendanceStatus.data[0].Active_Status)
                 setDate(datePart);
                 setTime(timePart.substring(0, 8));
             }
@@ -94,7 +95,7 @@ const AttendanceInfo = () => {
                 <View style={styles.cardHeader}>
                     <Text style={styles.cardTitle}>Today Attendance</Text>
                     <Button
-                        disabled={!!date}
+                        disabled={Number(activeStatus) === Number(1)}
                         color={Colors.primary}
                         onPress={() => { navigation.navigate('Attendance') }}
                         title='Start Day'
@@ -136,12 +137,15 @@ const AttendanceInfo = () => {
                     </View>
                 </View>
 
+
                 <Button
-                    // disabled={!!date}
+                    disabled={Number(activeStatus) === Number(0)}
                     color={Colors.primary}
                     onPress={() => { navigation.navigate('EndDay') }}
                     title='End Day'
                 />
+
+
             </View>
         </View>
     )

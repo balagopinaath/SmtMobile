@@ -5,15 +5,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DrawerScreen = ({ navigation }) => {
     const [name, setName] = useState('')
-    const [uType, setUType] = useState('')
 
     useEffect(() => {
         (async () => {
             try {
                 const userName = await AsyncStorage.getItem('Name');
-                const UserType = await AsyncStorage.getItem('UserType');
+                const UserId = await AsyncStorage.getItem('userTypeId');
                 setName(userName)
-                setUType(UserType)
             } catch (err) {
                 console.log(err);
             }
@@ -56,32 +54,29 @@ const DrawerScreen = ({ navigation }) => {
                 <Text style={styles.drawerText}>Home</Text>
             </TouchableOpacity>
 
-
-            {uType === 'SALES PERSON' &&
-                <View>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('Customers')} // Assuming "Customers" is correct screen name
-                    >
-                        <Icon name="team" size={20} color="#000" />
-                        <Text style={styles.drawerText}>Retailers</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('AddCustomer')}
-                    >
-                        <Icon name="adduser" size={20} color="#000" />
-                        <Text style={styles.drawerText}>Add Retailers</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('AttendanceInfo')}
-                    >
-                        <Icon name="calendar" size={20} color="#000" />
-                        <Text style={styles.drawerText}>Attendance</Text>
-                    </TouchableOpacity>
-                </View>
-            }
+            <View>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('Customers')} // Assuming "Customers" is correct screen name
+                >
+                    <Icon name="team" size={20} color="#000" />
+                    <Text style={styles.drawerText}>Retailers</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('AddCustomer')}
+                >
+                    <Icon name="adduser" size={20} color="#000" />
+                    <Text style={styles.drawerText}>Add Retailers</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('AttendanceInfo')}
+                >
+                    <Icon name="calendar" size={20} color="#000" />
+                    <Text style={styles.drawerText}>Attendance</Text>
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
                 style={[styles.drawerItem, { borderTopWidth: 1 }]}

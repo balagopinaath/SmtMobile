@@ -11,6 +11,7 @@ import { API } from '../Config/Endpoint';
 
 const Attendance = () => {
     const navigation = useNavigation();
+    const [activeStatus, setActiveStatus] = useState(0)
     const [locationEnabled, setLocationEnabled] = useState(false);
     const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
     const [watchId, setWatchId] = useState(false);
@@ -28,7 +29,6 @@ const Attendance = () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
                 setFormValues({ ...formValues, UserId: userId });
-                getAttendanceInfo(userId)
             } catch (err) {
                 console.log(err);
             }
@@ -118,33 +118,6 @@ const Attendance = () => {
         };
 
     }, [watchId])
-
-    const getAttendanceInfo = async (userId) => {
-        try {
-            const url = `${API.MyLastAttendance}${userId}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            const attendanceStatus = await response.json();
-
-            if (attendanceStatus && attendanceStatus.data && attendanceStatus.data.length > 0) {
-                const activeStatus = attendanceStatus.data[0].Active_Status;
-                if (activeStatus !== undefined && activeStatus === 1) {
-                    navigation.replace('HomeScreen');
-                } else {
-                    console.log('Attendance data found but inactive');
-                    // Handle other cases if needed
-                }
-            } else {
-                console.log('Attendance data not found or invalid format');
-            }
-        } catch (error) {
-            console.log("Error fetching attendance data:", error);
-        }
-    }
 
     const handleInputChange = value => {
         setFormValues({ ...formValues, Start_KM: value });

@@ -33,11 +33,6 @@ const HomeScreen = () => {
 
             <View style={styles.ContainerAction}>
 
-                <TouchableOpacity style={styles.actionButton} onPress={() => { navigation.navigate('Customers') }}>
-                    <Icon name="exclamationcircleo" color={Colors.white} size={25} />
-                    <Text style={styles.actionButtonText}>Retailers</Text>
-                </TouchableOpacity>
-
             </View>
 
         </View>

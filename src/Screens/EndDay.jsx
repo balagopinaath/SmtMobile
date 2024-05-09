@@ -21,12 +21,28 @@ const EndDay = () => {
         (async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
+                getAttendanceInfo(userId)
                 setFormValues({ ...formValues, Id: userId });
             } catch (err) {
                 console.log(err);
             }
         })();
     }, [])
+
+    const getAttendanceInfo = async (userId) => {
+        try {
+            const url = `${API.MyLastAttendance}${userId}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const attendanceStatus = await response.json();
+
+            setFormValues({ ...formValues, Id: attendanceStatus.data[0].Id });
+        } catch (error) {
+            console.log("Error fetching attendance data:", error);
+        }
+    };
 
     const handleInputChange = value => {
         setFormValues({ ...formValues, End_KM: value });
