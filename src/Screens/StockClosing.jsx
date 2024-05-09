@@ -217,7 +217,6 @@ const StockClosing = ({ route }) => {
 
             <View style={styles.retailerInfo}>
                 <Text style={styles.retailerInfoText}>Retailer Name: {item.Retailer_Name}</Text>
-                <Text style={styles.retailerInfoText}>Contact Address: {item.Reatailer_Address}</Text>
             </View>
 
             <View style={styles.inputContainer}>

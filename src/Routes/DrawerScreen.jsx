@@ -22,6 +22,7 @@ const DrawerScreen = ({ navigation }) => {
 
     const logout = async () => {
         try {
+            await AsyncStorage.removeItem('Autheticate_Id');
             await AsyncStorage.removeItem('userToken');
             await AsyncStorage.removeItem('UserId');
             await AsyncStorage.removeItem('userName');

@@ -52,22 +52,37 @@ const Customers = () => {
     };
 
     useEffect(() => {
-        if (selectedArea) {
-            const filtered = data.filter(r => r.Area_Id === selectedArea.Area_Id);
-            setFilteredData(filtered);
-        } else {
-            setFilteredData(data);
+        if (!selectedRetailer) { // Only filter by area if no retailer is selected
+            if (selectedArea) {
+                const filtered = data.filter(r => r.Area_Id === selectedArea.Area_Id);
+                setFilteredData(filtered);
+            } else {
+                setFilteredData(data);
+            }
         }
     }, [selectedArea, data]);
 
     useEffect(() => {
-        if (selectedArea) {
-            const filteredRetailers = data.filter(r => r.Area_Id === selectedArea.Area_Id);
-            setFilteredRetailers(filteredRetailers);
-        } else {
-            setFilteredRetailers([]);
+        if (!selectedRetailer) { // Only update retailers if no specific retailer is selected
+            if (selectedArea) {
+                const filteredRetailers = data.filter(r => r.Area_Id === selectedArea.Area_Id);
+                setFilteredRetailers(filteredRetailers);
+            } else {
+                setFilteredRetailers([]);
+            }
         }
     }, [selectedArea, data]);
+
+    const filterDataBasedOnRetailer = (retailer) => {
+        if (retailer) {
+            const newData = data.filter(item => item.Retailer_Id === retailer.Retailer_Id);
+            setFilteredData(newData);
+        } else {
+            // No retailer selected, revert to showing all data within the selected area
+            const areaData = data.filter(item => item.Area_Id === (selectedArea ? selectedArea.Area_Id : null));
+            setFilteredData(areaData);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -104,8 +119,11 @@ const Customers = () => {
                         labelField="Retailer_Name"
                         valueField="Retailer_Id"
                         placeholder="Select retailer"
-                        value={selectedRetailer}
-                        onChange={item => setSelectedRetailer(item)}
+                        value={selectedRetailer ? selectedRetailer.Retailer_Id : null}
+                        onChange={item => {
+                            setSelectedRetailer(item)
+                            filterDataBasedOnRetailer(item);
+                        }}
                         maxHeight={300}
                         search
                         searchPlaceholder="Search retailers"
