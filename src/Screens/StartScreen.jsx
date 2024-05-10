@@ -2,8 +2,7 @@ import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
+import { customColors, customFonts } from '../Config/helper';
 
 const StartScreen = () => {
     const navigation = useNavigation();
@@ -44,7 +43,7 @@ const StartScreen = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={Colors.primary} />
+            <StatusBar backgroundColor={customColors.primary} />
             <Text style={styles.logo}>Shri Foods</Text>
         </View>
     );
@@ -54,14 +53,14 @@ export default StartScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.white,
+        backgroundColor: customColors.white,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
     },
     logo: {
         fontSize: 32,
-        color: Colors.primary,
-        fontFamily: Fonts.plusJakartaSansExtraBold
+        color: customColors.primary,
+        fontFamily: customFonts.plusJakartaSansExtraBold
     }
 });

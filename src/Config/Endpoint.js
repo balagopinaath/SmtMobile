@@ -7,6 +7,7 @@ export const API = {
     myTodayAttendance: baseURL + 'api/myTodayAttendance?UserId=',
 
     retailers: baseURL + 'api/masters/retailers?Company_Id=',
+    retailerName: baseURL + 'api/masters/retailers/dropDown?Company_Id=',
     retailerLocation: baseURL + 'api/masters/retailerLocation',
     areaRetailers: baseURL + 'api/masters/retailers/areaRetailers?Company_Id=',
 

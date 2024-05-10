@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
-import CustomIcon from '../Components/CustomIcon';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
+import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const Customers = () => {
     const navigation = useNavigation();
@@ -88,17 +87,16 @@ const Customers = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Retailers</Text>
             </View>
 
             {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator style={styles.activityIndicator} size="large" color={customColors.primary} />
             ) : (
                 <>
                     <Dropdown
-                        style={styles.dropdown}
                         data={area}
                         labelField="Area_Name"
                         valueField="Area_Id"
@@ -111,11 +109,13 @@ const Customers = () => {
                         maxHeight={300}
                         search
                         searchPlaceholder="Search areas"
+                        style={styles.dropdown}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
                         inputSearchStyle={styles.inputSearchStyle}
                     />
                     <Dropdown
-                        style={styles.dropdown}
-                        data={filteredRetailers} // Use filteredRetailers state
+                        data={filteredRetailers}
                         labelField="Retailer_Name"
                         valueField="Retailer_Id"
                         placeholder="Select retailer"
@@ -127,6 +127,9 @@ const Customers = () => {
                         maxHeight={300}
                         search
                         searchPlaceholder="Search retailers"
+                        style={styles.dropdown}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
                         inputSearchStyle={styles.inputSearchStyle}
                     />
                     <Text style={styles.headerRetail}>Retailers in Selected Area:</Text>
@@ -157,39 +160,59 @@ export default Customers;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
         marginBottom: 20
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        color: Colors.white,
+        fontFamily: customFonts.plusJakartaSansBold,
+        color: customColors.white,
         fontSize: 15,
+        fontWeight: '500',
+        textAlign: 'center',
         marginLeft: 15
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     dropdown: {
         marginHorizontal: 20,
-        marginVertical: 5,
-        height: 50,
-        padding: 10,
-        borderBottomColor: 'gray',
-        borderBottomWidth: 0.5,
+        marginVertical: 10,
+        height: 45,
+        padding: 15,
+        borderRadius: 10,
+        borderWidth: 0.5,
+    },
+    placeholderStyle: {
+        fontFamily: customFonts.plusJakartaSansBold,
+        fontSize: 15,
+        fontWeight: '500'
+    },
+    selectedTextStyle: {
+        fontFamily: customFonts.plusJakartaSansMedium,
+        fontSize: 15,
+        fontWeight: '600'
     },
     inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
+        fontFamily: customFonts.plusJakartaSansMedium,
+        fontSize: 14,
+        fontWeight: '400'
     },
     headerRetail: {
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 16,
-        fontWeight: '800',
+        fontWeight: '500',
+        color: customColors.black,
         marginHorizontal: 20,
         marginTop: 20,
-        marginBottom: 10,
+        marginBottom: 15,
     },
     itemContainer: {
         flexDirection: 'row',
@@ -202,11 +225,19 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 15,
-        borderRadius: 5, // Optional: Add rounded corners
+        borderRadius: 5,
     },
-    item: {
-        fontSize: 14,
+    itemText: {
+        fontFamily: customFonts.plusJakartaSansMedium,
+        fontSize: 15,
+        fontWeight: '500',
+        color: customColors.black,
         marginVertical: 2,
     },
+    itemMobile: {
+        fontFamily: customFonts.plusJakartaSansMedium,
+        fontSize: 12,
+        fontWeight: '200',
+    }
 });
 

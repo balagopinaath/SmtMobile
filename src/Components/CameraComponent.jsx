@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import { Camera, useCameraDevice, useCameraPermission, } from 'react-native-vision-camera'
-import Colors from '../Config/Colors'
+import { customColors } from '../Config/helper'
 
 const CameraComponent = ({ onPhotoCapture }) => {
     const device = useCameraDevice('back');
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
     },
     captureButton: {
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         borderRadius: 30,
         justifyContent: 'center',
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         marginTop: 25,
     },
     captureButtonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 16,
     },
 })

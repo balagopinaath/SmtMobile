@@ -4,9 +4,8 @@ import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'react-native-crypto-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Fonts from '../Config/Fonts'
-import Colors from '../Config/Colors'
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
@@ -40,7 +39,6 @@ const LoginScreen = () => {
                     await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
                     await setData(data);
                     if (Number(data.data[0].UserTypeId) === Number(6)) {
-                        // navigation.replace("Attendance");
                         checkAttendanceHistory(data.data[0].UserId);
                     } else {
                         navigation.replace("HomeScreen");
@@ -72,10 +70,16 @@ const LoginScreen = () => {
             });
 
             const attendanceHistory = await response.json();
-            if (Number(attendanceHistory.data[0].Active_Status) === 0) {
+
+            if (attendanceHistory.data.length === 0) {
                 navigation.replace("Attendance");
             } else {
-                navigation.replace("HomeScreen");
+                const activeStatus = attendanceHistory.data[0]?.Active_Status;
+                if (activeStatus && Number(activeStatus) === 0) {
+                    navigation.replace("Attendance");
+                } else {
+                    navigation.replace("HomeScreen");
+                }
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
@@ -101,13 +105,13 @@ const LoginScreen = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={Colors.primary} />
+            <StatusBar backgroundColor={customColors.primary} />
             <Text style={styles.title}>Welcome to Sales App</Text>
 
             <Text style={styles.subtitle}>Let's start to manage your attendance more effectively with us!</Text>
 
             <View style={styles.inputContainer}>
-                <Icon name="mobile-phone" size={25} style={styles.inputIcon} color={Colors.accent} ></Icon>
+                <Icon name="mobile-phone" size={25} style={styles.inputIcon} color={customColors.accent} ></Icon>
                 <TextInput
                     style={styles.textInput}
                     textAlign='left'
@@ -119,7 +123,7 @@ const LoginScreen = () => {
             </View>
 
             <View style={styles.inputContainer}>
-                <Icon name="lock" size={25} style={styles.inputIcon} color={Colors.accent} ></Icon>
+                <Icon name="lock" size={25} style={styles.inputIcon} color={customColors.accent} ></Icon>
                 <TextInput
                     style={styles.textInput}
                     placeholder='Enter your Password'
@@ -144,17 +148,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
         padding: 20
     },
     title: {
-        fontFamily: Fonts.plusJakartaSansSemiBold,
+        fontFamily: customFonts.plusJakartaSansSemiBold,
         fontSize: 28,
         fontWeight: 'bold',
         marginBottom: 10,
     },
     subtitle: {
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 16,
         color: '#777',
         marginBottom: 40,
@@ -162,7 +166,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: Colors.secondary,
+        backgroundColor: customColors.secondary,
         borderRadius: 10,
         paddingHorizontal: 15,
         marginBottom: 20,
@@ -172,12 +176,12 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 16,
         marginLeft: 2.5
     },
     loginButton: {
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -185,7 +189,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     loginButtonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 18
     }
 });

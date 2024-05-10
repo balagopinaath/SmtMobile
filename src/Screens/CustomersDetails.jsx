@@ -1,14 +1,16 @@
-import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid, TextInput } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, Dimensions, View, PermissionsAndroid, Alert, ToastAndroid, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import CustomIcon from '../Components/CustomIcon';
+import CustomIcon from 'react-native-vector-icons/FontAwesome';
+import CustomAntIcon from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
 import { API } from '../Config/Endpoint';
 import { customFonts, customColors } from '../Config/helper';
+
+const { width } = Dimensions.get('window');
+
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
@@ -126,7 +128,7 @@ const CustomersDetails = ({ route }) => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Details</Text>
             </View>
@@ -174,30 +176,30 @@ const CustomersDetails = ({ route }) => {
                 <TouchableOpacity style={styles.button} onPress={() => {
                     Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
                 }}>
-                    <Icon name="whatsapp" size={20} color="green" />
+                    <Icon name="whatsapp" size={25} color="green" />
                     <Text style={styles.buttonText}>WhatsApp</Text>
                 </TouchableOpacity>
 
                 {latitude !== null && longitude !== null && (
                     <TouchableOpacity style={styles.button} onPress={handleLocation}>
-                        <Icon name="map-marker" size={20} color="red" />
-                        <Text style={styles.buttonText}>Maps</Text>
+                        <Icon name="map-o" size={20} color="red" />
+                        <Text style={styles.buttonText}>Maps Direction</Text>
                     </TouchableOpacity>
                 )}
 
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
-                    <Icon name="edit" size={20} color="blue" />
+                    <CustomAntIcon name="edit" size={20} color="blue" />
                     <Text style={styles.buttonText}>Edit Retailers</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button} onPress={handleUpdateLocation}>
-                    <Icon name="check" size={20} color="blue" />
+                    <Icon name="map-marker" size={20} color="red" />
                     <Text style={styles.buttonText}>Update Location</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('StockClosing', { item }) }}>
-                    <Icon name="check" size={20} color="blue" />
-                    <Text style={styles.buttonText}>Stock Update</Text>
+                    <Icon name="bar-chart-o" size={20} color="blue" />
+                    <Text style={styles.buttonText}>Closing Stock</Text>
                 </TouchableOpacity>
             </View>
 
@@ -211,24 +213,24 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 15,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 15
     },
     retailersContainer: {
         width: '90%',
         alignSelf: 'center',
-        backgroundColor: '#ffffff',
+        backgroundColor: customColors.white,
         borderRadius: 10,
         paddingHorizontal: 20,
         paddingVertical: 15,
@@ -250,23 +252,20 @@ const styles = StyleSheet.create({
         color: 'black',
     },
     link: {
-        fontFamily: Fonts.plusJakartaSansBold,
+        fontFamily: customFonts.plusJakartaSansBold,
         color: 'blue',
         textDecorationLine: 'underline',
     },
     buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        flexWrap: 'wrap',
-        marginTop: 20,
-        marginHorizontal: 2.5
+        marginTop: 5,
     },
     button: {
-        flexBasis: '48%',
+        width: width * 0.5,
+        height: 55,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignSelf: 'center',
         backgroundColor: '#f0f0f0',
-        padding: 10,
+        padding: 15,
         borderRadius: 5,
         marginVertical: 5,
     },

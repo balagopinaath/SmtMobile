@@ -1,13 +1,11 @@
 import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Alert, Image, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import CustomIcon from '../Components/CustomIcon';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../Components/CameraComponent';
 import Geolocation from '@react-native-community/geolocation'
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const Attendance = () => {
     const navigation = useNavigation();
@@ -212,18 +210,18 @@ export default Attendance
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
         marginBottom: 20
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        color: Colors.white,
+        fontFamily: customFonts.plusJakartaSansMedium,
+        color: customColors.white,
         fontSize: 15,
         marginLeft: 5,
     },
@@ -250,7 +248,7 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -259,7 +257,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15
     },
     buttonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 16,
     },
 })

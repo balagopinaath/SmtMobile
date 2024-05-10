@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();
@@ -86,7 +85,7 @@ const AttendanceInfo = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={Colors.white} size={20} />
+                    <Icon name="angle-left" color={customColors.white} size={20} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Attendance</Text>
             </View>
@@ -96,7 +95,7 @@ const AttendanceInfo = () => {
                     <Text style={styles.cardTitle}>Today Attendance</Text>
                     <Button
                         disabled={Number(activeStatus) === Number(1)}
-                        color={Colors.primary}
+                        color={customColors.primary}
                         onPress={() => { navigation.navigate('Attendance') }}
                         title='Start Day'
                     />
@@ -106,7 +105,7 @@ const AttendanceInfo = () => {
                 <View style={styles.cardContent}>
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="clock-o" color={Colors.black} size={20} />
+                            <Icon name="clock-o" color={customColors.black} size={20} />
                             <Text style={styles.text}>Date</Text>
                         </View>
                         <Text style={styles.text}>{date}</Text>
@@ -114,7 +113,7 @@ const AttendanceInfo = () => {
 
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="calendar-o" color={Colors.black} size={20} />
+                            <Icon name="calendar-o" color={customColors.black} size={20} />
                             <Text style={styles.text}>Time In</Text>
                         </View>
                         <Text style={styles.text}>{time}</Text>
@@ -122,7 +121,7 @@ const AttendanceInfo = () => {
 
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="clock-o" color={Colors.black} size={20} />
+                            <Icon name="clock-o" color={customColors.black} size={20} />
                             <Text style={styles.text}>Day End</Text>
                         </View>
                         <Text style={styles.text}>-: -: -</Text>
@@ -130,7 +129,7 @@ const AttendanceInfo = () => {
 
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="calendar-o" color={Colors.black} size={20} />
+                            <Icon name="calendar-o" color={customColors.black} size={20} />
                             <Text style={styles.text}>Time Out</Text>
                         </View>
                         <Text style={styles.text}>-: -: -</Text>
@@ -140,7 +139,7 @@ const AttendanceInfo = () => {
 
                 <Button
                     disabled={Number(activeStatus) === Number(0)}
-                    color={Colors.primary}
+                    color={customColors.primary}
                     onPress={() => { navigation.navigate('EndDay') }}
                     title='End Day'
                 />
@@ -156,24 +155,24 @@ export default AttendanceInfo
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
         textAlign: 'center',
-        fontFamily: Fonts.plusJakartaSansBold,
+        fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 18,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 15,
     },
     card: {
         width: 350,
-        backgroundColor: 'white',
+        backgroundColor: customColors.white,
         borderRadius: 15,
         padding: 16,
         elevation: 14,

@@ -1,12 +1,11 @@
 import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import CustomIcon from '../Components/CustomIcon';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
+import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../Components/CameraComponent';
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const EndDay = () => {
     const navigation = useNavigation();
@@ -92,7 +91,7 @@ const EndDay = () => {
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Close Attendance</Text>
             </View>
@@ -136,24 +135,24 @@ export default EndDay
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
         marginBottom: 20
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        color: Colors.white,
+        fontFamily: customFonts.plusJakartaSansMedium,
+        color: customColors.white,
         fontSize: 15,
         marginLeft: 10,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: customColors.white,
         borderRadius: 5,
         padding: 10,
         marginTop: 10,
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -183,7 +182,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 15
     },
     buttonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 16,
     },
 })

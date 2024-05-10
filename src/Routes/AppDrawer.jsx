@@ -18,7 +18,7 @@ const AppDrawer = () => {
                 drawerType: isLargeScreen ? 'permanent' : 'front',
                 drawerStyle: {
                     backgroundColor: '#c6cbef',
-                    width: "65%",
+                    width: "70%",
                 },
                 // overlayColor: 'transparent',
                 headerShown: false,

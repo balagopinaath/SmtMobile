@@ -2,11 +2,10 @@ import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndr
 import React, { useEffect, useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native'
-import CustomIcon from '../Components/CustomIcon';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
+import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import CameraComponent from '../Components/CameraComponent';
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const EditCustomer = ({ route }) => {
     const { item } = route.params;
@@ -173,7 +172,7 @@ const EditCustomer = ({ route }) => {
             type: 'image/jpeg'
         });
         formData.append("Distributor_Id", editValue.Distributor_Id);
-        formData.append("Created_By", editValue.Created_By);
+        formData.append("Updated_By", editValue.Created_By);
 
         fetch(`${API.retailers}${1}`, {
             method: 'PUT',
@@ -200,7 +199,7 @@ const EditCustomer = ({ route }) => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Edit Retailer</Text>
             </View>
@@ -400,18 +399,18 @@ export default EditCustomer
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 15,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 10
     },
     TopContainer: {
@@ -420,8 +419,8 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         marginBottom: 5,
-        color: Colors.text,
-        fontFamily: Fonts.plusJakartaSansBold
+        color: customColors.text,
+        fontFamily: customFonts.plusJakartaSansBold
     },
     input: {
         borderWidth: 1,
@@ -433,9 +432,9 @@ const styles = StyleSheet.create({
     mobileLabel: {
         fontSize: 14,
         marginBottom: 5,
-        color: Colors.text,
+        color: customColors.text,
         marginTop: 10,
-        fontFamily: Fonts.plusJakartaSansBold
+        fontFamily: customFonts.plusJakartaSansBold
     },
     previewImage: {
         alignSelf: 'flex-end',
@@ -446,7 +445,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     updateButton: {
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         alignItems: 'center',
         padding: 10,
@@ -454,8 +453,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     updateButtonText: {
-        fontFamily: Fonts.plusJakartaSansBold,
-        color: Colors.white,
+        fontFamily: customFonts.plusJakartaSansBold,
+        color: customColors.white,
         fontSize: 16,
     },
 })

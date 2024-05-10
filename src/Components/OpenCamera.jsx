@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, LogBox } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission, } from 'react-native-vision-camera';
 import { useNavigation } from '@react-navigation/native';
-import Colors from '../Config/Colors';
+import { customColors } from '../Config/helper';
 
 const OpenCamera = () => {
     const navigation = useNavigation();
@@ -83,7 +83,7 @@ export default OpenCamera;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: customColors.black,
     },
     headerButton: {
         marginRight: 10,
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 600,
         alignSelf: 'center',
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 20,
         alignSelf: 'center',
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
     },
     captureButtonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 16,
     },
 });

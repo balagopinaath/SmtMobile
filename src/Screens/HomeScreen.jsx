@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
+import { customColors, customFonts } from '../Config/helper';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -23,15 +22,19 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <StatusBar backgroundColor={Colors.primary} />
+            <StatusBar backgroundColor={customColors.primary} />
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Icon name="menuunfold" color={Colors.white} size={20} />
+                    <Icon name="menuunfold" color={customColors.white} size={20} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Welcome, {name}!</Text>
             </View>
 
             <View style={styles.ContainerAction}>
+
+                <TouchableOpacity onPress={() => navigation.navigate('RetailerVisit')}>
+                    <Text>Call log</Text>
+                </TouchableOpacity>
 
             </View>
 
@@ -44,43 +47,26 @@ export default HomeScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
         textAlign: 'center',
-        fontFamily: Fonts.plusJakartaSansBold,
+        fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 18,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 15,
     },
     ContainerAction: {
-        flexDirection: 'row',
         marginHorizontal: 25,
         marginVertical: 25,
-        justifyContent: 'space-between'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-    },
-    actionButton: {
-        width: '40%',
-        flexDirection: 'row',
-        backgroundColor: Colors.accent,
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 25,
-    },
-    actionButtonText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
-        fontSize: 16,
-        color: Colors.white,
-        marginLeft: 10,
-    },
+
 });

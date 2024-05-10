@@ -1,12 +1,11 @@
 import { View, Text, TextInput, ToastAndroid, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native'
-import Colors from '../Config/Colors';
 import { Dropdown } from 'react-native-element-dropdown';
-import CustomIcon from '../Components/CustomIcon';
-import Fonts from '../Config/Fonts';
+import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation'
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const AddCustomer = () => {
     const navigation = useNavigation();
@@ -209,7 +208,7 @@ const AddCustomer = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={Colors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Add Retailer</Text>
             </View>
@@ -405,18 +404,18 @@ export default AddCustomer
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 15,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 15
     },
     inputSearchStyle: {
@@ -469,7 +468,7 @@ const styles = StyleSheet.create({
     },
     geoButton: {
         flex: 1,
-        backgroundColor: Colors.accent,
+        backgroundColor: customColors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -477,21 +476,21 @@ const styles = StyleSheet.create({
         marginBottom: 25,
     },
     geoButtonText: {
-        color: Colors.white,
+        color: customColors.white,
         fontSize: 16,
     },
     label: {
         fontSize: 14,
         marginBottom: 5,
-        color: Colors.text,
-        fontFamily: Fonts.plusJakartaSansBold
+        color: customColors.text,
+        fontFamily: customFonts.plusJakartaSansBold
     },
     mobileLabel: {
         fontSize: 14,
         marginBottom: 5,
-        color: Colors.text,
+        color: customColors.text,
         marginTop: 10,
-        fontFamily: Fonts.plusJakartaSansBold
+        fontFamily: customFonts.plusJakartaSansBold
     },
     input: {
         borderWidth: 1,

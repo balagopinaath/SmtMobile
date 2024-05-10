@@ -3,11 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Colors from '../Config/Colors';
-import Fonts from '../Config/Fonts';
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../Config/helper';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
@@ -210,7 +209,7 @@ const StockClosing = ({ route }) => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={Colors.white} size={25} />
+                    <Icon name="angle-left" color={customColors.white} size={25} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Closing Stock Report</Text>
             </View>
@@ -280,10 +279,10 @@ const StockClosing = ({ route }) => {
                 />
                 <View style={styles.narrationContainerButtonGroup}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={{ color: Colors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
+                        <Text style={{ color: customColors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={postClosingStock}>
-                        <Text style={{ color: Colors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
+                        <Text style={{ color: customColors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -299,18 +298,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: Colors.background,
+        backgroundColor: customColors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: Colors.primary,
+        backgroundColor: customColors.primary,
     },
     headerText: {
-        fontFamily: Fonts.plusJakartaSansMedium,
+        fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 15,
-        color: Colors.white,
+        color: customColors.white,
         marginLeft: 15
     },
     retailerInfo: {
@@ -327,7 +326,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginVertical: 20,
         borderBottomWidth: 1,
-        borderBottomColor: Colors.lightGrey,
+        borderBottomColor: 'lightgray',
     },
     datePicker: {
         flexDirection: 'row',
@@ -369,7 +368,7 @@ const styles = StyleSheet.create({
     pagerViewContainerInputText: {
         fontSize: 14,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: customColors.white,
         borderRadius: 5,
         padding: 5,
         marginBottom: 20,
@@ -380,7 +379,7 @@ const styles = StyleSheet.create({
     narrationContainerInputText: {
         fontSize: 14,
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: customColors.white,
         borderRadius: 5,
         padding: 10,
         marginBottom: 20,

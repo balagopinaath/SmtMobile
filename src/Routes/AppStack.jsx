@@ -13,6 +13,7 @@ import OpenCamera from '../Components/OpenCamera';
 import EndDay from '../Screens/EndDay';
 import StockClosing from '../Screens/StockClosing';
 import AttendanceInfo from '../Screens/AttendanceInfo';
+import RetailerVisit from '../Screens/RetailerVisit';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ const AppStack = () => {
             <Stack.Screen name="CustomersDetails" component={CustomersDetails} />
             <Stack.Screen name="AddCustomer" component={AddCustomer} />
             <Stack.Screen name="EditCustomer" component={EditCustomer} />
+            <Stack.Screen name="RetailerVisit" component={RetailerVisit} />
             <Stack.Screen name="Attendance" component={Attendance} />
             <Stack.Screen name="AttendanceInfo" component={AttendanceInfo} />
             <Stack.Screen name="OpenCamera" component={OpenCamera} />
