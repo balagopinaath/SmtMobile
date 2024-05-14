@@ -14,6 +14,8 @@ import EndDay from '../Screens/EndDay';
 import StockClosing from '../Screens/StockClosing';
 import AttendanceInfo from '../Screens/AttendanceInfo';
 import RetailerVisit from '../Screens/RetailerVisit';
+import RetailerVisitLog from '../Screens/RetailerVisitLog';
+import AttendanceReport from '../Screens/AttendanceReport';
 
 const Stack = createStackNavigator();
 
@@ -28,8 +30,12 @@ const AppStack = () => {
             <Stack.Screen name="AddCustomer" component={AddCustomer} />
             <Stack.Screen name="EditCustomer" component={EditCustomer} />
             <Stack.Screen name="RetailerVisit" component={RetailerVisit} />
+            <Stack.Screen name="RetailerLog" component={RetailerVisitLog} />
+
             <Stack.Screen name="Attendance" component={Attendance} />
             <Stack.Screen name="AttendanceInfo" component={AttendanceInfo} />
+            <Stack.Screen name="AttendanceReport" component={AttendanceReport} />
+
             <Stack.Screen name="OpenCamera" component={OpenCamera} />
             <Stack.Screen name="EndDay" component={EndDay} />
             <Stack.Screen name="StockClosing" component={StockClosing} />

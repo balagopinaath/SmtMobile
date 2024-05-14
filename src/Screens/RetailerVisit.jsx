@@ -1,18 +1,44 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { API } from '../Config/Endpoint';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native'
 import { customColors, customFonts } from '../Config/helper';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomRadioButton from '../Components/CustomRadioButton';
 import LocationIndicator from '../Components/LocationIndicator';
+import CameraComponent from '../Components/CameraComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RetailerVisit = () => {
+    const navigation = useNavigation();
+    const [formValues, setFormValues] = useState({
+        Retailer_Id: selectedRetail,
+        Retailer_Name: '',
+        Contact_Person: '',
+        Mobile_No: '',
+        Route_Id: '',
+        Location_Address: '',
+        Narration: '',
+        Location_Image: ''
+    });
     const [retailerData, setRetailerData] = useState([])
     const [selectedRetail, setSelectedRetail] = useState(null);
     const [selectedValue, setSelectedValue] = useState('exist');
+    const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
+    const [showCamera, setShowCamera] = useState(false)
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
+    const [id, setId] = useState()
 
     useEffect(() => {
+        (async () => {
+            try {
+                const userId = await AsyncStorage.getItem('UserId');
+                setId(userId)
+            } catch (err) {
+                console.log(err);
+            }
+        })();
         fetchCustomersData()
     }, [])
 
@@ -23,22 +49,98 @@ const RetailerVisit = () => {
                 throw new Error(`API request failed with status: ${response.status}`);
             }
             const jsonData = await response.json();
-            setRetailerData(jsonData.data);
+            setRetailerData(jsonData.data)
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     };
 
+    const handleInputChange = (fieldName, value) => {
+        setFormValues(prevState => ({
+            ...prevState,
+            [fieldName]: value
+        }));
+    };
+
+    const handlePhotoCapture = async (photoPath) => {
+        setCapturedPhotoPath(photoPath);
+        setFormValues(prevState => ({
+            ...prevState,
+            Location_Image: photoPath
+        }));
+    };
+
+    const showAndHideCamera = () => {
+        setShowCamera(prevState => !prevState);
+    }
+
+    const clearPhoto = () => {
+        setCapturedPhotoPath(null);
+    };
+
+    const handleSubmit = async () => {
+        const formData = new FormData();
+
+        formData.append("Mode", selectedValue === 'exist' ? 1 : 2);
+
+        if (selectedValue === 'exist') {
+            formData.append("Retailer_Id", selectedRetail);
+            if (location.latitude && location.longitude) {
+                formData.append("Latitude", location.latitude);
+                formData.append("Longitude", location.longitude);
+            }
+            formData.append("Narration", formValues.narration);
+            formData.append("EntryBy", id);
+        } else {
+            formData.append("Reatailer_Name", formValues.Retailer_Name);
+            formData.append("Contact_Person", formValues.Contact_Person);
+            formData.append("Contact_Mobile", formValues.Mobile_No);
+            formData.append("Location_Address", formValues.Location_Address);
+            if (location.latitude && location.longitude) {
+                formData.append("Latitude", location.latitude);
+                formData.append("Longitude", location.longitude);
+            }
+            formData.append("narration", formValues.narration);
+            formData.append("EntryBy", id);
+        }
+
+        if (capturedPhotoPath) {
+            const photo = {
+                uri: `file://${formValues.Location_Image}`,
+                type: 'image/jpeg',
+                name: capturedPhotoPath
+            };
+            formData.append("Location_Image", photo);
+        }
+
+        fetch(API.visitedLog, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            body: formData,
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                    navigation.navigate('HomeScreen')
+                }
+            }).catch(error => {
+                ToastAndroid.show(error, ToastAndroid.SHORT);
+                console.error('Error submitting form:', error);
+            });
+    };
+
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon name="angle-left" color={customColors.white} size={20} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Log Info</Text>
             </View>
 
-            <LocationIndicator />
+            <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
 
             <View style={styles.radioView}>
                 <CustomRadioButton
@@ -63,7 +165,11 @@ const RetailerVisit = () => {
                         placeholder="Select Retailer"
                         value={selectedRetail}
                         onChange={item => {
-                            setSelectedRetail(item);
+                            setSelectedRetail(item.Retailer_Id);
+                            setFormValues(prevState => ({
+                                ...prevState,
+                                Retailer_Id: item.Retailer_Id
+                            }));
                         }}
                         maxHeight={300}
                         search
@@ -79,14 +185,35 @@ const RetailerVisit = () => {
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
-                        value='hi'
-                        onChangeText={(text) => this.setState({ text })}
+                        value={formValues.narration}
+                        onChangeText={(text) => handleInputChange('narration', text)} // Ensure this is properly set
                     />
 
-                    <TouchableOpacity onPress={() => doLoginStuff()}
+                    <TouchableOpacity onPress={showAndHideCamera}
+                        style={styles.button}
+                    ><Text style={styles.buttonText}>Open Camera</Text></TouchableOpacity>
+
+                    {showCamera && (
+                        !capturedPhotoPath ? (
+                            <CameraComponent onPhotoCapture={handlePhotoCapture} showCamera={showCamera} />
+                        ) : (
+                            capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
+                                <View style={styles.previewImageContainer}>
+                                    <Image
+                                        source={{ uri: 'file://' + capturedPhotoPath }}
+                                        style={styles.previewImage}
+                                    />
+                                    <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
+                                        <Text style={styles.buttonText}>Retake Photo</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        )
+                    )}
+
+                    <TouchableOpacity onPress={handleSubmit}
                         style={styles.button}
                     ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
-
                 </View>
             }
 
@@ -94,45 +221,77 @@ const RetailerVisit = () => {
                 <View>
                     <TextInput
                         style={styles.inputBox}
-                        // value={formValues.Gstno}
-                        keyboardType='default'
-                        autoCapitalize='characters'
-                        placeholder='Retailer Name'
-                    // onChangeText={(text) => handleInputChange('Gstno', text)}
+                        value={formValues.Retailer_Name}
+                        keyboardType="default"
+                        autoCapitalize="characters"
+                        placeholder="Retailer Name"
+                        onChangeText={(text) => handleInputChange('Retailer_Name', text)}
                     />
 
                     <TextInput
                         style={styles.inputBox}
-                        // value={formValues.Gstno}
-                        keyboardType='default'
-                        autoCapitalize='characters'
-                        placeholder='Contact Person'
-                    // onChangeText={(text) => handleInputChange('Gstno', text)}
+                        value={formValues.Contact_Person}
+                        keyboardType="default"
+                        autoCapitalize="characters"
+                        placeholder="Contact Person"
+                        onChangeText={(text) => handleInputChange('Contact_Person', text)}
                     />
 
                     <TextInput
                         style={styles.inputBox}
-                        // value={formValues.Gstno}
-                        keyboardType='default'
-                        autoCapitalize='characters'
-                        placeholder='Mobile Number'
-                    // onChangeText={(text) => handleInputChange('Gstno', text)}
+                        value={formValues.Mobile_No}
+                        keyboardType="phone-pad"
+                        autoCapitalize="none"
+                        placeholder="Mobile Number"
+                        onChangeText={(text) => handleInputChange('Mobile_No', text)}
                     />
+
+                    <TextInput
+                        style={styles.inputBox}
+                        value={formValues.Location_Address}
+                        keyboardType="default"
+                        placeholder="Address"
+                        onChangeText={(text) => handleInputChange('Mobile_No', text)}
+                    />
+
                     <TextInput
                         style={styles.textArea}
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
-                        value='hi'
-                        onChangeText={(text) => this.setState({ text })}
+                        value={formValues.narration}
+                        onChangeText={(text) => handleInputChange('narration', text)} // Ensure this is properly set
                     />
-                    <TouchableOpacity onPress={() => doLoginStuff()}
+
+                    <TouchableOpacity onPress={showAndHideCamera}
+                        style={styles.button}
+                    ><Text style={styles.buttonText}>Open Camera</Text></TouchableOpacity>
+
+                    {showCamera && (
+                        !capturedPhotoPath ? (
+                            <CameraComponent onPhotoCapture={handlePhotoCapture} />
+                        ) : (
+                            capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
+                                <View style={styles.previewImageContainer}>
+                                    <Image
+                                        source={{ uri: 'file://' + capturedPhotoPath }}
+                                        style={styles.previewImage}
+                                    />
+                                    <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
+                                        <Text style={styles.buttonText}>Retake Photo</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        )
+                    )}
+
+                    <TouchableOpacity onPress={handleSubmit}
                         style={styles.button}
                     ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
                 </View>
             }
 
-        </View>
+        </ScrollView>
     )
 }
 
@@ -194,7 +353,20 @@ const styles = StyleSheet.create({
         padding: 10,
         fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 14,
-        fontWeight: '400'
+        fontWeight: '400',
+        marginBottom: 25,
+    },
+    previewImageContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    previewImage: {
+        width: 350,
+        height: 350,
+        resizeMode: 'cover',
+        borderRadius: 10,
     },
     button: {
         width: 150,
@@ -213,7 +385,12 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: customColors.white
     },
-
+    clearPhotoButton: {
+        marginTop: 20,
+        backgroundColor: 'red',
+        padding: 10,
+        borderRadius: 5,
+    },
     inputBox: {
         borderWidth: 1,
         marginHorizontal: 20,

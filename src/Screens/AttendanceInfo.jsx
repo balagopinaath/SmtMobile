@@ -83,12 +83,6 @@ const AttendanceInfo = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={customColors.white} size={20} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Attendance</Text>
-            </View>
 
             <View style={styles.card}>
                 <View style={styles.cardHeader}>
@@ -118,24 +112,7 @@ const AttendanceInfo = () => {
                         </View>
                         <Text style={styles.text}>{time}</Text>
                     </View>
-
-                    <View style={styles.cardItem}>
-                        <View style={styles.itemIcon}>
-                            <Icon name="clock-o" color={customColors.black} size={20} />
-                            <Text style={styles.text}>Day End</Text>
-                        </View>
-                        <Text style={styles.text}>-: -: -</Text>
-                    </View>
-
-                    <View style={styles.cardItem}>
-                        <View style={styles.itemIcon}>
-                            <Icon name="calendar-o" color={customColors.black} size={20} />
-                            <Text style={styles.text}>Time Out</Text>
-                        </View>
-                        <Text style={styles.text}>-: -: -</Text>
-                    </View>
                 </View>
-
 
                 <Button
                     disabled={Number(activeStatus) === Number(0)}
@@ -143,7 +120,6 @@ const AttendanceInfo = () => {
                     onPress={() => { navigation.navigate('EndDay') }}
                     title='End Day'
                 />
-
 
             </View>
         </View>
@@ -154,21 +130,8 @@ export default AttendanceInfo
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         backgroundColor: customColors.background,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: customColors.primary,
-    },
-    headerText: {
-        textAlign: 'center',
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 18,
-        color: customColors.white,
-        marginLeft: 15,
     },
     card: {
         width: 350,

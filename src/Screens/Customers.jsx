@@ -21,6 +21,19 @@ const Customers = () => {
         fetchAreas();
     }, []);
 
+    const fetchAreas = async () => {
+        try {
+            const response = await fetch(API.areas);
+            if (!response.ok) {
+                throw new Error(`API request failed with status: ${response.status}`);
+            }
+            const jsonData = await response.json();
+            setArea(jsonData.data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
     const fetchCustomersData = async () => {
         try {
             const response = await fetch(`${API.retailers}${1}`);
@@ -34,19 +47,6 @@ const Customers = () => {
             console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchAreas = async () => {
-        try {
-            const response = await fetch(API.areas);
-            if (!response.ok) {
-                throw new Error(`API request failed with status: ${response.status}`);
-            }
-            const jsonData = await response.json();
-            setArea(jsonData.data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
         }
     };
 
@@ -87,7 +87,7 @@ const Customers = () => {
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
+                    <CustomIcon name="angle-left" color={customColors.white} size={30} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Retailers</Text>
             </View>
@@ -107,6 +107,7 @@ const Customers = () => {
                             setSelectedRetailer(null);
                         }}
                         maxHeight={300}
+                        // disable={selectedRetailer !== null}
                         search
                         searchPlaceholder="Search areas"
                         style={styles.dropdown}
@@ -115,15 +116,23 @@ const Customers = () => {
                         inputSearchStyle={styles.inputSearchStyle}
                     />
                     <Dropdown
-                        data={filteredRetailers}
+                        data={[{ Retailer_Id: 'all', Retailer_Name: 'All Retailers' }, ...filteredRetailers]}
                         labelField="Retailer_Name"
                         valueField="Retailer_Id"
                         placeholder="Select retailer"
                         value={selectedRetailer ? selectedRetailer.Retailer_Id : null}
                         onChange={item => {
-                            setSelectedRetailer(item)
-                            filterDataBasedOnRetailer(item);
+                            if (item.Retailer_Id === 'all') {
+                                // If 'All Retailers' option is selected, reset the selected retailer
+                                setSelectedRetailer(null);
+                                // Set filtered data to all retailers' data
+                                setFilteredData(data)
+                            } else {
+                                setSelectedRetailer(item);
+                                filterDataBasedOnRetailer(item);
+                            }
                         }}
+                        // disable={selectedArea !== null}
                         maxHeight={300}
                         search
                         searchPlaceholder="Search retailers"
@@ -137,13 +146,10 @@ const Customers = () => {
                         {filteredData.map(item => (
                             <TouchableOpacity key={item.Retailer_Id} onPress={() => navigation.navigate('CustomersDetails', { item })}>
                                 <View style={styles.itemContainer}>
-                                    <Image
-                                        source={{ uri: item.imageUrl }}
-                                        style={styles.itemImage}
-                                    />
                                     <View style={{ flex: 1, }}>
                                         <Text style={styles.itemText}>{item.Retailer_Name}</Text>
                                         <Text style={styles.itemMobile}>{item.Mobile_No}</Text>
+                                        <Text style={styles.itemMobile}>{item.AreaGet}</Text>
                                     </View>
                                 </View>
                             </TouchableOpacity>

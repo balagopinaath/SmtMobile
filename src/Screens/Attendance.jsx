@@ -6,9 +6,11 @@ import CameraComponent from '../Components/CameraComponent';
 import Geolocation from '@react-native-community/geolocation'
 import { API } from '../Config/Endpoint';
 import { customColors, customFonts } from '../Config/helper';
+import LocationIndicator from '../Components/LocationIndicator';
 
 const Attendance = () => {
     const navigation = useNavigation();
+    const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [activeStatus, setActiveStatus] = useState(0)
     const [locationEnabled, setLocationEnabled] = useState(false);
     const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
@@ -17,8 +19,8 @@ const Attendance = () => {
     const [formValues, setFormValues] = useState({
         UserId: '',
         Start_KM: '',
-        Latitude: '',
-        Longitude: '',
+        Latitude: location.latitude,
+        Longitude: location.longitude,
         Start_KM_Pic: ''
     })
 
@@ -170,6 +172,8 @@ const Attendance = () => {
             <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>Attendance</Text>
             </View>
+
+            <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
 
             <View>
                 <TextInput

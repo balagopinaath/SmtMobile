@@ -30,8 +30,8 @@ const StockClosing = ({ route }) => {
         Product_Stock_List: []
     }
 
-    const [stockValues, setStockValues] = useState({});
-    const [stockInputValue, setStockInputValue] = useState(initialStockValue)
+    const [stockValues, setStockValues] = useState([]);
+    const [stockInputValue, setStockInputValue] = useState(initialStockValue.Product_Stock_List)
 
     useEffect(() => {
         (async () => {
@@ -45,7 +45,10 @@ const StockClosing = ({ route }) => {
 
         fetchGroupedproducts()
         fetchProductClosingStock(item.Retailer_Id)
-        updateInitialStockValue()
+        setStockInputValue({
+            ...initialStockValue,
+            Product_Stock_List: stockValues
+        });
     }, [stockValues])
 
     const fetchGroupedproducts = async () => {
@@ -91,29 +94,34 @@ const StockClosing = ({ route }) => {
         }
     };
 
-    const handleStockInputChange = (productId, value) => {
-        setStockValues(prevState => ({
-            ...prevState,
-            [productId]: value
-        }));
-        console.log(productId, value)
+    const getClosingStockDate = (productId) => {
+        if (!productClosingData || productClosingData.length === 0) {
+            return '';
+        }
+        const productData = productClosingData.find(item => Number(item.Item_Id) === Number(productId));
+        if (productData && productData.Cl_Date !== undefined) {
+            const date = new Date(productData.Cl_Date);
+            return date.toLocaleDateString(); // Format the date according to your preference
+        } else {
+            return 'N/A';
+        }
     };
 
-    const updateInitialStockValue = () => {
-        const productStockList = Object.keys(stockValues).map(productId => ({
-            Product_Id: productId,
-            Stock_Value: stockValues[productId]
-        }));
-
-        setStockInputValue(prevState => ({
-            ...prevState,
-            Product_Stock_List: productStockList
-        }));
+    const handleStockInputChange = (productId, value, date, previousStock) => {
+        const updatedStock = { Product_Id: productId, ST_Qty: value, PR_Qty: previousStock, LT_CL_Date: date };
+        setStockValues(prevValues => {
+            const index = prevValues.findIndex(item => item.Product_Id === productId);
+            if (index !== -1) {
+                const newValues = [...prevValues];
+                newValues[index] = updatedStock;
+                return newValues;
+            } else {
+                return [...prevValues, updatedStock];
+            }
+        });
     };
 
     const postClosingStock = async () => {
-        updateInitialStockValue();
-
         if (stockInputValue.Product_Stock_List.length > 0 && stockInputValue.Retailer_Id) {
             try {
                 const response = await fetch(API.closingStock, {
@@ -123,16 +131,21 @@ const StockClosing = ({ route }) => {
                     },
                     body: JSON.stringify(stockInputValue)
                 });
-                const data = await response.json();
 
-                if (data.success) {
-                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                        navigation.navigate('HomeScreen')
+                    } else {
+                        ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                    }
                 } else {
-                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                    throw new Error('Network response was not ok.');
                 }
             } catch (e) {
                 console.error(e);
-                ToastAndroid.show('Failed to post stock data', ToastAndroid.SHORT);
+                ToastAndroid.show('Failed to post stock data: ' + e.message, ToastAndroid.SHORT);
             }
         } else {
             ToastAndroid.show('Please enter at least one valid stock value', ToastAndroid.SHORT);
@@ -160,12 +173,21 @@ const StockClosing = ({ route }) => {
                                     <View style={{ marginLeft: 10 }}>
                                         <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
                                         <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
+                                        <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id)}</Text>
+                                        <Text style={styles.dateText}>Previous Stock: {getStockCount(product.Product_Id)}</Text>
                                         <TextInput
                                             style={styles.pagerViewContainerInputText}
-                                            // value={product.Product_Id}
-                                            placeholder={`Previous: ${getStockCount(product.Product_Id)}`}
+                                            // value={`${product.Product_Id}`}
+                                            placeholder="Enter the current value"
                                             keyboardType='number-pad'
-                                            onChangeText={(text) => handleStockInputChange(product.Product_Id, text)}
+                                            onChangeText={(text) =>
+                                                handleStockInputChange(
+                                                    product.Product_Id,
+                                                    text,
+                                                    getClosingStockDate(product.Product_Id),
+                                                    getStockCount(product.Product_Id)
+                                                )
+                                            }
                                         />
                                     </View>
                                 </View>

@@ -4,7 +4,7 @@ import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { customColors, customFonts } from '../Config/helper';
 
-const LocationIndicator = () => {
+const LocationIndicator = ({ onLocationUpdate }) => {
     const [currentLocation, setCurrentLocation] = useState(
         {
             'latitude': '',
@@ -13,7 +13,6 @@ const LocationIndicator = () => {
     )
     const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
     const [locationEnabled, setLocationEnabled] = useState(false);
-
     const [refresh, setRefresh] = useState(false);
     const [fetchButton, setFetchButton] = useState(true);
 
@@ -32,42 +31,25 @@ const LocationIndicator = () => {
                     setLocationEnabled(true);
                     const { latitude, longitude } = position.coords;
                     setCurrentLocation({ latitude, longitude });
+                    if (onLocationUpdate) {
+                        onLocationUpdate({ latitude, longitude });
+                    }
                 },
                 (error) => {
                     setLocationEnabled(false);
+                    console.error('Error getting location:', error);
                 }
             );
         };
-
-        const startWatchingPosition = () => {
-            const watchId = Geolocation.watchPosition(
-                newPosition => {
-                    const { latitude, longitude } = newPosition.coords;
-                    setCurrentLocation({ latitude, longitude });
-                },
-                error => {
-                    console.error('Error getting location:', error);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 } // Update interval in meters
-            );
-            return watchId;
-        };
-
-        const intervalId = setInterval(() => {
-            checkLocationStatus();
-        }, 5000); // Check location status every 5 seconds
 
         const initializeLocation = async () => {
             const granted = await checkPermission();
             if (granted) {
                 checkLocationStatus();
-                startWatchingPosition();
             } else {
                 Alert.alert('Location Permission', 'Location permission denied. App cannot function properly without it.');
             }
         };
-
-        initializeLocation()
 
         const getLocationPermission = async () => {
             try {
@@ -84,9 +66,10 @@ const LocationIndicator = () => {
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                     console.log('Location permission granted');
                     setLocationPermissionGranted(true);
-                    startWatchingPosition()
+                    checkLocationStatus(); // Call checkLocationStatus after permission is granted
                 } else {
                     console.log('Location permission denied');
+                    setLocationEnabled(false); // Update locationEnabled state if permission is denied
                     Alert.alert('Location Permission', 'Location permission denied. App cannot function properly without it.');
                 }
             } catch (err) {
@@ -94,15 +77,12 @@ const LocationIndicator = () => {
             }
         };
 
+        // Call getLocationPermission when locationPermissionGranted changes or refresh is triggered
+        if (!locationPermissionGranted || refresh) {
+            getLocationPermission();
+        }
 
-
-        return () => {
-            clearInterval(intervalId);
-        };
-
-
-
-    }, [locationPermissionGranted, refresh])
+    }, [locationPermissionGranted, refresh, onLocationUpdate]);
 
     const fetchEvent = () => {
         setFetchButton(!fetchButton);
@@ -111,6 +91,7 @@ const LocationIndicator = () => {
 
     const refreshLocation = () => {
         setCurrentLocation({ latitude: '', longitude: '' });
+        setLocationEnabled(false); // Reset locationEnabled when location is refreshed
     };
 
     return (
@@ -127,8 +108,11 @@ const LocationIndicator = () => {
                 </View>
             </View>
             <TouchableOpacity onPress={refreshLocation} style={styles.refreshButton}>
-                {/* <Icon name="refresh" color={customColors.black} size={25} /> */}
                 <Text style={styles.refreshButtonText}>Refresh Status</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={fetchEvent} style={styles.refreshButton}>
+                {/* <Icon name="refresh" color={customColors.black} size={25} /> */}
+                <Text style={styles.refreshButtonText}>Fetch Location</Text>
             </TouchableOpacity>
         </View>
     )

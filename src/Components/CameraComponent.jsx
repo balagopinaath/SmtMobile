@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Camera, useCameraDevice, useCameraPermission, } from 'react-native-vision-camera'
 import { customColors } from '../Config/helper'
 
-const CameraComponent = ({ onPhotoCapture }) => {
+const CameraComponent = ({ onPhotoCapture, showCamera }) => {
     const device = useCameraDevice('back');
     const camera = useRef(null);
     const { hasPermission, requestPermission } = useCameraPermission();
@@ -38,11 +38,11 @@ const CameraComponent = ({ onPhotoCapture }) => {
     if (!hasPermission || device == null) return (<ActivityIndicator />);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, showCamera && styles.fullScreen]}>
             <Camera
                 ref={camera}
                 photo={true}
-                style={[styles.cameraView]}
+                style={[styles.cameraView, showCamera && styles.fullScreen]}
                 device={device}
                 isActive={true}
             />
@@ -62,8 +62,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cameraView: {
-        flex: 1,
-        width: '90%',
+        width: '80%',
         aspectRatio: 1,
     },
     captureButton: {
@@ -80,5 +79,9 @@ const styles = StyleSheet.create({
     captureButtonText: {
         color: customColors.white,
         fontSize: 16,
+    },
+    fullScreen: {
+        width: '100%',
+        height: '100%',
     },
 })

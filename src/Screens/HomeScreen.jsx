@@ -1,41 +1,95 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Button } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import { customColors, customFonts } from '../Config/helper';
+import { API } from '../Config/Endpoint';
+import AttendanceInfo from './AttendanceInfo';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [name, setName] = useState('')
+    const [activeStatus, setActiveStatus] = useState(0)
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
 
     useEffect(() => {
         (async () => {
             try {
                 const userName = await AsyncStorage.getItem('Name');
+                const UserId = await AsyncStorage.getItem('UserId');
                 setName(userName)
+                getAttendanceHistory(UserId)
             } catch (err) {
                 console.log(err);
             }
         })();
     }, []);
 
+    const getAttendanceHistory = async (userId) => {
+        try {
+            const url = `${API.MyLastAttendance}${userId}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            const attendanceHistory = await response.json();
+
+            if (attendanceHistory.data.length > 0) {
+                // console.log('attendanceHistory', attendanceHistory)
+            }
+        } catch (error) {
+            console.log("Error fetching attendance data:", error);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={customColors.primary} />
+
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Icon name="menuunfold" color={customColors.white} size={20} />
+                    <Icon name="menuunfold" color={customColors.white} size={23} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Welcome, {name}!</Text>
             </View>
 
-            <View style={styles.ContainerAction}>
+            <AttendanceInfo />
 
-                <TouchableOpacity onPress={() => navigation.navigate('RetailerVisit')}>
-                    <Text>Call log</Text>
+            <View style={styles.functionalities}>
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Customers')}>
+                    <Icon name="team" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Retailers</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('AddCustomer')}>
+                    <Icon name="adduser" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Add Retailer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerVisit')}>
+                    <IconMaterial name="add-location-alt" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Visit Entry</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('AttendanceReport')}>
+                    <Icon name="filetext1" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Attendance Report</Text>
+                </TouchableOpacity>
+
+                {/* <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Attendance')}>
+                    <Icon name="database" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Attendance</Text>
+                </TouchableOpacity> */}
+
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerLog')}>
+                    <Icon name="filetext1" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Visited Report</Text>
+                </TouchableOpacity>
             </View>
 
         </View>
@@ -62,11 +116,32 @@ const styles = StyleSheet.create({
         color: customColors.white,
         marginLeft: 15,
     },
-    ContainerAction: {
-        marginHorizontal: 25,
-        marginVertical: 25,
-        justifyContent: 'center',
-        alignItems: 'center'
+    functionalities: {
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingVertical: 20,
+        borderWidth: 2.5,
+        borderColor: customColors.secondary,
+        borderRadius: 15,
+        margin: 15,
     },
+    functionality: {
+        width: '30%',
+        aspectRatio: 1,
+        alignItems: 'center',
+        paddingVertical: 25,
+        marginBottom: 20,
+    },
+    functionalityText: {
+        color: customColors.accent,
+        fontFamily: customFonts.plusJakartaSansSemiBold,
+        fontSize: 14.5,
+        fontWeight: '700',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+
 
 });
