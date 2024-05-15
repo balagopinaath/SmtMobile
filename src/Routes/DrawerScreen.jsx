@@ -32,7 +32,7 @@ const DrawerScreen = ({ navigation }) => {
             await AsyncStorage.removeItem('branchId');
             await AsyncStorage.removeItem('branchName');
             await AsyncStorage.removeItem('userTypeId');
-            ToastAndroid.show('Log out Successfully', ToastAndroid.SHORT);
+            ToastAndroid.show('Log out Successfully', ToastAndroid.LONG);
             navigation.navigate("LoginScreen");
         } catch (e) {
             console.error('Error clearing AsyncStorage:', e);
@@ -57,45 +57,36 @@ const DrawerScreen = ({ navigation }) => {
                 <Text style={styles.drawerText}>Home</Text>
             </TouchableOpacity>
 
-            {Number(userTypeId) === 6 &&
-                <View>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('Customers')} // Assuming "Customers" is correct screen name
-                    >
-                        <Icon name="team" size={20} color={customColors.black} />
-                        <Text style={styles.drawerText}>Retailers List</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('AddCustomer')}
-                    >
-                        <Icon name="adduser" size={20} color={customColors.black} />
-                        <Text style={styles.drawerText}>Add Retailers</Text>
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('AttendanceInfo')}
-                    >
-                        <Icon name="calendar" size={20} color={customColors.black} />
-                        <Text style={styles.drawerText}>Attendance</Text>
-                    </TouchableOpacity> */}
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('AttendanceReport')}
-                    >
-                        <Icon name="filetext1" size={20} color={customColors.black} />
-                        <Text style={styles.drawerText}>Attendance Report</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => navigation.navigate('RetailerLog')}
-                    >
-                        <Icon name="filetext1" size={20} color={customColors.black} />
-                        <Text style={styles.drawerText}>Visited Report</Text>
-                    </TouchableOpacity>
-                </View>
-            }
+            <View>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('Customers')} // Assuming "Customers" is correct screen name
+                >
+                    <Icon name="team" size={20} color={customColors.black} />
+                    <Text style={styles.drawerText}>Retailers List</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('AddCustomer')}
+                >
+                    <Icon name="adduser" size={20} color={customColors.black} />
+                    <Text style={styles.drawerText}>Add Retailers</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('AttendanceReport')}
+                >
+                    <Icon name="filetext1" size={20} color={customColors.black} />
+                    <Text style={styles.drawerText}>Attendance Report</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => navigation.navigate('RetailerLog')}
+                >
+                    <Icon name="filetext1" size={20} color={customColors.black} />
+                    <Text style={styles.drawerText}>Visited Report</Text>
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
                 style={[styles.drawerItem, { borderTopWidth: 1 }]}

@@ -1,4 +1,4 @@
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Button, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -135,20 +135,20 @@ const StockClosing = ({ route }) => {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
-                        ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                        ToastAndroid.show(data.message, ToastAndroid.LONG);
                         navigation.navigate('HomeScreen')
                     } else {
-                        ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                        ToastAndroid.show(data.message, ToastAndroid.LONG);
                     }
                 } else {
                     throw new Error('Network response was not ok.');
                 }
             } catch (e) {
                 console.error(e);
-                ToastAndroid.show('Failed to post stock data: ' + e.message, ToastAndroid.SHORT);
+                ToastAndroid.show('Failed to post stock data: ' + e.message, ToastAndroid.LONG);
             }
         } else {
-            ToastAndroid.show('Please enter at least one valid stock value', ToastAndroid.SHORT);
+            ToastAndroid.show('Please enter at least one valid stock value', ToastAndroid.LONG);
         }
     }
 
@@ -178,7 +178,7 @@ const StockClosing = ({ route }) => {
                                         <TextInput
                                             style={styles.pagerViewContainerInputText}
                                             // value={`${product.Product_Id}`}
-                                            placeholder="Enter the current value"
+                                            placeholder="Closing Stock Quantity"
                                             keyboardType='number-pad'
                                             onChangeText={(text) =>
                                                 handleStockInputChange(
@@ -228,13 +228,8 @@ const StockClosing = ({ route }) => {
     };
 
     return (
+
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={customColors.white} size={25} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Closing Stock Report</Text>
-            </View>
 
             <View style={styles.retailerInfo}>
                 <Text style={styles.retailerInfoText}>Retailer Name: {item.Retailer_Name}</Text>
@@ -278,7 +273,7 @@ const StockClosing = ({ route }) => {
                 </ScrollView>
                 <ScrollView>
                     <PagerView
-                        style={{ flex: 1, marginTop: 15 }}
+                        style={{ marginTop: 15 }}
                         initialPage={selectedTab}
                         ref={pagerRef}
                         onPageSelected={onPageSelected}
@@ -286,30 +281,28 @@ const StockClosing = ({ route }) => {
                         {tabs.map((tab, index) => (
                             <View key={index} style={{ flex: 1 }}>
                                 {tab.content}
+                                <View style={styles.narrationContainer}>
+                                    <TextInput
+                                        style={styles.narrationContainerInputText}
+                                        value={initialStockValue.Narration}
+                                        placeholder='Narration'
+                                    // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
+                                    />
+                                    <View style={styles.narrationContainerButtonGroup}>
+                                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                                            <Text style={{ color: customColors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={postClosingStock}>
+                                            <Text style={{ color: customColors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
                             </View>
                         ))}
                     </PagerView>
+
                 </ScrollView>
             </View>
-
-            <View style={styles.narrationContainer}>
-                <TextInput
-                    style={styles.narrationContainerInputText}
-                    value={initialStockValue.Narration}
-                    placeholder='Narration'
-                // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
-                />
-                <View style={styles.narrationContainerButtonGroup}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={{ color: customColors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={postClosingStock}>
-                        <Text style={{ color: customColors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
-                    </TouchableOpacity>
-                </View>
-
-            </View>
-
         </View>
     )
 }
@@ -387,12 +380,18 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         paddingBottom: 20,
     },
-    pagerViewContainerInputText: {
+    dateText: {
+        fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 14,
-        borderWidth: 1,
-        borderColor: customColors.white,
+    },
+    pagerViewContainerInputText: {
+        fontFamily: customFonts.plusJakartaSansSemiBold,
+        fontSize: 14,
+        borderWidth: 0.75,
+        borderColor: customColors.black,
         borderRadius: 5,
         padding: 5,
+        marginTop: 15,
         marginBottom: 20,
     },
     narrationContainer: {

@@ -79,7 +79,7 @@ const EndDay = () => {
 
             const responseData = await response.json();
             console.log('Response from server:', responseData);
-            ToastAndroid.show('Your attendance update successfully', ToastAndroid.SHORT);
+            ToastAndroid.show('Your attendance update successfully', ToastAndroid.LONG);
             navigation.navigate('HomeScreen')
 
         } catch (error) {
@@ -89,13 +89,6 @@ const EndDay = () => {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Close Attendance</Text>
-            </View>
-
             <View>
                 <TextInput
                     style={styles.input}
@@ -152,7 +145,7 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: customColors.white,
+        borderColor: customColors.text,
         borderRadius: 5,
         padding: 10,
         marginTop: 10,

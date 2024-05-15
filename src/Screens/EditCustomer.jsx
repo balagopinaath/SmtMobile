@@ -197,12 +197,6 @@ const EditCustomer = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Edit Retailer</Text>
-            </View>
 
             <ScrollView>
                 <View style={styles.TopContainer}>

@@ -1,8 +1,9 @@
-const baseURL = "http://shrifoodsapi.erpsmt.in/"
-// const baseURL = "http://192.168.1.2:9001/"
+// const baseURL = "http://shrifoodsapi.erpsmt.in/"
+const baseURL = "http://192.168.1.2:9001/"
 
 export const API = {
     login: baseURL + 'api/login',
+
     attendance: baseURL + 'api/attendance',
     MyLastAttendance: baseURL + 'api/getMyLastAttendance?UserId=',
     myTodayAttendance: baseURL + 'api/myTodayAttendance?UserId=',
@@ -21,6 +22,8 @@ export const API = {
     groupedProducts: baseURL + 'api/masters/products/grouped',
     productClosingStock: baseURL + 'api/masters/retailers/productClosingStock?Retailer_Id=',
     closingStock: baseURL + 'api/masters/retailers/closingStock',
+    closingStockReport: baseURL + 'api/masters/retailers/closingStock/myEntry?UserId=',
+    
     visitedLog: baseURL + 'api/visitedPlaces',
 
     google_map: 'https://www.google.com/maps/search/?api=1&query=',

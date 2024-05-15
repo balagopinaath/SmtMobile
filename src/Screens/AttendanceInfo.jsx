@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../Config/Endpoint';
 import { customColors, customFonts } from '../Config/helper';
+import CustomButton from '../Components/CustomButton';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();
@@ -30,35 +31,35 @@ const AttendanceInfo = () => {
         };
 
         loadUserDetails();
-    }, []);
+    }, [activeStatus]);
 
     useEffect(() => {
         if (userId) {
-            getAttendanceInfo(userId);
+            // getAttendanceInfo(userId);
             getAttendanceHistory(userId);
         }
     }, [userId]);
 
-    const getAttendanceInfo = async (userId) => {
-        try {
-            const url = `${API.myTodayAttendance}${userId}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            const attendanceStatus = await response.json();
-            if (attendanceStatus.data.length > 0) {
-                const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
-                const lastStartDate = lastAttendance.Start_Date;
-                const [datePart, timePart] = lastStartDate.split('T');
-                setActiveStatus(attendanceStatus.data[0].Active_Status)
-                setDate(datePart);
-                setTime(timePart.substring(0, 8));
-            }
-        } catch (error) {
-            console.log("Error fetching attendance data:", error);
-        }
-    };
+    // const getAttendanceInfo = async (userId) => {
+    //     try {
+    //         const url = `${API.myTodayAttendance}${userId}`;
+    //         const response = await fetch(url, {
+    //             method: 'GET',
+    //             headers: { 'Content-Type': 'application/json' },
+    //         });
+    //         const attendanceStatus = await response.json();
+    //         if (attendanceStatus.data.length > 0) {
+    //             const lastAttendance = attendanceStatus.data[attendanceStatus.data.length - 1];
+    //             const lastStartDate = lastAttendance.Start_Date;
+    //             const [datePart, timePart] = lastStartDate.split('T');
+    //             setActiveStatus(attendanceStatus.data[0].Active_Status)
+    //             setDate(datePart);
+    //             setTime(timePart.substring(0, 8));
+    //         }
+    //     } catch (error) {
+    //         console.log("Error fetching attendance data:", error);
+    //     }
+    // };
 
     const getAttendanceHistory = async (userId) => {
         try {
@@ -75,6 +76,12 @@ const AttendanceInfo = () => {
 
             if (attendanceHistory.data.length > 0) {
                 // console.log('attendanceHistory', attendanceHistory)
+                const lastAttendance = attendanceHistory.data[attendanceHistory.data.length - 1];
+                const lastStartDate = lastAttendance.Start_Date;
+                const [datePart, timePart] = lastStartDate.split('T');
+                setActiveStatus(attendanceHistory.data[0].Active_Status)
+                setDate(datePart);
+                setTime(timePart.substring(0, 8));
             }
         } catch (error) {
             console.log("Error fetching attendance data:", error);
@@ -82,20 +89,19 @@ const AttendanceInfo = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles.card}>
+            <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Today Attendance</Text>
 
-            <View style={styles.card}>
-                <View style={styles.cardHeader}>
-                    <Text style={styles.cardTitle}>Today Attendance</Text>
-                    <Button
-                        disabled={Number(activeStatus) === Number(1)}
-                        color={customColors.primary}
-                        onPress={() => { navigation.navigate('Attendance') }}
-                        title='Start Day'
-                    />
-                </View>
+                <Button
+                    disabled={Number(activeStatus) === Number(1)}
+                    color={customColors.primary}
+                    onPress={() => { navigation.navigate('Attendance') }}
+                    title='Start Day'
+                />
+            </View>
 
-                {/* Content */}
+            {activeStatus !== 0 && (
                 <View style={styles.cardContent}>
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
@@ -112,16 +118,17 @@ const AttendanceInfo = () => {
                         </View>
                         <Text style={styles.text}>{time}</Text>
                     </View>
+
+                    <Button
+                        color={customColors.primary}
+                        onPress={() => {
+                            navigation.navigate('EndDay');
+                            setActiveStatus(0);
+                        }}
+                        title='End Day'
+                    />
                 </View>
-
-                <Button
-                    disabled={Number(activeStatus) === Number(0)}
-                    color={customColors.primary}
-                    onPress={() => { navigation.navigate('EndDay') }}
-                    title='End Day'
-                />
-
-            </View>
+            )}
         </View>
     )
 }
@@ -129,10 +136,6 @@ const AttendanceInfo = () => {
 export default AttendanceInfo
 
 const styles = StyleSheet.create({
-    container: {
-        // flex: 1,
-        backgroundColor: customColors.background,
-    },
     card: {
         width: 350,
         backgroundColor: customColors.white,
@@ -160,6 +163,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     cardTitle: {
+        fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',

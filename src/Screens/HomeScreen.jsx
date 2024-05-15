@@ -67,10 +67,7 @@ const HomeScreen = () => {
                     <Icon name="team" size={35} color={customColors.accent} />
                     <Text style={styles.functionalityText}>Retailers</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('AddCustomer')}>
-                    <Icon name="adduser" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Add Retailer</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerVisit')}>
                     <IconMaterial name="add-location-alt" size={35} color={customColors.accent} />
                     <Text style={styles.functionalityText}>Visit Entry</Text>
@@ -81,10 +78,10 @@ const HomeScreen = () => {
                     <Text style={styles.functionalityText}>Attendance Report</Text>
                 </TouchableOpacity>
 
-                {/* <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Attendance')}>
-                    <Icon name="database" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Attendance</Text>
-                </TouchableOpacity> */}
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('StockInfo')}>
+                    <Icon name="checksquareo" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Previous Stock Report</Text>
+                </TouchableOpacity>
 
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerLog')}>
                     <Icon name="filetext1" size={35} color={customColors.accent} />

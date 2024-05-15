@@ -126,12 +126,6 @@ const CustomersDetails = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={customColors.white} size={25} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Details</Text>
-            </View>
 
             <View style={styles.retailersContainer}>
                 <View style={styles.retailersInner}>

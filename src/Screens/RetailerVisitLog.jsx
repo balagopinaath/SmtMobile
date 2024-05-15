@@ -22,8 +22,6 @@ const RetailerVisitLog = () => {
                 console.log(err);
             }
         })();
-
-
     }, [selectedDate])
 
     const fetchVisitersLog = async (fromDate, id) => {
@@ -59,12 +57,6 @@ const RetailerVisitLog = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={customColors.white} size={23} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Call Log Report</Text>
-            </View>
 
             <View style={styles.datePickerContainer}>
                 <View style={styles.datePickerWrapper}>
@@ -94,7 +86,7 @@ const RetailerVisitLog = () => {
                     <View key={index} style={styles.card}>
                         <View style={styles.textContainer}>
                             <Text style={styles.cardTitle}>{log.IsExistingRetailer === 0 ? 'New Retailer' : 'Existing Retailer'}</Text>
-                            <Text style={styles.cardTitle}>{log.Contact_Person}</Text>
+                            <Text style={styles.cardTitle}>{log.Reatailer_Name}</Text>
                             <Text style={styles.cardSubtitle}>{log.Contact_Mobile}</Text>
                             <Text style={styles.cardText}>{log.Location_Address}</Text>
                             <Text style={styles.cardText}>{log.Narration}</Text>

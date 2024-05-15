@@ -20,10 +20,3 @@ export const customColors = {
     accent: "#433bff",
     background: "#fbfbfe",
 }
-
-export const customIcons = {
-    mobileInput: <IconFromFontAwesome name="mobile-phone" size={25} color={customColors.accent} />,
-    updateLocation: <IconFromFontAwesome name="check" size={20} color={customColors.accent} />,
-
-    logout: <IconAntDesign name="logout" size={25} color={customColors.accent} />,
-}

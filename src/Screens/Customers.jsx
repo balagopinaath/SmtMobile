@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Image, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomIcon from 'react-native-vector-icons/FontAwesome';
@@ -15,6 +15,7 @@ const Customers = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [filteredRetailers, setFilteredRetailers] = useState([])
     const [selectedRetailer, setSelectedRetailer] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchCustomersData();
@@ -83,63 +84,85 @@ const Customers = () => {
         }
     };
 
+    useEffect(() => {
+        if (searchQuery.length > 0) {
+            const filtered = data.filter(item =>
+                item.Retailer_Name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredData(filtered);
+        } else {
+            // Revert to filtering based on dropdown selections if search is cleared
+            if (selectedRetailer) {
+                filterDataBasedOnRetailer(selectedRetailer);
+            } else if (selectedArea) {
+                const filtered = data.filter(r => r.Area_Id === selectedArea.Area_Id);
+                setFilteredData(filtered);
+            } else {
+                setFilteredData(data);
+            }
+        }
+    }, [searchQuery, data, selectedArea, selectedRetailer]);
+
     return (
         <View style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <CustomIcon name="angle-left" color={customColors.white} size={30} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Retailers</Text>
-            </View>
 
             {loading ? (
                 <ActivityIndicator style={styles.activityIndicator} size="large" color={customColors.primary} />
             ) : (
                 <>
-                    <Dropdown
-                        data={area}
-                        labelField="Area_Name"
-                        valueField="Area_Id"
-                        placeholder="Select area"
-                        value={selectedArea}
-                        onChange={item => {
-                            setSelectedArea(item);
-                            setSelectedRetailer(null);
-                        }}
-                        maxHeight={300}
-                        // disable={selectedRetailer !== null}
-                        search
-                        searchPlaceholder="Search areas"
-                        style={styles.dropdown}
-                        placeholderStyle={styles.placeholderStyle}
-                        selectedTextStyle={styles.selectedTextStyle}
-                        inputSearchStyle={styles.inputSearchStyle}
-                    />
-                    <Dropdown
-                        data={[{ Retailer_Id: 'all', Retailer_Name: 'All Retailers' }, ...filteredRetailers]}
-                        labelField="Retailer_Name"
-                        valueField="Retailer_Id"
-                        placeholder="Select retailer"
-                        value={selectedRetailer ? selectedRetailer.Retailer_Id : null}
-                        onChange={item => {
-                            if (item.Retailer_Id === 'all') {
-                                // If 'All Retailers' option is selected, reset the selected retailer
+                    <View style={styles.dropdownContainer}>
+                        <Dropdown
+                            data={area}
+                            labelField="Area_Name"
+                            valueField="Area_Id"
+                            placeholder="Select area"
+                            value={selectedArea}
+                            onChange={item => {
+                                setSelectedArea(item);
                                 setSelectedRetailer(null);
-                                // Set filtered data to all retailers' data
-                                setFilteredData(data)
-                            } else {
-                                setSelectedRetailer(item);
-                                filterDataBasedOnRetailer(item);
-                            }
-                        }}
-                        // disable={selectedArea !== null}
-                        maxHeight={300}
-                        search
-                        searchPlaceholder="Search retailers"
-                        style={styles.dropdown}
-                        placeholderStyle={styles.placeholderStyle}
-                        selectedTextStyle={styles.selectedTextStyle}
-                        inputSearchStyle={styles.inputSearchStyle}
+                            }}
+                            maxHeight={300}
+                            // disable={selectedRetailer !== null}
+                            search
+                            searchPlaceholder="Search areas"
+                            style={styles.dropdown}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            inputSearchStyle={styles.inputSearchStyle}
+                        />
+                        <Dropdown
+                            data={[{ Retailer_Id: 'all', Retailer_Name: 'All Retailers' }, ...filteredRetailers]}
+                            labelField="Retailer_Name"
+                            valueField="Retailer_Id"
+                            placeholder="Select retailer"
+                            value={selectedRetailer ? selectedRetailer.Retailer_Id : null}
+                            onChange={item => {
+                                if (item.Retailer_Id === 'all') {
+                                    // If 'All Retailers' option is selected, reset the selected retailer
+                                    setSelectedRetailer(null);
+                                    // Set filtered data to all retailers' data
+                                    setFilteredData(data)
+                                } else {
+                                    setSelectedRetailer(item);
+                                    filterDataBasedOnRetailer(item);
+                                }
+                            }}
+                            // disable={selectedArea !== null}
+                            maxHeight={300}
+                            search
+                            searchPlaceholder="Search retailers"
+                            style={styles.dropdown}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            inputSearchStyle={styles.inputSearchStyle}
+                        />
+                    </View>
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Search by retailer name"
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        returnKeyType="search"
                     />
                     <Text style={styles.headerRetail}>Retailers in Selected Area:</Text>
                     <ScrollView>
@@ -188,9 +211,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    dropdown: {
+    searchInput: {
+        fontSize: 16,
+        padding: 10,
+        margin: 15,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+    },
+    dropdownContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
         marginHorizontal: 20,
-        marginVertical: 10,
+        marginVertical: 20,
+    },
+    dropdown: {
+        width: '50%',
+        marginHorizontal: 15,
         height: 45,
         padding: 15,
         borderRadius: 10,

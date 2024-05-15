@@ -64,7 +64,7 @@ const LocationIndicator = ({ onLocationUpdate }) => {
                     },
                 );
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    console.log('Location permission granted');
+                    // console.log('Location permission granted');
                     setLocationPermissionGranted(true);
                     checkLocationStatus(); // Call checkLocationStatus after permission is granted
                 } else {
@@ -96,24 +96,28 @@ const LocationIndicator = ({ onLocationUpdate }) => {
 
     return (
         <View style={styles.card}>
-            <View style={styles.cardRow}>
-                <View style={locationPermissionGranted ? styles.active : styles.inActive}>
-                    <Text style={styles.text}>Permission</Text>
+            <Text style={styles.cardTitle}>Location Status</Text>
+            <View style={styles.cardContent}>
+                <View style={styles.row}>
+                    <View style={locationPermissionGranted ? styles.active : styles.inActive}>
+                        <Text style={styles.text}>Permission</Text>
+                    </View>
+                    <View style={locationEnabled ? styles.active : styles.inActive}>
+                        <Text style={styles.text}>Location</Text>
+                    </View>
+                    <View style={(currentLocation.latitude && currentLocation.longitude) ? styles.active : styles.inActive}>
+                        <Text style={styles.text}>Position</Text>
+                    </View>
                 </View>
-                <View style={locationEnabled ? styles.active : styles.inActive}>
-                    <Text style={styles.text}>Location</Text>
-                </View>
-                <View style={(currentLocation.latitude && currentLocation.longitude) ? styles.active : styles.inActive}>
-                    <Text style={styles.text}>Position</Text>
+                <View style={styles.buttonGroup}>
+                    <TouchableOpacity onPress={refreshLocation} style={styles.refreshButton}>
+                        <Text style={styles.refreshButtonText}>Refresh Status</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={fetchEvent} style={styles.refreshButton}>
+                        <Text style={styles.refreshButtonText}>Fetch Location</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity onPress={refreshLocation} style={styles.refreshButton}>
-                <Text style={styles.refreshButtonText}>Refresh Status</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={fetchEvent} style={styles.refreshButton}>
-                {/* <Icon name="refresh" color={customColors.black} size={25} /> */}
-                <Text style={styles.refreshButtonText}>Fetch Location</Text>
-            </TouchableOpacity>
         </View>
     )
 }
@@ -129,10 +133,26 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 20,
     },
-    cardRow: {
+    cardTitle: {
+        fontSize: 13,
+        fontFamily: customFonts.plusJakartaSansRegular,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        borderStyle: 'dashed',
+        paddingBottom: 5,
+    },
+    cardContent: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'stretch',
+    },
+    row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: 10,
     },
     active: {
         padding: 5,
@@ -152,20 +172,23 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: customColors.text,
     },
-    refreshButton: {
+    buttonGroup: {
         flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    refreshButton: {
         borderWidth: 0.5,
         padding: 5,
         borderColor: customColors.accent,
         borderRadius: 5,
-        marginLeft: 'auto',
-        marginHorizontal: 15,
-        marginTop: 15
+        marginHorizontal: 5,
+        marginTop: 10,
+        alignItems: 'center',
     },
     refreshButtonText: {
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 14,
         fontWeight: '500',
         color: customColors.text,
-    }
+    },
 })

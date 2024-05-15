@@ -89,7 +89,7 @@ const RetailerVisit = () => {
                 formData.append("Latitude", location.latitude);
                 formData.append("Longitude", location.longitude);
             }
-            formData.append("Narration", formValues.narration);
+            formData.append("Narration", formValues.Narration);
             formData.append("EntryBy", id);
         } else {
             formData.append("Reatailer_Name", formValues.Retailer_Name);
@@ -100,7 +100,7 @@ const RetailerVisit = () => {
                 formData.append("Latitude", location.latitude);
                 formData.append("Longitude", location.longitude);
             }
-            formData.append("narration", formValues.narration);
+            formData.append("Narration", formValues.Narration);
             formData.append("EntryBy", id);
         }
 
@@ -122,23 +122,17 @@ const RetailerVisit = () => {
         }).then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                    ToastAndroid.show(data.message, ToastAndroid.LONG);
                     navigation.navigate('HomeScreen')
                 }
             }).catch(error => {
-                ToastAndroid.show(error, ToastAndroid.SHORT);
+                ToastAndroid.show(error, ToastAndroid.LONG);
                 console.error('Error submitting form:', error);
             });
     };
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="angle-left" color={customColors.white} size={20} />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Log Info</Text>
-            </View>
 
             <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
 
@@ -185,8 +179,8 @@ const RetailerVisit = () => {
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
-                        value={formValues.narration}
-                        onChangeText={(text) => handleInputChange('narration', text)} // Ensure this is properly set
+                        value={formValues.Narration}
+                        onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
                     <TouchableOpacity onPress={showAndHideCamera}
@@ -251,7 +245,7 @@ const RetailerVisit = () => {
                         value={formValues.Location_Address}
                         keyboardType="default"
                         placeholder="Address"
-                        onChangeText={(text) => handleInputChange('Mobile_No', text)}
+                        onChangeText={(text) => handleInputChange('Location_Address', text)}
                     />
 
                     <TextInput
@@ -259,8 +253,8 @@ const RetailerVisit = () => {
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
-                        value={formValues.narration}
-                        onChangeText={(text) => handleInputChange('narration', text)} // Ensure this is properly set
+                        value={formValues.Narration}
+                        onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
                     <TouchableOpacity onPress={showAndHideCamera}

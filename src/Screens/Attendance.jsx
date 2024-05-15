@@ -1,4 +1,4 @@
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Alert, Image, PermissionsAndroid } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Alert, Image, PermissionsAndroid, ToastAndroid, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,7 +8,7 @@ import { API } from '../Config/Endpoint';
 import { customColors, customFonts } from '../Config/helper';
 import LocationIndicator from '../Components/LocationIndicator';
 
-const Attendance = () => {
+const Attendance = (locationData) => {
     const navigation = useNavigation();
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [activeStatus, setActiveStatus] = useState(0)
@@ -19,10 +19,11 @@ const Attendance = () => {
     const [formValues, setFormValues] = useState({
         UserId: '',
         Start_KM: '',
-        Latitude: location.latitude,
-        Longitude: location.longitude,
+        Latitude: locationData.latitude,
+        Longitude: locationData.longitude,
         Start_KM_Pic: ''
     })
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -35,90 +36,6 @@ const Attendance = () => {
         })();
     }, [])
 
-    useEffect(() => {
-        const checkPermission = async () => {
-            const granted = await PermissionsAndroid.check(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-            )
-            setLocationPermissionGranted(granted)
-            return granted
-        }
-
-        const checkLocationStatus = () => {
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    setLocationEnabled(true);
-                },
-                (error) => {
-                    setLocationEnabled(false);
-                }
-            );
-        };
-
-        const requestLocationPermission = async () => {
-            try {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                    {
-                        title: 'The Sales App needs your location permission',
-                        message: 'Sales app needs access to your location ',
-                        buttonNeutral: 'Ask Me Later',
-                        buttonNegative: 'Cancel',
-                        buttonPositive: 'OK',
-                    },
-                );
-                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                    setLocationPermissionGranted(true);
-                    startWatchingPosition();
-                } else {
-                    console.log('Location permission denied');
-                }
-            } catch (err) {
-                console.warn('Error requesting location permission:', err);
-            }
-        };
-
-        const startWatchingPosition = () => {
-            const id = Geolocation.watchPosition(
-                newPosition => {
-                    const { latitude, longitude } = newPosition.coords;
-                    setFormValues(prevState => ({
-                        ...prevState,
-                        Latitude: latitude.toString(),
-                        Longitude: longitude.toString(),
-                    }));
-                },
-                error => {
-                    console.error('Error getting location:', error);
-                },
-                { enableHighAccuracy: true, distanceFilter: 2 } // Update interval in meters
-            );
-            setWatchId(id);
-        };
-
-        const stopWatchingPosition = () => {
-            if (watchId) {
-                Geolocation.clearWatch(watchId);
-            }
-        };
-
-        checkPermission().then(granted => {
-            if (granted) {
-                checkLocationStatus()
-                requestLocationPermission()
-            } else {
-                requestLocationPermission();
-            }
-        }).catch(err => {
-            console.log(err)
-        })
-
-        return () => {
-            stopWatchingPosition(); // Make sure to stop watching when the component unmounts
-        };
-
-    }, [watchId])
-
     const handleInputChange = value => {
         setFormValues({ ...formValues, Start_KM: value });
     };
@@ -128,8 +45,18 @@ const Attendance = () => {
         setFormValues({ ...formValues, Start_KM_Pic: photoPath });
     };
 
+    const handleLocationUpdate = (locationData) => {
+        // Update latitude and longitude in formValues state
+        setFormValues(prevState => ({
+            ...prevState,
+            Latitude: locationData.latitude,
+            Longitude: locationData.longitude,
+        }));
+    };
+
     const handleSubmit = async () => {
         try {
+            setLoading(true);
             if (!formValues.Latitude || !formValues.Longitude) {
                 Alert.alert('Location Permission', 'Please enable location services.');
                 return;
@@ -138,8 +65,8 @@ const Attendance = () => {
             const formData = new FormData();
             formData.append('UserId', formValues.UserId);
             formData.append('Start_KM', formValues.Start_KM);
-            formData.append('Latitude', formValues.Latitude);
-            formData.append('Longitude', formValues.Longitude);
+            formData.append('Latitude', location.latitude);
+            formData.append('Longitude', location.longitude);
             formData.append("Start_KM_Pic", {
                 uri: `file://${formValues.Start_KM_Pic}`,
                 name: 'photo.jpg',
@@ -157,23 +84,27 @@ const Attendance = () => {
             if (!response.ok) {
                 throw new Error('Failed to post data to server');
             }
-
             const responseData = await response.json();
+            ToastAndroid.show(responseData.message, ToastAndroid.LONG);
             navigation.replace('HomeScreen');
-            console.log('Response from server:', responseData);
         } catch (error) {
             console.error('Error posting data:', error);
             Alert.alert('Error', 'Failed to submit data. Please try again later.');
+        } finally {
+            setLoading(false); // Set loading to false when form submission completes (either success or error)
         }
     };
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.headerText}>Attendance</Text>
-            </View>
 
-            <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={customColors.accent} />
+                </View>
+            )}
+
+            <LocationIndicator onLocationUpdate={handleLocationUpdate} />
 
             <View>
                 <TextInput
@@ -228,6 +159,16 @@ const styles = StyleSheet.create({
         color: customColors.white,
         fontSize: 15,
         marginLeft: 5,
+    },
+    loadingContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     input: {
         borderWidth: 1,
