@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import Icon from 'react-native-vector-icons/AntDesign';
+import { customColors } from '../Config/helper';
 
-const Accordion = ({ data }) => {
-    const navigation = useNavigation();
+const Accordion = ({ data, renderHeader, renderContent }) => {
     const [expanded, setExpanded] = useState(false);
 
     const toggleAccordion = (index) => {
@@ -14,24 +14,24 @@ const Accordion = ({ data }) => {
         }
     };
 
-    const navigateToRetailerInfo = (retailer) => {
-        navigation.navigate('CustomersDetails', { retailer });
-    };
-
     return (
         <ScrollView style={styles.container}>
-            {data.map((area, index) => (
-                <View key={index} style={styles.areaContainer}>
+            {data.map((item, index) => (
+                <View key={index} style={styles.itemContainer}>
                     <TouchableOpacity onPress={() => toggleAccordion(index)}>
-                        <Text style={styles.areaName}>{area.Area_Name}</Text>
+                        <View style={styles.headerContent}>
+                            {renderHeader(item)}
+                            <Icon
+                                name={expanded === index ? 'upcircleo' : 'circledowno'}
+                                size={20}
+                                color={customColors.black}
+                                style={styles.icon}
+                            />
+                        </View>
                     </TouchableOpacity>
                     {expanded === index && (
-                        <View style={styles.retailersContainer}>
-                            {area.Area_Retailers.map((retailer, retailerIndex) => (
-                                <TouchableOpacity key={retailerIndex} onPress={() => navigateToRetailerInfo(retailer)}>
-                                    <Text style={styles.retailerName}>{retailer.Retailer_Name}</Text>
-                                </TouchableOpacity>
-                            ))}
+                        <View style={styles.contentContainer}>
+                            {renderContent(item)}
                         </View>
                     )}
                 </View>
@@ -46,19 +46,21 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
     },
-    areaContainer: {
+    itemContainer: {
         marginBottom: 10,
         backgroundColor: '#e0e0e0',
         borderRadius: 5,
     },
-    areaName: {
-        padding: 10,
-        fontWeight: 'bold',
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
-    retailersContainer: {
+    contentContainer: {
         padding: 10,
     },
-    retailerName: {
+    icon: {
         marginLeft: 10,
     },
 })

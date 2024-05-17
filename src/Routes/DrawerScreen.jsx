@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign'; // Ensure you have linked this library
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { customColors, customFonts } from '../Config/helper';
+import { CommonActions, StackActions } from '@react-navigation/native';
 
 const DrawerScreen = ({ navigation }) => {
     const [name, setName] = useState('')
@@ -33,7 +34,12 @@ const DrawerScreen = ({ navigation }) => {
             await AsyncStorage.removeItem('branchName');
             await AsyncStorage.removeItem('userTypeId');
             ToastAndroid.show('Log out Successfully', ToastAndroid.LONG);
-            navigation.navigate("LoginScreen");
+
+            navigation.dispatch(CommonActions.reset({
+                index: 0,
+                routes: [{ name: 'LoginScreen' }],
+            }));
+            navigation.closeDrawer();
         } catch (e) {
             console.error('Error clearing AsyncStorage:', e);
         }
@@ -60,18 +66,18 @@ const DrawerScreen = ({ navigation }) => {
             <View>
                 <TouchableOpacity
                     style={styles.drawerItem}
-                    onPress={() => navigation.navigate('Customers')} // Assuming "Customers" is correct screen name
+                    onPress={() => navigation.navigate('Customers')}
                 >
                     <Icon name="team" size={20} color={customColors.black} />
                     <Text style={styles.drawerText}>Retailers List</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.drawerItem}
                     onPress={() => navigation.navigate('AddCustomer')}
                 >
                     <Icon name="adduser" size={20} color={customColors.black} />
                     <Text style={styles.drawerText}>Add Retailers</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                     style={styles.drawerItem}
                     onPress={() => navigation.navigate('AttendanceReport')}

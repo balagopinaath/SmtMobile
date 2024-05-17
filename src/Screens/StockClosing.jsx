@@ -1,135 +1,155 @@
 import { Button, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Icon from 'react-native-vector-icons/FontAwesome'
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../Config/Endpoint';
 import { customColors, customFonts } from '../Config/helper';
+import CustomButton from '../Components/CustomButton';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
-    const { item } = route.params;
-    const [stockDate, setStockDate] = useState(new Date());
-    const [show, setShow] = useState(false);
+    const { item, isEdit } = route.params;
     const pagerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
     const [productClosingData, setProductClosingData] = useState([])
-    const [tabs, setTabs] = useState([]);
-    const [userNameId, setUserNameId] = useState('')
 
     const initialStockValue = {
-        Company_Id: 1,
+        Company_Id: item.Company_Id,
         ST_Date: new Date().toISOString().split('T')[0],
         Retailer_Id: item.Retailer_Id,
         Retailer_Name: item.Retailer_Name,
         Narration: '',
-        Created_by: userNameId,
-        Product_Stock_List: []
+        Created_by: '',
+        Product_Stock_List: [],
+        ST_Id: ''
     }
 
-    const [stockValues, setStockValues] = useState([]);
-    const [stockInputValue, setStockInputValue] = useState(initialStockValue.Product_Stock_List)
+    const [stockInputValue, setStockInputValue] = useState(initialStockValue)
+    const [closingStockValues, setClosingStockValues] = useState([]);
+    // const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
         (async () => {
             try {
-                const UserId = await AsyncStorage.getItem('UserId');
-                setUserNameId(UserId)
+                const userId = await AsyncStorage.getItem('UserId');
+                setStockInputValue(prev => ({
+                    ...prev,
+                    Created_by: userId
+                }));
             } catch (err) {
                 console.log(err);
             }
         })();
 
-        fetchGroupedproducts()
+        fetchGroupedproducts(item.Company_Id)
         fetchProductClosingStock(item.Retailer_Id)
-        setStockInputValue({
-            ...initialStockValue,
-            Product_Stock_List: stockValues
-        });
-    }, [stockValues])
+    }, [stockInputValue.ST_Date, stockInputValue.Retailer_Id])
 
-    const fetchGroupedproducts = async () => {
-        try {
-            const response = await fetch(
-                API.groupedProducts
-            );
-            const jsonData = await response.json();
-
-            if (jsonData.data) {
-                // console.log(jsonData)
-                setProductData(jsonData);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
+    useEffect(() => {
+        if (isEdit) {
+            setClosingStockValues(item.ProductCount.map(product => ({
+                Product_Id: product.Item_Id,
+                ST_Qty: product.ST_Qty,
+                PR_Qty: product.PR_Qty,
+                LT_CL_Date: product.LT_CL_Date,
+            })));
+            setStockInputValue({
+                ...stockInputValue,
+                ST_Id: item.ST_Id,
+                Company_Id: item.Company_Id,
+                ST_Date: item.ST_Date,
+                Retailer_Id: item.Retailer_Id,
+                Narration: item.Narration,
+                Created_by: item.Created_by,
+            });
         }
+    }, [isEdit, item]);
+
+    const fetchGroupedproducts = async (company) => {
+        fetch(`${API.groupedProducts}${company}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setProductData(data.data)
+                }
+            }).catch(e => console.error(e))
     };
 
     const fetchProductClosingStock = async (Retailer_Id) => {
-        try {
-            const response = await fetch(
-                `${API.productClosingStock}${Retailer_Id}`
-            );
-            const jsonData = await response.json();
-
-            if (jsonData.data) {
-                setProductClosingData(jsonData.data)
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+        fetch(`${API.productClosingStock}${Retailer_Id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setProductClosingData(data.data)
+                }
+            }).catch(e => console.error(e))
     };
 
     const getStockCount = (productId) => {
-        if (!productClosingData || productClosingData.length === 0) {
-            return '';
-        }
         const mergedData = productClosingData.filter(item => Number(item.Item_Id) === Number(productId));
         if (mergedData.length > 0 && mergedData[0].Previous_Balance !== undefined) {
-            return `${mergedData[0].Previous_Balance}`;
+            return mergedData[0].Previous_Balance;
         } else {
-            return 'N/A';
+            return 0;
         }
     };
 
     const getClosingStockDate = (productId) => {
-        if (!productClosingData || productClosingData.length === 0) {
-            return '';
-        }
-        const productData = productClosingData.find(item => Number(item.Item_Id) === Number(productId));
-        if (productData && productData.Cl_Date !== undefined) {
-            const date = new Date(productData.Cl_Date);
-            return date.toLocaleDateString(); // Format the date according to your preference
+        const productDataItem = productClosingData.find(item => Number(item.Item_Id) === Number(productId));
+        if (productDataItem && productDataItem.Cl_Date) {
+            const date = new Date(productDataItem.Cl_Date);
+            return date;
         } else {
-            return 'N/A';
+            return new Date();
         }
     };
 
     const handleStockInputChange = (productId, value, date, previousStock) => {
-        const updatedStock = { Product_Id: productId, ST_Qty: value, PR_Qty: previousStock, LT_CL_Date: date };
-        setStockValues(prevValues => {
-            const index = prevValues.findIndex(item => item.Product_Id === productId);
-            if (index !== -1) {
-                const newValues = [...prevValues];
-                newValues[index] = updatedStock;
-                return newValues;
-            } else {
-                return [...prevValues, updatedStock];
-            }
-        });
+        const updatedStockIndex = closingStockValues.findIndex(item => Number(item.Product_Id) === Number(productId))
+
+        if (updatedStockIndex !== -1) {
+            const updatedValues = [...closingStockValues];
+            updatedValues[updatedStockIndex] = {
+                ...updatedValues[updatedStockIndex],
+                ST_Qty: Number(value),
+                PR_Qty: previousStock,
+                LT_CL_Date: date,
+            };
+
+            setClosingStockValues(updatedValues);
+        } else {
+            setClosingStockValues(prevValues => [...prevValues, {
+                Product_Id: Number(productId),
+                ST_Qty: Number(value),
+                PR_Qty: previousStock,
+                LT_CL_Date: date,
+            }]);
+        }
+    };
+
+    const handleTabPress = (index) => {
+        setSelectedTab(index);
+        pagerRef.current.setPage(index); // Set the currently visible page in the PagerView
+    };
+
+    const onPageSelected = (e) => {
+        setSelectedTab(e.nativeEvent.position); // Update the selectedTab state when page is selected
     };
 
     const postClosingStock = async () => {
-        if (stockInputValue.Product_Stock_List.length > 0 && stockInputValue.Retailer_Id) {
+        if (closingStockValues.length > 0 && stockInputValue.Retailer_Id) {
             try {
                 const response = await fetch(API.closingStock, {
-                    method: 'POST',
+                    method: isEdit ? 'PUT' : 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(stockInputValue)
+                    body: JSON.stringify({
+                        ...stockInputValue,
+                        Product_Stock_List: closingStockValues
+                    })
                 });
 
                 if (response.ok) {
@@ -152,122 +172,42 @@ const StockClosing = ({ route }) => {
         }
     }
 
-    useEffect(() => {
-        if (productData && productData.data && productData.data.length > 0) {
-            const newTabs = productData.data.map(item => ({
-                title: item.Pro_Group,
-                content: (
-                    <View>
-                        {item.GroupedProductArray.map(product => (
-                            <View key={`${product.Product_Id}_name`} style={styles.pagerViewContainer}>
-                                <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
-                                    <Image
-                                        style={{
-                                            width: 125,
-                                            height: 125,
-                                        }}
-                                        source={{
-                                            uri: product.productImageUrl,
-                                        }}
-                                    />
-                                    <View style={{ marginLeft: 10 }}>
-                                        <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                        <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
-                                        <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id)}</Text>
-                                        <Text style={styles.dateText}>Previous Stock: {getStockCount(product.Product_Id)}</Text>
-                                        <TextInput
-                                            style={styles.pagerViewContainerInputText}
-                                            // value={`${product.Product_Id}`}
-                                            placeholder="Closing Stock Quantity"
-                                            keyboardType='number-pad'
-                                            onChangeText={(text) =>
-                                                handleStockInputChange(
-                                                    product.Product_Id,
-                                                    text,
-                                                    getClosingStockDate(product.Product_Id),
-                                                    getStockCount(product.Product_Id)
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                </View>
-
-                                <View
-                                    style={{
-                                        flex: 0.5,
-                                        borderBottomColor: 'black',
-                                        borderBottomWidth: 1,
-                                    }}
-                                />
-                            </View>
-                        ))}
-                    </View>
-                )
-            }));
-            setTabs(newTabs);
-        }
-    }, [productData]);
-
-    const handleTabPress = (index) => {
-        setSelectedTab(index);
-        pagerRef.current.setPage(index); // Set the currently visible page in the PagerView
-    };
-
-    const onPageSelected = (e) => {
-        setSelectedTab(e.nativeEvent.position); // Update the selectedTab state when page is selected
-    };
-
-    const selectDateFn = (event, selectedDate) => {
-        const currentDate = selectedDate || stockDate;
-        setShow(Platform.OS === 'ios');
-        setStockDate(currentDate);
-    };
-
-    const showDatePicker = () => {
-        setShow(true);
-    };
-
     return (
-
         <View style={styles.container}>
-
             <View style={styles.retailerInfo}>
-                <Text style={styles.retailerInfoText}>Retailer Name: {item.Retailer_Name}</Text>
+                <Text style={styles.retailerLabel}>Retailer Name: {item.Retailer_Name}</Text>
             </View>
 
-            <View style={styles.inputContainer}>
-                <TouchableOpacity onPress={showDatePicker} style={styles.datePicker}>
-                    <TextInput
-                        style={styles.textInput}
-                        value={stockDate.toDateString()}
-                        editable={false}
-                    />
-                    <Icon name="calendar" color="red" size={20} />
-                </TouchableOpacity>
-
-                {show && (
-                    <DateTimePicker
-                        value={stockDate}
-                        onChange={selectDateFn}
-                        mode="date"
-                        // minimumDate={minimumDate}
-                        // maximumDate={todayDate}
-                        timeZoneOffsetInMinutes={0}
-                        style={{ flex: 1 }}
-                        testID="dateTimePicker"
-                    />
-                )}
+            <View style={styles.narrationContainer}>
+                <TextInput
+                    style={styles.narrationContainerInputText}
+                    placeholder='Narration'
+                    onChangeText={(text) =>
+                        setStockInputValue({
+                            ...stockInputValue,
+                            Narration: text,
+                        })
+                    }
+                />
+                <View style={styles.narrationContainerButtonGroup}>
+                    <CustomButton onPress={() => navigation.goBack()}>Cancel</CustomButton>
+                    <CustomButton onPress={postClosingStock}>Update</CustomButton>
+                </View>
             </View>
 
             <View style={{ flex: 1 }}>
                 <ScrollView horizontal contentContainerStyle={styles.tabContainer} showsHorizontalScrollIndicator={true}>
-                    {tabs.map((tab, index) => (
+                    {productData.map((item, index) => (
                         <TouchableOpacity
                             key={index}
-                            style={[styles.tabButton, selectedTab === index && styles.activeTab]}
-                            onPress={() => handleTabPress(index)}
+                            style={[
+                                styles.tabButton,
+                                selectedTab === index
+                                && styles.activeTab
+                            ]}
+                            onPress={() => { handleTabPress(index) }}
                         >
-                            <Text>{tab.title}</Text>
+                            <Text>{item.Pro_Group}</Text>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
@@ -278,27 +218,58 @@ const StockClosing = ({ route }) => {
                         ref={pagerRef}
                         onPageSelected={onPageSelected}
                     >
-                        {tabs.map((tab, index) => (
-                            <View key={index} style={{ flex: 1 }}>
-                                {tab.content}
-                                <View style={styles.narrationContainer}>
-                                    <TextInput
-                                        style={styles.narrationContainerInputText}
-                                        value={initialStockValue.Narration}
-                                        placeholder='Narration'
-                                    // onChangeText={(text) => handleInputChange('Retailer_Name', text)}
-                                    />
-                                    <View style={styles.narrationContainerButtonGroup}>
-                                        <TouchableOpacity onPress={() => navigation.goBack()}>
-                                            <Text style={{ color: customColors.black, fontSize: 14, fontWeight: '500', }}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={postClosingStock}>
-                                            <Text style={{ color: customColors.accent, fontSize: 14, fontWeight: '500', marginLeft: 20 }}>Update</Text>
-                                        </TouchableOpacity>
+                        {productData?.map((item, index) => (
+                            <View key={index}>
+                                {item.GroupedProductArray.map((product, pIndex) => (
+                                    <View key={pIndex} style={styles.pagerViewContainer}>
+                                        <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                                            <Image
+                                                style={{
+                                                    width: 125,
+                                                    height: 125,
+                                                    borderRadius: 8,
+                                                    marginRight: 10,
+                                                }}
+                                                source={{
+                                                    uri: product.productImageUrl,
+                                                }}
+                                            />
+                                            <View style={styles.card}>
+                                                <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
+                                                <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
+                                                <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
+                                                <Text style={styles.dateText}>Previous Stock: {getStockCount(product.Product_Id)}</Text>
+                                                <TextInput
+                                                    style={styles.pagerViewContainerInputText}
+                                                    // value={`${product.Product_Id}`}
+                                                    onChangeText={(text) =>
+                                                        handleStockInputChange(
+                                                            product.Product_Id,
+                                                            text,
+                                                            getClosingStockDate(product.Product_Id),
+                                                            getStockCount(product.Product_Id)
+                                                        )
+                                                    }
+                                                    value={
+                                                        (closingStockValues.find(
+                                                            (ooo) =>
+                                                                Number(ooo?.Product_Id) ===
+                                                                Number(product?.Product_Id)
+                                                        )?.ST_Qty
+                                                            || '').toString()
+                                                    }
+                                                    placeholder="Closing Stock Quantity"
+                                                    keyboardType='number-pad'
+
+                                                />
+                                            </View>
+                                        </View>
                                     </View>
-                                </View>
+                                ))}
+
                             </View>
                         ))}
+
                     </PagerView>
 
                 </ScrollView>
@@ -315,51 +286,44 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: customColors.background,
     },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        backgroundColor: customColors.primary,
-    },
-    headerText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
-        color: customColors.white,
-        marginLeft: 15
-    },
     retailerInfo: {
-        paddingTop: 15,
-        paddingHorizontal: 20,
-    },
-    retailerInfoText: {
-        fontSize: 14,
-        fontWeight: '600'
-    },
-    inputContainer: {
-        flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
-        marginVertical: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: 'lightgray',
+        marginVertical: 15,
     },
-    datePicker: {
+    retailerLabel: {
+        fontFamily: customFonts.plusJakartaSansBold,
+        fontSize: 15,
+        color: customColors.accent,
+        fontWeight: '500',
+    },
+    narrationContainer: {
+        marginHorizontal: 20,
+        marginVertical: 10,
+    },
+    narrationContainerInputText: {
+        color: customColors.text,
+        fontFamily: customFonts.plusJakartaSansRegular,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: '#a1a1a1',
+        borderRadius: 8,
+        padding: 12,
+        marginHorizontal: 'auto',
+    },
+    narrationContainerButtonGroup: {
         flexDirection: 'row',
-    },
-    textInput: {
-        flex: 1,
-        height: 40,
-        paddingHorizontal: 10,
+        justifyContent: 'flex-end',
+        marginVertical: 15,
     },
     tabContainer: {
         flexDirection: 'row',
-        backgroundColor: 'lightgray',
+        backgroundColor: '#f0f0f0',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
     tabButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 20,
         borderBottomWidth: 2,
         borderBottomColor: 'transparent',
     },
@@ -367,50 +331,49 @@ const styles = StyleSheet.create({
         borderBottomColor: 'blue',
     },
     pagerViewContainer: {
+        backgroundColor: customColors.white,
         paddingHorizontal: 15,
-        paddingVertical: 10
+        paddingVertical: 10,
+        borderRadius: 10,
+        margin: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 5,
+    },
+    card: {
+        flex: 1,
+        padding: 10,
     },
     pagerViewContainerText: {
+        fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 14,
-        fontWeight: '600',
-        paddingBottom: 5
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 4,
     },
     pagerViewContainerSubText: {
+        fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 12,
+        color: '#666',
         fontWeight: '500',
-        paddingBottom: 20,
+        marginBottom: 10,
     },
     dateText: {
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 14,
+        color: '#444',
+        marginBottom: 4,
     },
     pagerViewContainerInputText: {
         fontFamily: customFonts.plusJakartaSansSemiBold,
         fontSize: 14,
-        borderWidth: 0.75,
-        borderColor: customColors.black,
-        borderRadius: 5,
-        padding: 5,
-        marginTop: 15,
-        marginBottom: 20,
-    },
-    narrationContainer: {
-        backgroundColor: '#E2E3E6'
-    },
-    narrationContainerInputText: {
-        fontSize: 14,
+        padding: 8,
         borderWidth: 1,
-        borderColor: customColors.white,
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 20,
-        marginTop: 20,
-        marginHorizontal: 20
+        borderColor: '#ccc',
+        borderRadius: 4,
+        marginTop: 5,
     },
-    narrationContainerButtonGroup: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginRight: 25,
-        marginBottom: 20
-    }
+
 })

@@ -9,7 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AttendanceReport = () => {
     const navigation = useNavigation();
-    const [userId, setUserId] = useState(null)
     const [attendanceData, setAttendanceData] = useState(null)
 
     const [show, setShow] = useState(false);
@@ -21,16 +20,12 @@ const AttendanceReport = () => {
         (async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
-                setUserId(userId)
+                fetchAttendance(selectedFromDate.toISOString(), selectedToDate.toISOString(), userId);
             } catch (err) {
                 console.log(err);
             }
         })();
-    }, [])
-
-    useEffect(() => {
-        fetchAttendance(selectedFromDate.toISOString(), selectedToDate.toISOString(), userId);
-    }, [selectedFromDate, selectedToDate]);
+    }, [selectedFromDate, selectedToDate])
 
     const selectDateFn = (event, selectedDate) => {
         setShow(Platform.OS === 'ios');
@@ -53,7 +48,6 @@ const AttendanceReport = () => {
         setShow(true);
         setIsSelectingFromDate(isFrom); // Set the flag to determine if selecting "From" or "To" date
     };
-
 
     const fetchAttendance = async (fromDay, toDay, id) => {
         try {
@@ -114,13 +108,12 @@ const AttendanceReport = () => {
                 )}
             </View>
 
-
             <ScrollView style={styles.cardContainer}>
                 {attendanceData && attendanceData.map((log, index) => (
                     <View key={index} style={styles.card}>
                         <View style={styles.textContainer}>
                             <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Serial Number:</Text>
+                                <Text style={styles.label}>Attendance:</Text>
                                 <Text style={styles.cardTitle}>{index + 1}</Text>
                             </View>
 
@@ -129,12 +122,31 @@ const AttendanceReport = () => {
                                 <Text style={styles.cardTitle}>{log.Start_KM}</Text>
                             </View>
                             <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Start Date:</Text>
+                                <Text style={styles.label}>Date:</Text>
                                 <Text style={styles.cardTitle}>{new Date(log.Start_Date).toISOString().substring(0, 10)}</Text>
                             </View>
                             <View style={styles.rowContainer}>
                                 <Text style={styles.label}>Start Time:</Text>
                                 <Text style={styles.cardTitle}>{new Date(log.Start_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>
+                            </View>
+
+                            <View style={styles.rowContainer}>
+                                <Text style={styles.label}>End Time:</Text>
+                                {log.End_Date ?
+                                    <Text style={styles.cardTitle}>
+                                        {new Date(log.End_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                    </Text> :
+                                    <Text style={styles.cardTitle}>Not Set</Text>
+                                }
+                            </View>
+
+                            <View style={styles.rowContainer}>
+                                <Text style={styles.label}>End KM:</Text>
+                                {log.End_KM ?
+                                    <Text style={styles.cardTitle}>{log.End_KM}</Text> :
+                                    <Text style={styles.cardTitle}>Not Set</Text>
+                                }
+
                             </View>
 
                         </View>

@@ -19,7 +19,7 @@ export const API = {
     state: baseURL + 'api/masters/state',
     distributors: baseURL + 'api/masters/distributors',
 
-    groupedProducts: baseURL + 'api/masters/products/grouped',
+    groupedProducts: baseURL + 'api/masters/products/grouped?Company_Id=',
     productClosingStock: baseURL + 'api/masters/retailers/productClosingStock?Retailer_Id=',
     closingStock: baseURL + 'api/masters/retailers/closingStock',
     closingStockReport: baseURL + 'api/masters/retailers/closingStock/myEntry?UserId=',

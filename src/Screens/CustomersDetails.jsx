@@ -14,7 +14,6 @@ const { width } = Dimensions.get('window');
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
-
     const latitude = item.Latitude;
     const longitude = item.Longitude;
     const phoneNumber = item.Mobile_No;
