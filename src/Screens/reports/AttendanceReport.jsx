@@ -1,14 +1,12 @@
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { customColors, customFonts } from '../Config/helper';
-import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../../Config/helper';
+import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AttendanceReport = () => {
-    const navigation = useNavigation();
     const [attendanceData, setAttendanceData] = useState(null)
 
     const [show, setShow] = useState(false);
@@ -46,7 +44,7 @@ const AttendanceReport = () => {
 
     const showDatePicker = (isFrom) => {
         setShow(true);
-        setIsSelectingFromDate(isFrom); // Set the flag to determine if selecting "From" or "To" date
+        setIsSelectingFromDate(isFrom);
     };
 
     const fetchAttendance = async (fromDay, toDay, id) => {

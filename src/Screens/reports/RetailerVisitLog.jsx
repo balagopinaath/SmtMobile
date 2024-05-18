@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { customColors, customFonts } from '../Config/helper';
-import { API } from '../Config/Endpoint';
+import { customColors, customFonts } from '../../Config/helper';
+import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RetailerVisitLog = () => {

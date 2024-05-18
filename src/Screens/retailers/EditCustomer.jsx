@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native'
 import CustomIcon from 'react-native-vector-icons/FontAwesome';
-import CameraComponent from '../Components/CameraComponent';
-import { API } from '../Config/Endpoint';
-import { customColors, customFonts } from '../Config/helper';
+import CameraComponent from '../../Components/CameraComponent';
+import { API } from '../../Config/Endpoint';
+import { customColors, customFonts } from '../../Config/helper';
 
 const EditCustomer = ({ route }) => {
     const { item } = route.params;

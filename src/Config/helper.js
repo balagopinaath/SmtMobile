@@ -1,6 +1,3 @@
-import IconAntDesign from 'react-native-vector-icons/AntDesign';
-import IconFromFontAwesome from 'react-native-vector-icons/FontAwesome';
-
 export const customFonts = {
     plusJakartaSansBold: "PlusJakartaSans-Bold",
     plusJakartaSansExtraBold: "PlusJakartaSans-ExtraBold",

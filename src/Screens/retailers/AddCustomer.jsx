@@ -4,8 +4,8 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation'
-import { API } from '../Config/Endpoint';
-import { customColors, customFonts } from '../Config/helper';
+import { API } from '../../Config/Endpoint';
+import { customColors, customFonts } from '../../Config/helper';
 
 const AddCustomer = () => {
     const navigation = useNavigation();

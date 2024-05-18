@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { API } from '../Config/Endpoint';
-import { customColors, customFonts } from '../Config/helper';
-import CustomButton from '../Components/CustomButton';
+import { API } from '../../Config/Endpoint';
+import { customColors, customFonts } from '../../Config/helper';
+import CustomButton from '../../Components/CustomButton';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();

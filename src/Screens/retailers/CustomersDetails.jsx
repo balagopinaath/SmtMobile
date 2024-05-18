@@ -6,8 +6,8 @@ import { useNavigation } from '@react-navigation/native'
 import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import CustomAntIcon from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { API } from '../Config/Endpoint';
-import { customFonts, customColors } from '../Config/helper';
+import { API } from '../../Config/Endpoint';
+import { customFonts, customColors } from '../../Config/helper';
 
 const { width } = Dimensions.get('window');
 

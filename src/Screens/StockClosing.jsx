@@ -28,7 +28,6 @@ const StockClosing = ({ route }) => {
 
     const [stockInputValue, setStockInputValue] = useState(initialStockValue)
     const [closingStockValues, setClosingStockValues] = useState([]);
-    // const [isEdit, setIsEdit] = useState(false);
 
     useEffect(() => {
         (async () => {

@@ -6,15 +6,12 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import { customColors, customFonts } from '../Config/helper';
 import { API } from '../Config/Endpoint';
-import AttendanceInfo from './AttendanceInfo';
+import AttendanceInfo from './attendance/AttendanceInfo';
 import { Dropdown } from 'react-native-element-dropdown';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [name, setName] = useState('')
-    const [modalVisible, setModalVisible] = useState(false);
-    const [dropdown1Value, setDropdown1Value] = useState(null);
-    const [dropdown2Value, setDropdown2Value] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -50,11 +47,6 @@ const HomeScreen = () => {
         }
     }
 
-    const data = [
-        { label: 'Option 1', value: '1' },
-        { label: 'Option 2', value: '2' },
-        { label: 'Option 3', value: '3' },
-    ];
 
     return (
         <View style={styles.container}>
@@ -65,9 +57,6 @@ const HomeScreen = () => {
                     <Icon name="menuunfold" color={customColors.white} size={23} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Welcome, {name}!</Text>
-                <TouchableOpacity onPress={{}}>
-                    <Icon name="setting" color={customColors.white} size={23} />
-                </TouchableOpacity>
             </View>
 
             <AttendanceInfo />
@@ -97,44 +86,12 @@ const HomeScreen = () => {
                     <Icon name="filetext1" size={35} color={customColors.accent} />
                     <Text style={styles.functionalityText}>Visited Report</Text>
                 </TouchableOpacity>
-            </View>
 
-            <Modal animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalBackground}>
-                    <Text style={styles.modalTitle}>Select Options</Text>
-                    <Dropdown
-                        style={styles.dropdown}
-                        data={data}
-                        labelField="label"
-                        valueField="value"
-                        placeholder="Select option 1"
-                        value={dropdown1Value}
-                        onChange={item => {
-                            setDropdown1Value(item.value);
-                        }}
-                    />
-                    <Dropdown
-                        style={styles.dropdown}
-                        data={data}
-                        labelField="label"
-                        valueField="value"
-                        placeholder="Select option 2"
-                        value={dropdown2Value}
-                        onChange={item => {
-                            setDropdown2Value(item.value);
-                        }}
-                    />
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setModalVisible(false)} >
-                        <Text style={styles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Orders')}>
+                    <Icon name="filetext1" size={35} color={customColors.accent} />
+                    <Text style={styles.functionalityText}>Sale Order</Text>
+                </TouchableOpacity>
+            </View>
 
         </View >
     )
@@ -149,7 +106,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        // justifyContent: 'space-around',
         alignItems: 'center',
         padding: 20,
         backgroundColor: customColors.primary,
@@ -180,7 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     functionalityText: {
-        color: customColors.accent,
+        color: customColors.text,
         fontFamily: customFonts.plusJakartaSansSemiBold,
         fontSize: 14.5,
         fontWeight: '700',

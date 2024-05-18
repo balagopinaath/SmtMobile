@@ -1,13 +1,13 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { API } from '../Config/Endpoint';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { API } from '../../Config/Endpoint';
+import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native'
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, customFonts } from '../../Config/helper';
 import { Dropdown } from 'react-native-element-dropdown';
-import CustomRadioButton from '../Components/CustomRadioButton';
-import LocationIndicator from '../Components/LocationIndicator';
-import CameraComponent from '../Components/CameraComponent';
+import CustomRadioButton from '../../Components/CustomRadioButton';
+import LocationIndicator from '../../Components/LocationIndicator';
+import CameraComponent from '../../Components/CameraComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RetailerVisit = () => {
@@ -26,7 +26,7 @@ const RetailerVisit = () => {
     const [selectedRetail, setSelectedRetail] = useState(null);
     const [selectedValue, setSelectedValue] = useState('exist');
     const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
-    const [showCamera, setShowCamera] = useState(false)
+    const [showCameraModal, setShowCameraModal] = useState(false);
     const [location, setLocation] = useState({ latitude: null, longitude: null });
     const [id, setId] = useState()
 
@@ -69,10 +69,6 @@ const RetailerVisit = () => {
             Location_Image: photoPath
         }));
     };
-
-    const showAndHideCamera = () => {
-        setShowCamera(prevState => !prevState);
-    }
 
     const clearPhoto = () => {
         setCapturedPhotoPath(null);
@@ -183,31 +179,45 @@ const RetailerVisit = () => {
                         onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
-                    <TouchableOpacity onPress={showAndHideCamera}
-                        style={styles.button}
-                    ><Text style={styles.buttonText}>Open Camera</Text></TouchableOpacity>
+                    <View style={styles.buttonGroup}>
+                        <TouchableOpacity onPress={() => setShowCameraModal(true)}
+                            style={styles.button}
+                        ><Text style={styles.buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
 
-                    {showCamera && (
-                        !capturedPhotoPath ? (
-                            <CameraComponent onPhotoCapture={handlePhotoCapture} showCamera={showCamera} />
-                        ) : (
-                            capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
-                                <View style={styles.previewImageContainer}>
-                                    <Image
-                                        source={{ uri: 'file://' + capturedPhotoPath }}
-                                        style={styles.previewImage}
-                                    />
-                                    <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
-                                        <Text style={styles.buttonText}>Retake Photo</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        )
-                    )}
+                        <TouchableOpacity onPress={handleSubmit}
+                            style={styles.button}
+                        ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                    </View>
 
-                    <TouchableOpacity onPress={handleSubmit}
-                        style={styles.button}
-                    ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                    <Modal
+                        visible={showCameraModal}
+                        animationType="slide"
+                        transparent={true}
+                        onRequestClose={() => setShowCameraModal(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles.closeButton}>
+                                <Icon name='close' size={30} color={customColors.white} />
+                            </TouchableOpacity>
+                            {
+                                !capturedPhotoPath ? (
+                                    <CameraComponent onPhotoCapture={handlePhotoCapture} />
+                                ) : (
+                                    capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
+                                        <View style={styles.previewImageContainer}>
+                                            <Image
+                                                source={{ uri: 'file://' + capturedPhotoPath }}
+                                                style={styles.previewImage}
+                                            />
+                                            <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
+                                                <Text style={styles.buttonText}>Retake Photo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                )
+                            }
+                        </View>
+                    </Modal>
                 </View>
             }
 
@@ -257,31 +267,45 @@ const RetailerVisit = () => {
                         onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
-                    <TouchableOpacity onPress={showAndHideCamera}
-                        style={styles.button}
-                    ><Text style={styles.buttonText}>Open Camera</Text></TouchableOpacity>
+                    <View style={styles.buttonGroup}>
+                        <TouchableOpacity onPress={() => setShowCameraModal(true)}
+                            style={styles.button}
+                        ><Text style={styles.buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
 
-                    {showCamera && (
-                        !capturedPhotoPath ? (
-                            <CameraComponent onPhotoCapture={handlePhotoCapture} />
-                        ) : (
-                            capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
-                                <View style={styles.previewImageContainer}>
-                                    <Image
-                                        source={{ uri: 'file://' + capturedPhotoPath }}
-                                        style={styles.previewImage}
-                                    />
-                                    <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
-                                        <Text style={styles.buttonText}>Retake Photo</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        )
-                    )}
+                        <TouchableOpacity onPress={handleSubmit}
+                            style={styles.button}
+                        ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                    </View>
 
-                    <TouchableOpacity onPress={handleSubmit}
-                        style={styles.button}
-                    ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                    <Modal
+                        visible={showCameraModal}
+                        animationType="slide"
+                        transparent={true}
+                        onRequestClose={() => setShowCameraModal(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles.closeButton}>
+                                <Icon name='close' size={30} color={customColors.white} />
+                            </TouchableOpacity>
+                            {
+                                !capturedPhotoPath ? (
+                                    <CameraComponent onPhotoCapture={handlePhotoCapture} />
+                                ) : (
+                                    capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
+                                        <View style={styles.previewImageContainer}>
+                                            <Image
+                                                source={{ uri: 'file://' + capturedPhotoPath }}
+                                                style={styles.previewImage}
+                                            />
+                                            <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
+                                                <Text style={styles.buttonText}>Retake Photo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                )
+                            }
+                        </View>
+                    </Modal>
                 </View>
             }
 
@@ -348,7 +372,23 @@ const styles = StyleSheet.create({
         fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 14,
         fontWeight: '400',
-        marginBottom: 25,
+        // marginBottom: 25,
+    },
+    buttonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginBottom: 50
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    closeButton: {
+        marginLeft: 'auto',
+        top: 15,
+        right: 25,
     },
     previewImageContainer: {
         justifyContent: 'center',
