@@ -89,9 +89,15 @@ const StockClosing = ({ route }) => {
     const getStockCount = (productId) => {
         const mergedData = productClosingData.filter(item => Number(item.Item_Id) === Number(productId));
         if (mergedData.length > 0 && mergedData[0].Previous_Balance !== undefined) {
-            return mergedData[0].Previous_Balance;
+            return {
+                previousBalance: mergedData[0].Previous_Balance,
+                hasPreviousBalance: mergedData[0].Previous_Balance > 0
+            };
         } else {
-            return 0;
+            return {
+                previousBalance: 0,
+                hasPreviousBalance: false
+            };
         }
     };
 
@@ -219,53 +225,53 @@ const StockClosing = ({ route }) => {
                     >
                         {productData?.map((item, index) => (
                             <View key={index}>
-                                {item.GroupedProductArray.map((product, pIndex) => (
-                                    <View key={pIndex} style={styles.pagerViewContainer}>
-                                        <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
-                                            <Image
-                                                style={{
-                                                    width: 125,
-                                                    height: 125,
-                                                    borderRadius: 8,
-                                                    marginRight: 10,
-                                                }}
-                                                source={{
-                                                    uri: product.productImageUrl,
-                                                }}
-                                            />
-                                            <View style={styles.card}>
-                                                <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                                <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
-                                                <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
-                                                <Text style={styles.dateText}>Previous Stock: {getStockCount(product.Product_Id)}</Text>
-                                                <TextInput
-                                                    style={styles.pagerViewContainerInputText}
-                                                    // value={`${product.Product_Id}`}
-                                                    onChangeText={(text) =>
-                                                        handleStockInputChange(
-                                                            product.Product_Id,
-                                                            text,
-                                                            getClosingStockDate(product.Product_Id),
-                                                            getStockCount(product.Product_Id)
-                                                        )
-                                                    }
-                                                    value={
-                                                        (closingStockValues.find(
-                                                            (ooo) =>
-                                                                Number(ooo?.Product_Id) ===
-                                                                Number(product?.Product_Id)
-                                                        )?.ST_Qty
-                                                            || '').toString()
-                                                    }
-                                                    placeholder="Closing Stock Quantity"
-                                                    keyboardType='number-pad'
-
+                                {item.GroupedProductArray.map((product, pIndex) => {
+                                    const stockCount = getStockCount(product.Product_Id);
+                                    return (
+                                        <View key={pIndex} style={styles.pagerViewContainer}>
+                                            <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                                                <Image
+                                                    style={{
+                                                        width: 125,
+                                                        height: 125,
+                                                        borderRadius: 8,
+                                                        marginRight: 10,
+                                                    }}
+                                                    source={{
+                                                        uri: product.productImageUrl,
+                                                    }}
                                                 />
+                                                <View style={styles.card}>
+                                                    <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
+                                                    <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
+                                                    <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
+                                                    <Text style={[styles.dateText, stockCount.hasPreviousBalance && styles.highlightedText]}>Previous Stock: {stockCount.previousBalance}</Text>
+                                                    <TextInput
+                                                        style={styles.pagerViewContainerInputText}
+                                                        onChangeText={(text) =>
+                                                            handleStockInputChange(
+                                                                product.Product_Id,
+                                                                text,
+                                                                getClosingStockDate(product.Product_Id),
+                                                                stockCount.previousBalance
+                                                            )
+                                                        }
+                                                        value={
+                                                            (closingStockValues.find(
+                                                                (ooo) =>
+                                                                    Number(ooo?.Product_Id) ===
+                                                                    Number(product?.Product_Id)
+                                                            )?.ST_Qty
+                                                                || '').toString()
+                                                        }
+                                                        placeholder="Closing Stock Quantity"
+                                                        keyboardType='number-pad'
+                                                    />
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
-                                ))}
-
+                                    );
+                                })}
                             </View>
                         ))}
 
@@ -315,6 +321,7 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     tabContainer: {
+        height: 55,
         flexDirection: 'row',
         backgroundColor: '#f0f0f0',
         borderBottomWidth: 1,
@@ -351,6 +358,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 4,
+    },
+    highlightedText: {
+        backgroundColor: '#FFFF00',
+        color: '#000',
+        fontWeight: 'bold',
     },
     pagerViewContainerSubText: {
         fontFamily: customFonts.plusJakartaSansRegular,

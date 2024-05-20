@@ -1,5 +1,5 @@
-// const baseURL = "http://shrifoodsapi.erpsmt.in/"
-const baseURL = "http://192.168.1.2:9001/"
+const baseURL = "http://shrifoodsapi.erpsmt.in/"
+// const baseURL = "http://192.168.1.2:9001/"
 
 export const API = {
     login: baseURL + 'api/login',

@@ -137,7 +137,7 @@ export default AttendanceInfo
 
 const styles = StyleSheet.create({
     card: {
-        width: 350,
+        width: '90%',
         backgroundColor: customColors.white,
         borderRadius: 15,
         padding: 16,
@@ -150,8 +150,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 6,
         marginBottom: 25,
-        marginHorizontal: 25,
-        marginVertical: 25,
+        marginTop: 25,
+        alignSelf: 'center',
+
     },
     cardHeader: {
         flexDirection: 'row',
@@ -166,6 +167,7 @@ const styles = StyleSheet.create({
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 18,
         fontWeight: 'bold',
+        flexShrink: 1,
         textAlign: 'center',
     },
     cardSubTitle: {

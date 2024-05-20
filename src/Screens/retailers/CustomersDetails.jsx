@@ -1,4 +1,4 @@
-import { Linking, StyleSheet, Text, TouchableOpacity, Dimensions, View, PermissionsAndroid, Alert, ToastAndroid, TextInput } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, Dimensions, View, PermissionsAndroid, Alert, ToastAndroid, TextInput, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -124,7 +124,7 @@ const CustomersDetails = ({ route }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
 
             <View style={styles.retailersContainer}>
                 <View style={styles.retailersInner}>
@@ -180,10 +180,10 @@ const CustomersDetails = ({ route }) => {
                     </TouchableOpacity>
                 )}
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
+                {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
                     <CustomAntIcon name="edit" size={20} color="blue" />
                     <Text style={styles.buttonText}>Edit Retailers</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles.button} onPress={handleUpdateLocation}>
                     <Icon name="map-marker" size={20} color="red" />
@@ -196,7 +196,7 @@ const CustomersDetails = ({ route }) => {
                 </TouchableOpacity>
             </View>
 
-        </View>
+        </ScrollView>
     )
 }
 

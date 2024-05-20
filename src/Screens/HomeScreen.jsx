@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconMaterial from 'react-native-vector-icons/MaterialIcons';
+import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import { customColors, customFonts } from '../Config/helper';
 import { API } from '../Config/Endpoint';
 import AttendanceInfo from './attendance/AttendanceInfo';
@@ -68,7 +68,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerVisit')}>
-                    <IconMaterial name="add-location-alt" size={35} color={customColors.accent} />
+                    <IconMaterial name="call-made" size={35} color={customColors.accent} />
                     <Text style={styles.functionalityText}>Visit Entry</Text>
                 </TouchableOpacity>
 
@@ -79,7 +79,7 @@ const HomeScreen = () => {
 
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('StockInfo')}>
                     <Icon name="checksquareo" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Previous Stock Report</Text>
+                    <Text style={styles.functionalityText}>Stock Report</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerLog')}>
@@ -88,7 +88,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Orders')}>
-                    <Icon name="filetext1" size={35} color={customColors.accent} />
+                    <IconMaterial name="sale" size={35} color={customColors.accent} />
                     <Text style={styles.functionalityText}>Sale Order</Text>
                 </TouchableOpacity>
             </View>
