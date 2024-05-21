@@ -1,13 +1,12 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Button, Modal } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 import { API } from '../Config/Endpoint';
 import AttendanceInfo from './attendance/AttendanceInfo';
-import { Dropdown } from 'react-native-element-dropdown';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
@@ -47,7 +46,6 @@ const HomeScreen = () => {
         }
     }
 
-
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor={customColors.primary} />
@@ -57,39 +55,42 @@ const HomeScreen = () => {
                     <Icon name="menuunfold" color={customColors.white} size={23} />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>Welcome, {name}!</Text>
+                <TouchableOpacity>
+                    <Icon name="bells" color={customColors.white} size={23} />
+                </TouchableOpacity>
             </View>
 
             <AttendanceInfo />
 
-            <View style={styles.functionalities}>
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Customers')}>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Customers')}>
                     <Icon name="team" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Retailers</Text>
+                    <Text style={styles.buttonText}>Retailers</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerVisit')}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RetailerVisit')}>
                     <IconMaterial name="call-made" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Visit Entry</Text>
+                    <Text style={styles.buttonText}>Visit Entry</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('AttendanceReport')}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AttendanceReport')}>
                     <Icon name="filetext1" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Attendance Report</Text>
+                    <Text style={styles.buttonText}>Attendance Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('StockInfo')}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StockInfo')}>
                     <Icon name="checksquareo" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Stock Report</Text>
+                    <Text style={styles.buttonText}>Stock Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('RetailerLog')}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RetailerLog')}>
                     <Icon name="filetext1" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Visited Report</Text>
+                    <Text style={styles.buttonText}>Visited Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.functionality} onPress={() => navigation.navigate('Orders')}>
+                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Orders')}>
                     <IconMaterial name="sale" size={35} color={customColors.accent} />
-                    <Text style={styles.functionalityText}>Sale Order</Text>
+                    <Text style={styles.buttonText}>Sale Order</Text>
                 </TouchableOpacity>
             </View>
 
@@ -106,44 +107,37 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        // justifyContent: 'space-around',
         alignItems: 'center',
+        justifyContent: 'space-between',
         padding: 20,
         backgroundColor: customColors.primary,
     },
     headerText: {
-        textAlign: 'center',
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 18,
+        ...typography.h5,
         color: customColors.white,
-        marginLeft: 15,
+        flex: 1,
+        marginHorizontal: 10,
     },
-    functionalities: {
-        flexWrap: 'wrap',
+    buttonContainer: {
+        flex: 1,
         flexDirection: 'row',
+        flexWrap: 'wrap',
         justifyContent: 'space-around',
         alignItems: 'center',
         paddingVertical: 20,
-        borderWidth: 2.5,
-        borderColor: customColors.secondary,
-        borderRadius: 15,
-        margin: 15,
+        marginHorizontal: 15,
     },
-    functionality: {
+    button: {
         width: '30%',
-        aspectRatio: 1,
         alignItems: 'center',
-        paddingVertical: 25,
+        paddingVertical: 15,
         marginBottom: 20,
     },
-    functionalityText: {
+    buttonText: {
+        ...typography.body1,
         color: customColors.text,
-        fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 14.5,
-        fontWeight: '700',
         textAlign: 'center',
+        fontWeight: '700',
         marginTop: 10,
     },
-
-
 });

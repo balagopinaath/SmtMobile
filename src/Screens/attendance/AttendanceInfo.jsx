@@ -2,9 +2,10 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
+import IconFont from 'react-native-vector-icons/Fontisto';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
 
 const AttendanceInfo = () => {
@@ -93,19 +94,18 @@ const AttendanceInfo = () => {
             <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Today Attendance</Text>
 
-                <Button
-                    disabled={Number(activeStatus) === Number(1)}
-                    color={customColors.primary}
-                    onPress={() => { navigation.navigate('Attendance') }}
-                    title='Start Day'
-                />
+                {!activeStatus && (
+                    <TouchableOpacity style={styles.startButton} onPress={() => { navigation.navigate('Attendance') }} >
+                        <Text style={styles.buttonText}>Start Day</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
             {activeStatus !== 0 && (
                 <View style={styles.cardContent}>
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="clock-o" color={customColors.black} size={20} />
+                            <IconFont name="date" color={customColors.black} size={20} />
                             <Text style={styles.text}>Date</Text>
                         </View>
                         <Text style={styles.text}>{date}</Text>
@@ -113,20 +113,20 @@ const AttendanceInfo = () => {
 
                     <View style={styles.cardItem}>
                         <View style={styles.itemIcon}>
-                            <Icon name="calendar-o" color={customColors.black} size={20} />
+                            <Icon name="time-outline" color={customColors.black} size={20} />
                             <Text style={styles.text}>Time In</Text>
                         </View>
                         <Text style={styles.text}>{time}</Text>
                     </View>
 
-                    <Button
-                        color={customColors.primary}
+                    <TouchableOpacity
+                        style={styles.endButton}
                         onPress={() => {
                             navigation.navigate('EndDay');
                             setActiveStatus(0);
-                        }}
-                        title='End Day'
-                    />
+                        }}>
+                        <Text style={styles.buttonText}>End Day</Text>
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -137,46 +137,47 @@ export default AttendanceInfo
 
 const styles = StyleSheet.create({
     card: {
-        width: '90%',
         backgroundColor: customColors.white,
-        borderRadius: 15,
-        padding: 16,
+        borderRadius: 10,
+        padding: 20,
+        margin: 20,
         elevation: 14,
-        shadowColor: 'black',
+        shadowColor: 'rgba(0, 0, 0, 0.6)',
         shadowOffset: {
             width: 0,
             height: 4,
         },
         shadowOpacity: 0.3,
         shadowRadius: 6,
-        marginBottom: 25,
-        marginTop: 25,
-        alignSelf: 'center',
-
     },
     cardHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignContent: 'center',
-        borderBottomColor: 'black',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        paddingBottom: 10,
-        marginBottom: 10,
+        marginBottom: 20,
     },
     cardTitle: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 18,
-        fontWeight: 'bold',
-        flexShrink: 1,
-        textAlign: 'center',
+        ...typography.h5,
+        color: customColors.textPrimary,
     },
-    cardSubTitle: {
-        fontSize: 16,
-        marginLeft: 5,
+    startButton: {
+        backgroundColor: customColors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 5,
     },
-    cardContent: {
-        marginBottom: 10,
+    endButton: {
+        backgroundColor: customColors.primary,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 5,
+        alignSelf: 'flex-end',
     },
+    buttonText: {
+        ...typography.button,
+        color: customColors.textPrimary
+    },
+    cardContent: {},
     cardItem: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -188,19 +189,9 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     text: {
-        fontSize: 16,
-        marginLeft: 5,
-    },
-    endDayButton: {
-        alignSelf: 'flex-end',
-        borderWidth: 1,
-        padding: 5,
-        borderColor: '#808080',
-        borderRadius: 5,
-    },
-    endDayButtonText: {
-        fontSize: 16,
-        color: 'blue',
-        padding: 50
+        ...typography.body1,
+        color: customColors.textPrimary,
+        marginLeft: 10,
+        marginBottom: 5,
     },
 })

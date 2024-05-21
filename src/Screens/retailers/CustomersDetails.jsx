@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import CustomIcon from 'react-native-vector-icons/FontAwesome';
-import CustomAntIcon from 'react-native-vector-icons/AntDesign';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { API } from '../../Config/Endpoint';
 import { customFonts, customColors } from '../../Config/helper';
@@ -18,7 +16,6 @@ const CustomersDetails = ({ route }) => {
     const longitude = item.Longitude;
     const phoneNumber = item.Mobile_No;
     const [userId, setUserId] = useState('');
-    const [location, setLocation] = useState(false);
     const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
@@ -48,31 +45,6 @@ const CustomersDetails = ({ route }) => {
             Linking.openURL(url);
         } else {
             console.log('Location not available');
-        }
-    };
-
-    const requestLocationPermission = async () => {
-        try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                {
-                    title: 'The Sales App needs your location permission',
-                    message:
-                        'Sales app needs access to your location ' +
-                        'so you can register your attendance.',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log('You can use the Location');
-                getCurrentLocation();
-            } else {
-                console.log('Location permission denied');
-            }
-        } catch (err) {
-            console.warn(err);
         }
     };
 

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, ScrollView, Image, TextInput, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Dropdown } from 'react-native-element-dropdown';
-import CustomIcon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 
 const Customers = () => {
     const navigation = useNavigation();
@@ -48,15 +46,13 @@ const Customers = () => {
         <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })}>
             <View style={styles.retailerContainer}>
                 <View style={styles.retailerInfo}>
-                    <Text style={styles.retailerInfo}>{item.Retailer_Name}</Text>
-                    <Text style={styles.retailerInfo}>{item.Mobile_No}</Text>
+                    <Text style={styles.retailerName}>{item.Retailer_Name}</Text>
+                    <Text style={styles.retailerMobile}>{item.Mobile_No}</Text>
                 </View>
                 <Text style={styles.retailerArea}>{item.AreaGet}</Text>
-                {/* Add more Text components for other fields */}
             </View>
         </TouchableOpacity>
     );
-
 
     return (
         <View style={styles.container}>
@@ -67,7 +63,7 @@ const Customers = () => {
                 onChangeText={handleSearch}
                 returnKeyType="search"
             />
-            <View style={styles.retailerContainer}>
+            <View style={styles.retailerHeading}>
                 <Text style={styles.retailerTitle}>Retailer Info</Text>
                 <Text style={styles.retailerTitle}>Area</Text>
             </View>
@@ -77,14 +73,16 @@ const Customers = () => {
             ) : (
                 <>
                     {filteredData.length > 0 ? (
-                        <FlatList style={{ color: '#000' }}
+                        <FlatList
                             data={filteredData}
                             renderItem={renderItem}
                             keyExtractor={(item, index) => index.toString()}
                         />
 
                     ) : (
-                        <Text style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>No data found</Text>
+                        <View style={styles.noDataText}>
+                            <Text style={{ ...typography.h5 }}>No data found</Text>
+                        </View>
                     )}
                 </>
 
@@ -100,127 +98,76 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: customColors.background,
     },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        backgroundColor: customColors.primary,
-        marginBottom: 20
-    },
-    headerText: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        color: customColors.white,
-        fontSize: 15,
-        fontWeight: '500',
-        textAlign: 'center',
-        marginLeft: 15
-    },
     activityIndicator: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
     searchInput: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 16,
+        ...typography.h6,
         paddingHorizontal: 20,
-        margin: 20,
-        borderColor: '#ccc',
-        borderWidth: 1,
+        margin: 25,
+        borderColor: customColors.textSecondary,
+        borderWidth: 0.75,
         borderRadius: 30,
     },
     retailerContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
-        paddingVertical: 20,
+        alignItems: 'center',
+        backgroundColor: customColors.white,
+        padding: 15,
+        marginTop: 10,
+        marginBottom: 10,
+        marginHorizontal: 10,
+        borderRadius: 10,
+        shadowColor: customColors.surface,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    retailerInfo: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    retailerHeading: {
+        flexDirection: 'row',
+        alignContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
         paddingHorizontal: 20,
+        backgroundColor: customColors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
     },
     retailerTitle: {
         flex: 1,
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
-        fontWeight: '500',
-        marginHorizontal: 25,
-        color: customColors.text,
+        ...typography.h6,
+        fontWeight: '600',
+        textAlign: 'left',
     },
-    retailerInfo: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
-        fontWeight: '500',
-        paddingHorizontal: 15,
-        color: customColors.text,
+    retailerName: {
+        ...typography.h6,
+        fontWeight: '700',
+    },
+    retailerMobile: {
+        ...typography.h6,
+        fontWeight: '400',
     },
     retailerArea: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
-        fontWeight: '500',
+        ...typography.h6,
+        fontWeight: '400',
         paddingHorizontal: 50,
-        color: customColors.text,
     },
-    dropdownContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        marginHorizontal: 20,
-        marginVertical: 20,
-    },
-    dropdown: {
-        width: '50%',
-        marginHorizontal: 15,
-        height: 45,
-        padding: 15,
-        borderRadius: 10,
-        borderWidth: 0.5,
-    },
-    placeholderStyle: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 15,
-        fontWeight: '500'
-    },
-    selectedTextStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
-        fontWeight: '600'
-    },
-    inputSearchStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 14,
-        fontWeight: '400'
-    },
-    headerRetail: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 16,
-        fontWeight: '500',
-        color: customColors.black,
-        marginHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 15,
-    },
-    itemContainer: {
-        flexDirection: 'row',
+    noDataText: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        padding: 15,
-        borderBottomWidth: 0.5,
-        borderBottomColor: 'gray',
+        color: customColors.textSecondary,
+        fontSize: 16,
     },
-    itemImage: {
-        width: 50,
-        height: 50,
-        marginRight: 15,
-        borderRadius: 5,
-    },
-    itemText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
-        fontWeight: '500',
-        color: customColors.black,
-        marginVertical: 2,
-    },
-    itemMobile: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 12,
-        fontWeight: '200',
-    }
 });
-

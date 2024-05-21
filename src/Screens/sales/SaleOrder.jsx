@@ -1,4 +1,4 @@
-import { Button, Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
@@ -20,7 +20,8 @@ const SaleOrder = () => {
         Retailer_Name: '',
         Narration: '',
         Created_by: '',
-        Product_Stock_List: [],
+        Product_Array: [],
+        Sales_Person_Id: '',
     }
     const [stockInputValue, setStockInputValue] = useState(initialStockValue)
     const [retailers, setRetailers] = useState([])
@@ -35,7 +36,8 @@ const SaleOrder = () => {
                 const userId = await AsyncStorage.getItem('UserId');
                 setStockInputValue(prev => ({
                     ...prev,
-                    Created_by: userId
+                    Created_by: userId,
+                    Sales_Person_Id: userId,
                 }));
             } catch (err) {
                 console.log(err);
@@ -53,7 +55,6 @@ const SaleOrder = () => {
 
             if (jsonData.success) {
                 setRetailers(jsonData.data)
-                // console.log(jsonData.data)
             }
 
         } catch (err) {
@@ -86,7 +87,6 @@ const SaleOrder = () => {
 
         if (productIndex !== -1) {
             updatedQuantities[productIndex].Bill_Qty = value;
-            // Ensure the rate is correctly updated
             updatedQuantities[productIndex].Item_Rate = rate;
         } else {
             updatedQuantities.push({
@@ -95,7 +95,6 @@ const SaleOrder = () => {
                 Item_Rate: rate,
             });
         }
-
         setQuantities(updatedQuantities);
     };
 
@@ -136,7 +135,53 @@ const SaleOrder = () => {
         setModalVisible(true);
     };
 
-    const handleSubmit = () => { }
+    const handleSubmit = async () => {
+        if (quantities.length <= 0 || !selectedRetail) {
+            Alert.alert('Error', 'Please select a retailer and enter product quantities.');
+            return;
+        }
+
+        const orderProducts = quantities.filter(q => parseFloat(q.Bill_Qty) > 0);
+
+        if (orderProducts.length <= 0) {
+            Alert.alert('Error', 'Enter at least one product quantity.');
+            return;
+        }
+
+        const orderDetails = {
+            ...stockInputValue,
+            Product_Array: orderProducts
+        };
+
+        console.log("Final order details:", orderDetails);
+
+        try {
+            const response = await fetch(`${API.saleOrder}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            });
+
+            const data = await response.json();
+            console.log('post data', data)
+
+            if (data.success) {
+                Alert.alert('Success', data.message);
+                // Reset state after successful submission
+                setStockInputValue(initialStockValue);
+                setQuantities([]);
+                setSelectedRetail(null);
+                setModalVisible(false);
+            } else {
+                Alert.alert('Error', data.message);
+            }
+        } catch (err) {
+            console.log(err)
+            Alert.alert('Error', err);
+        }
+    }
 
     return (
         <View style={styles.container}>
