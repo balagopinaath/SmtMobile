@@ -34,17 +34,19 @@ const RetailerVisit = () => {
         (async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
+                const companyId = await AsyncStorage.getItem('Company_Id');
+                fetchCustomersData(companyId)
                 setId(userId)
             } catch (err) {
                 console.log(err);
             }
         })();
-        fetchCustomersData()
     }, [])
 
-    const fetchCustomersData = async () => {
+    const fetchCustomersData = async (companyId) => {
+        // console.log(`${API.retailerName}${companyId}`)
         try {
-            const response = await fetch(`${API.retailerName}${1}`);
+            const response = await fetch(`${API.retailerName}${companyId}`);
             if (!response.ok) {
                 throw new Error(`API request failed with status: ${response.status}`);
             }

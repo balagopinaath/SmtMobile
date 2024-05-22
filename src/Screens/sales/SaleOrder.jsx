@@ -8,14 +8,16 @@ import { API } from '../../Config/Endpoint';
 import { customColors, customFonts } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
 
-const SaleOrder = () => {
+const SaleOrder = ({ route }) => {
     const navigation = useNavigation();
     const pagerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
     const initialStockValue = {
+        So_Id: '',
         Company_Id: '',
         ST_Date: new Date().toISOString().split('T')[0],
+        Branch_Id: '',
         Retailer_Id: '',
         Retailer_Name: '',
         Narration: '',
@@ -29,28 +31,62 @@ const SaleOrder = () => {
     const [quantities, setQuantities] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [total, setTotal] = useState(0);
+    const [isEdit, setIsEdit] = useState(false);
+    const [saleOrderId, setSaleOrderId] = useState(null);
+
 
     useEffect(() => {
-        (async () => {
+        const initialize = async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
+                const branchId = await AsyncStorage.getItem('branchId');
+                const companyId = await AsyncStorage.getItem('Company_Id');
+
+                fetchRetailers(companyId);
+                fetchGroupedproducts(companyId);
+
                 setStockInputValue(prev => ({
                     ...prev,
                     Created_by: userId,
                     Sales_Person_Id: userId,
+                    Branch_Id: branchId,
                 }));
             } catch (err) {
                 console.log(err);
             }
-        })();
 
-        fetchGroupedproducts()
-        fetchRetailers()
+            // Check if editing
+            if (route.params?.isEdit && route.params?.item) {
+                const { item } = route.params;
+                setIsEdit(true);
+                setSaleOrderId(item.Sales_Order_Id);
+                setSelectedRetail(item.Retailer_Id);
+                setStockInputValue({
+                    So_Id: item.So_Id,
+                    Company_Id: item.Company_Id,
+                    ST_Date: new Date(item.So_Date).toISOString().split('T')[0],
+                    Retailer_Id: item.Retailer_Id,
+                    Retailer_Name: item.Retailer_Name,
+                    Branch_Id: item.Branch_Id,
+                    Narration: item.Narration,
+                    Created_by: item.Created_by,
+                    Product_Array: item.Products_List,
+                    Sales_Person_Id: item.Sales_Person_Id,
+                });
+                setQuantities(item.Products_List.map(product => ({
+                    Item_Id: product.Item_Id,
+                    Bill_Qty: product.Bill_Qty.toString(),
+                    Item_Rate: product.Item_Rate.toString(),
+                })));
+            }
+        };
+
+        initialize();
     }, [])
 
-    const fetchRetailers = async () => {
+    const fetchRetailers = async (id) => {
         try {
-            const response = await fetch(`${API.retailers}${1}`);
+            const response = await fetch(`${API.retailers}${id}`);
             const jsonData = await response.json();
 
             if (jsonData.success) {
@@ -62,8 +98,9 @@ const SaleOrder = () => {
         }
     }
 
-    const fetchGroupedproducts = async () => {
-        fetch(`${API.groupedProducts}${1}`)
+    const fetchGroupedproducts = async (id) => {
+        console.log(`${API.groupedProducts}${id}`)
+        fetch(`${API.groupedProducts}${id}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -153,11 +190,12 @@ const SaleOrder = () => {
             Product_Array: orderProducts
         };
 
-        console.log("Final order details:", orderDetails);
+        // console.log("Final order details:", orderDetails);
 
         try {
+            const method = isEdit ? 'PUT' : 'POST';
             const response = await fetch(`${API.saleOrder}`, {
-                method: 'POST',
+                method: method,
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -247,36 +285,38 @@ const SaleOrder = () => {
                         onPageSelected={onPageSelected}
                     >
                         {productData.map((group, groupIndex) => (
-                            group.GroupedProductArray.map((product, pIndex) => (
-                                <View key={pIndex} style={styles.pagerViewContainer}>
-                                    <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
-                                        <Image
-                                            style={{
-                                                width: 125,
-                                                height: 125,
-                                                borderRadius: 8,
-                                                marginRight: 10,
-                                            }}
-                                            source={{ uri: product.productImageUrl }}
-                                        />
-                                        <View style={styles.card}>
-                                            <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                            <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
-                                            <TextInput
-                                                style={styles.pagerViewContainerInputText}
-                                                onChangeText={(text) =>
-                                                    handleQuantityChange(product.Product_Id, text, product.Item_Rate)
-                                                }
-                                                value={
-                                                    quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
-                                                }
-                                                placeholder="Quantity"
-                                                keyboardType='number-pad'
+                            <View key={groupIndex}>
+                                {group.GroupedProductArray.map((product, pIndex) => (
+                                    <View key={pIndex} style={styles.pagerViewContainer}>
+                                        <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                                            <Image
+                                                style={{
+                                                    width: 125,
+                                                    height: 125,
+                                                    borderRadius: 8,
+                                                    marginRight: 10,
+                                                }}
+                                                source={{ uri: product.productImageUrl }}
                                             />
+                                            <View style={styles.card}>
+                                                <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
+                                                <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
+                                                <TextInput
+                                                    style={styles.pagerViewContainerInputText}
+                                                    onChangeText={(text) =>
+                                                        handleQuantityChange(product.Product_Id, text, product.Item_Rate)
+                                                    }
+                                                    value={
+                                                        quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
+                                                    }
+                                                    placeholder="Quantity"
+                                                    keyboardType='number-pad'
+                                                />
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            ))
+                                ))}
+                            </View>
                         ))}
 
                     </PagerView>

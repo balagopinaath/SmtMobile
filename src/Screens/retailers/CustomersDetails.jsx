@@ -1,17 +1,16 @@
-import { Linking, StyleSheet, Text, TouchableOpacity, Dimensions, View, PermissionsAndroid, Alert, ToastAndroid, TextInput, ScrollView } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid, ScrollView, Image, useColorScheme } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/FontAwesome'
 import { API } from '../../Config/Endpoint';
-import { customFonts, customColors } from '../../Config/helper';
-
-const { width } = Dimensions.get('window');
+import { customFonts, customColors, typography } from '../../Config/helper';
 
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
     const { item } = route.params;
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const latitude = item.Latitude;
     const longitude = item.Longitude;
     const phoneNumber = item.Mobile_No;
@@ -96,75 +95,87 @@ const CustomersDetails = ({ route }) => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles(colors).container}>
 
-            <View style={styles.retailersContainer}>
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Name:</Text>
-                    <Text style={styles.infoText}>{item.Retailer_Name}</Text>
+            <View style={styles(colors).retailersContainer}>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Name:</Text>
+                    <Text style={styles(colors).infoText}>{item.Retailer_Name}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Address:</Text>
-                    <Text style={styles.infoText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Address:</Text>
+                    <Text style={styles(colors).infoText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Contact Person:</Text>
-                    <Text style={styles.infoText}>{item.Contact_Person}</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Contact Person:</Text>
+                    <Text style={styles(colors).infoText}>{item.Contact_Person}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Channel:</Text>
-                    <Text style={styles.infoText}>{item.Retailer_Channel_Id}</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Channel:</Text>
+                    <Text style={styles(colors).infoText}>{item.Retailer_Channel_Id}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>GST:</Text>
-                    <Text style={styles.infoText}>{item.Gstno}</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>GST:</Text>
+                    <Text style={styles(colors).infoText}>{item.Gstno}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Distributor:</Text>
-                    <Text style={styles.infoText}>{item.Distributor_Id}</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Distributor:</Text>
+                    <Text style={styles(colors).infoText}>{item.Distributor_Id}</Text>
                 </View>
 
-                <View style={styles.retailersInner}>
-                    <Text style={styles.labelText}>Contact:</Text>
+                <View style={styles(colors).retailersInner}>
+                    <Text style={styles(colors).labelText}>Contact:</Text>
                     <TouchableOpacity onPress={handleCall}>
-                        <Text style={[styles.infoText, styles.link]}>{item.Mobile_No}</Text>
+                        <Text style={[styles(colors).infoText, styles(colors).link]}>{item.Mobile_No}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => {
-                    Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
-                }}>
-                    <Icon name="whatsapp" size={25} color="green" />
-                    <Text style={styles.buttonText}>WhatsApp</Text>
-                </TouchableOpacity>
-
-                {latitude !== null && longitude !== null && (
-                    <TouchableOpacity style={styles.button} onPress={handleLocation}>
-                        <Icon name="map-o" size={20} color="red" />
-                        <Text style={styles.buttonText}>Maps Direction</Text>
-                    </TouchableOpacity>
-                )}
-
+            <View style={styles(colors).buttonContainer}>
                 {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
                     <CustomAntIcon name="edit" size={20} color="blue" />
                     <Text style={styles.buttonText}>Edit Retailers</Text>
                 </TouchableOpacity> */}
 
-                <TouchableOpacity style={styles.button} onPress={handleUpdateLocation}>
-                    <Icon name="map-marker" size={20} color="red" />
-                    <Text style={styles.buttonText}>Update Location</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => {
+                    Linking.openURL(`${API.whatsApp}${item.Mobile_No}/?text=Hi`)
+                }} >
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../../assets/images/whatsapp.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>WhatsApp</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => { navigation.navigate('StockClosing', { item }) }}>
-                    <Icon name="bar-chart-o" size={20} color="blue" />
-                    <Text style={styles.buttonText}>Closing Stock</Text>
+                {latitude !== null && longitude !== null && (
+                    <TouchableOpacity style={styles(colors).button} onPress={handleLocation}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../../assets/images/map.png')}
+                        />
+                        <Text style={styles(colors).buttonText}>Maps</Text>
+                    </TouchableOpacity>
+                )}
+
+                <TouchableOpacity style={styles(colors).button} onPress={() => handleUpdateLocation()}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../../assets/images/pin.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Update Location</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles(colors).button} onPress={() => { navigation.navigate('StockClosing', { item }) }} >
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../../assets/images/packages.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Closing Stock</Text>
                 </TouchableOpacity>
             </View>
 
@@ -174,28 +185,27 @@ const CustomersDetails = ({ route }) => {
 
 export default CustomersDetails
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        backgroundColor: customColors.primary,
+        backgroundColor: colors.primary,
     },
     headerText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
-        color: customColors.white,
+        ...typography.h6,
+        // color: customColors.white,
         marginLeft: 15
     },
     retailersContainer: {
         width: '90%',
         alignSelf: 'center',
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderRadius: 10,
         paddingHorizontal: 20,
         paddingVertical: 15,
@@ -208,38 +218,43 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     labelText: {
+        width: 100,
+        ...typography.h6,
         fontWeight: 'bold',
         marginRight: 10,
-        width: 100,
     },
     infoText: {
         flex: 1,
-        color: 'black',
+        ...typography.h6,
     },
     link: {
-        fontFamily: customFonts.plusJakartaSansBold,
+        ...typography.h4,
         color: 'blue',
         textDecorationLine: 'underline',
     },
     buttonContainer: {
-        marginTop: 5,
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        paddingVertical: 20,
+        marginHorizontal: 15,
     },
     button: {
-        width: width * 0.5,
-        height: 55,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        backgroundColor: '#f0f0f0',
-        padding: 15,
-        borderRadius: 5,
-        marginVertical: 5,
+        width: '30%',
+        alignItems: 'center',
+        paddingVertical: 15,
+        marginBottom: 20,
     },
     buttonText: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        marginLeft: 10,
-        fontSize: 16,
-        fontWeight: 'bold',
-        // color: '#333',
-        color: customColors.accent
+        ...typography.body1(colors),
+        textAlign: 'center',
+        fontWeight: '700',
+        marginTop: 10,
     },
+    tinyLogo: {
+        width: 50,
+        height: 50,
+    }
 });

@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, useColorScheme } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
-import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import { customColors, typography } from '../Config/helper';
 import { API } from '../Config/Endpoint';
 import AttendanceInfo from './attendance/AttendanceInfo';
@@ -11,6 +10,8 @@ import AttendanceInfo from './attendance/AttendanceInfo';
 const HomeScreen = () => {
     const navigation = useNavigation();
     const [name, setName] = useState('')
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
 
     useEffect(() => {
         (async () => {
@@ -47,50 +48,76 @@ const HomeScreen = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor={customColors.primary} />
+        <View style={styles(colors).container}>
+            <StatusBar backgroundColor={colors.primary} />
 
-            <View style={styles.headerContainer}>
+            <View style={styles(colors).headerContainer}>
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                    <Icon name="menuunfold" color={customColors.white} size={23} />
+                    <Icon name="menuunfold" color={colors.white} size={23} />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Welcome, {name}!</Text>
+                <Text style={styles(colors).headerText}>Welcome, {name}!</Text>
                 <TouchableOpacity>
-                    <Icon name="bells" color={customColors.white} size={23} />
+                    {/* <Icon name="bells" color={colors.white} size={23} /> */}
                 </TouchableOpacity>
             </View>
 
             <AttendanceInfo />
 
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Customers')}>
-                    <Icon name="team" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Retailers</Text>
+            <View style={styles(colors).buttonContainer}>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Customers')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/retailer.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Retailers</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RetailerVisit')}>
-                    <IconMaterial name="call-made" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Visit Entry</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerVisit')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/entry.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Visit Entry</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AttendanceReport')}>
-                    <Icon name="filetext1" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Attendance Report</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('AttendanceReport')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/attendance.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Attendance Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('StockInfo')}>
-                    <Icon name="checksquareo" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Stock Report</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('StockInfo')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/stock.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Stock Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RetailerLog')}>
-                    <Icon name="filetext1" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Visited Report</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerLog')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/visitLog.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Visited Report</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Orders')}>
-                    <IconMaterial name="sale" size={35} color={customColors.accent} />
-                    <Text style={styles.buttonText}>Sale Order</Text>
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Orders')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/sale.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Sale Order</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('OrderPreview')}>
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../assets/images/sale-report.png')}
+                    />
+                    <Text style={styles(colors).buttonText}>Sale List</Text>
                 </TouchableOpacity>
             </View>
 
@@ -100,21 +127,21 @@ const HomeScreen = () => {
 
 export default HomeScreen
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
     },
     headerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: 20,
-        backgroundColor: customColors.primary,
+        backgroundColor: colors.primary,
     },
     headerText: {
-        ...typography.h5,
-        color: customColors.white,
+        ...typography.h5(colors),
+        color: '#ffffff',
         flex: 1,
         marginHorizontal: 10,
     },
@@ -134,10 +161,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     buttonText: {
-        ...typography.body1,
-        color: customColors.text,
+        ...typography.body1(colors),
         textAlign: 'center',
         fontWeight: '700',
         marginTop: 10,
     },
+    tinyLogo: {
+        width: 45,
+        height: 45,
+    }
 });

@@ -1,3 +1,5 @@
+import { useColorScheme } from 'react-native';
+
 export const customFonts = {
     plusJakartaSansBold: "PlusJakartaSans-Bold",
     plusJakartaSansExtraBold: "PlusJakartaSans-ExtraBold",
@@ -9,6 +11,29 @@ export const customFonts = {
 }
 
 export const customColors = {
+    light: {
+        background: "#ffffff",
+        primary: "#20c997",
+        secondary: "#f5f5f5",
+        accent: "#FF7043",
+        surface: '#1E1E1E',
+        textPrimary: "#212121",
+        textSecondary: '#757575',
+        black: "#000000",
+        white: "#ffffff",
+    },
+    dark: {
+        background: "#000000",
+        primary: "#20c997",
+        secondary: "#1E1E1E",
+        accent: "#FF7043",
+        surface: '#f5f5f5',
+        textPrimary: "#ffffff",
+        textSecondary: '#b0b0b0',
+        black: "#000000",
+        white: "#ffffff",
+    },
+
     background: "#ffffff",
     primary: "#20c997",
     secondary: "#f5f5f5",
@@ -21,60 +46,61 @@ export const customColors = {
     white: "#ffffff",
 }
 
+
 export const typography = {
-    h1: {
+    h1: (colors) => ({
         fontFamily: customFonts.plusJakartaSansExtraBold,
         fontSize: 32,
-        color: customColors.textPrimary,
-    },
-    h2: {
+        color: colors.textPrimary,
+    }),
+    h2: (colors) => ({
         fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 28,
-        color: customColors.textPrimary,
-    },
-    h3: {
+        color: colors.textPrimary,
+    }),
+    h3: (colors) => ({
         fontFamily: customFonts.plusJakartaSansSemiBold,
         fontSize: 24,
-        color: customColors.textPrimary,
-    },
-    h4: {
+        color: colors.textPrimary,
+    }),
+    h4: (colors) => ({
         fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 20,
-        color: customColors.textPrimary,
-    },
-    h5: {
+        color: colors.textPrimary,
+    }),
+    h5: (colors) => ({
         fontFamily: customFonts.plusJakartaSansMedium,
         fontSize: 18,
-        color: customColors.textPrimary,
-    },
-    h6: {
+        color: colors.textPrimary,
+    }),
+    h6: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 16,
-        color: customColors.textPrimary,
-    },
-    body1: {
+        color: colors.textPrimary,
+    }),
+    body1: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 14,
-        color: customColors.textPrimary,
-    },
-    body2: {
+        color: colors.textPrimary,
+    }),
+    body2: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
         fontSize: 12,
-        color: customColors.textSecondary,
-    },
-    button: {
+        color: colors.textSecondary,
+    }),
+    button: (colors) => ({
         fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 14,
-        color: customColors.white,
-    },
-    caption: {
+        color: colors.white,
+    }),
+    caption: (colors) => ({
         fontFamily: customFonts.plusJakartaSansLight,
         fontSize: 12,
-        color: customColors.textSecondary,
-    },
-    overline: {
+        color: colors.textSecondary,
+    }),
+    overline: (colors) => ({
         fontFamily: customFonts.plusJakartaSansLight,
         fontSize: 10,
-        color: customColors.textSecondary,
-    },
+        color: colors.textSecondary,
+    }),
 };

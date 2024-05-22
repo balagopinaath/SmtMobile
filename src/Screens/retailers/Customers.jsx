@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList, useColorScheme } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API } from '../../Config/Endpoint';
 import { customColors, typography } from '../../Config/helper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Customers = () => {
     const navigation = useNavigation();
@@ -10,14 +11,23 @@ const Customers = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
 
     useEffect(() => {
-        fetchRetailersData();
+        (async () => {
+            try {
+                const companyId = await AsyncStorage.getItem('Company_Id');
+                fetchRetailersData(companyId)
+            } catch (err) {
+                console.log(err);
+            }
+        })();
     }, []);
 
-    const fetchRetailersData = async () => {
+    const fetchRetailersData = async (id) => {
         try {
-            const response = await fetch(`${API.retailers}${1}`);
+            const response = await fetch(`${API.retailers}${id}`);
             if (!response.ok) {
                 throw new Error(`API request failed with status: ${response.status}`);
             }
@@ -44,32 +54,32 @@ const Customers = () => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })}>
-            <View style={styles.retailerContainer}>
-                <View style={styles.retailerInfo}>
-                    <Text style={styles.retailerName}>{item.Retailer_Name}</Text>
-                    <Text style={styles.retailerMobile}>{item.Mobile_No}</Text>
+            <View style={styles(colors).retailerContainer}>
+                <View style={styles(colors).retailerInfo}>
+                    <Text style={styles(colors).retailerName}>{item.Retailer_Name}</Text>
+                    <Text style={styles(colors).retailerMobile}>{item.Mobile_No}</Text>
                 </View>
-                <Text style={styles.retailerArea}>{item.AreaGet}</Text>
+                <Text style={styles(colors).retailerArea}>{item.AreaGet}</Text>
             </View>
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
             <TextInput
                 value={searchQuery}
-                style={styles.searchInput}
+                style={styles(colors).searchInput}
                 placeholder="Search by retailer name"
                 onChangeText={handleSearch}
                 returnKeyType="search"
             />
-            <View style={styles.retailerHeading}>
-                <Text style={styles.retailerTitle}>Retailer Info</Text>
-                <Text style={styles.retailerTitle}>Area</Text>
+            <View style={styles(colors).retailerHeading}>
+                <Text style={styles(colors).retailerTitle}>Retailer Info</Text>
+                <Text style={styles(colors).retailerTitle}>Area</Text>
             </View>
 
             {loading ? (
-                <ActivityIndicator style={styles.activityIndicator} size="large" color={customColors.primary} />
+                <ActivityIndicator style={styles(colors).activityIndicator} size="large" color={customColors.primary} />
             ) : (
                 <>
                     {filteredData.length > 0 ? (
@@ -80,8 +90,8 @@ const Customers = () => {
                         />
 
                     ) : (
-                        <View style={styles.noDataText}>
-                            <Text style={{ ...typography.h5 }}>No data found</Text>
+                        <View style={styles(colors).noDataText}>
+                            <Text style={{ ...typography.h5(colors) }}>No data found</Text>
                         </View>
                     )}
                 </>
@@ -93,10 +103,10 @@ const Customers = () => {
 
 export default Customers;
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
     },
     activityIndicator: {
         flex: 1,
@@ -104,10 +114,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     searchInput: {
-        ...typography.h6,
+        ...typography.h6(colors),
         paddingHorizontal: 20,
         margin: 25,
-        borderColor: customColors.textSecondary,
+        borderColor: colors.textSecondary,
         borderWidth: 0.75,
         borderRadius: 30,
     },
@@ -115,13 +125,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         padding: 15,
         marginTop: 10,
         marginBottom: 10,
         marginHorizontal: 10,
         borderRadius: 10,
-        shadowColor: customColors.surface,
+        shadowColor: colors.surface,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -140,26 +150,26 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
     retailerTitle: {
         flex: 1,
-        ...typography.h6,
+        ...typography.h6(colors),
         fontWeight: '600',
         textAlign: 'left',
     },
     retailerName: {
-        ...typography.h6,
+        ...typography.h6(colors),
         fontWeight: '700',
     },
     retailerMobile: {
-        ...typography.h6,
+        ...typography.h6(colors),
         fontWeight: '400',
     },
     retailerArea: {
-        ...typography.h6,
+        ...typography.h6(colors),
         fontWeight: '400',
         paddingHorizontal: 50,
     },
@@ -167,7 +177,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        color: customColors.textSecondary,
+        color: colors.textSecondary,
         fontSize: 16,
     },
 });

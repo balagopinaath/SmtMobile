@@ -1,15 +1,17 @@
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import IconFont from 'react-native-vector-icons/Fontisto';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [name, setName] = useState('')
     const [userId, setUserId] = useState('')
     const [userType, setUserType] = useState('')
@@ -90,42 +92,42 @@ const AttendanceInfo = () => {
     }
 
     return (
-        <View style={styles.card}>
-            <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>Today Attendance</Text>
+        <View style={styles(colors).card}>
+            <View style={styles(colors).cardHeader}>
+                <Text style={styles(colors).cardTitle}>Today Attendance</Text>
 
                 {!activeStatus && (
-                    <TouchableOpacity style={styles.startButton} onPress={() => { navigation.navigate('Attendance') }} >
-                        <Text style={styles.buttonText}>Start Day</Text>
+                    <TouchableOpacity style={styles(colors).startButton} onPress={() => { navigation.navigate('Attendance') }} >
+                        <Text style={styles(colors).buttonText}>Start Day</Text>
                     </TouchableOpacity>
                 )}
             </View>
 
             {activeStatus !== 0 && (
-                <View style={styles.cardContent}>
-                    <View style={styles.cardItem}>
-                        <View style={styles.itemIcon}>
-                            <IconFont name="date" color={customColors.black} size={20} />
-                            <Text style={styles.text}>Date</Text>
+                <View style={styles(colors).cardContent}>
+                    <View style={styles(colors).cardItem}>
+                        <View style={styles(colors).itemIcon}>
+                            <IconFont name="date" color={colors.black} size={20} />
+                            <Text style={styles(colors).text}>Date</Text>
                         </View>
-                        <Text style={styles.text}>{date}</Text>
+                        <Text style={styles(colors).text}>{date}</Text>
                     </View>
 
-                    <View style={styles.cardItem}>
-                        <View style={styles.itemIcon}>
-                            <Icon name="time-outline" color={customColors.black} size={20} />
-                            <Text style={styles.text}>Time In</Text>
+                    <View style={styles(colors).cardItem}>
+                        <View style={styles(colors).itemIcon}>
+                            <Icon name="time-outline" color={colors.black} size={20} />
+                            <Text style={styles(colors).text}>Time In</Text>
                         </View>
-                        <Text style={styles.text}>{time}</Text>
+                        <Text style={styles(colors).text}>{time}</Text>
                     </View>
 
                     <TouchableOpacity
-                        style={styles.endButton}
+                        style={styles(colors).endButton}
                         onPress={() => {
                             navigation.navigate('EndDay');
                             setActiveStatus(0);
                         }}>
-                        <Text style={styles.buttonText}>End Day</Text>
+                        <Text style={styles(colors).buttonText}>End Day</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -135,9 +137,9 @@ const AttendanceInfo = () => {
 
 export default AttendanceInfo
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     card: {
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderRadius: 10,
         padding: 20,
         margin: 20,
@@ -157,25 +159,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     cardTitle: {
-        ...typography.h5,
-        color: customColors.textPrimary,
+        ...typography.h5(colors),
     },
     startButton: {
-        backgroundColor: customColors.primary,
+        backgroundColor: colors.primary,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 5,
     },
     endButton: {
-        backgroundColor: customColors.primary,
+        backgroundColor: colors.primary,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 5,
         alignSelf: 'flex-end',
     },
     buttonText: {
-        ...typography.button,
-        color: customColors.textPrimary
+        ...typography.button(colors),
     },
     cardContent: {},
     cardItem: {
@@ -189,8 +189,8 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     text: {
-        ...typography.body1,
-        color: customColors.textPrimary,
+        ...typography.body1(colors),
+        // color: colors.textPrimary,
         marginLeft: 10,
         marginBottom: 5,
     },

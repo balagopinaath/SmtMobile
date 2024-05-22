@@ -19,23 +19,30 @@ import AttendanceReport from '../Screens/reports/AttendanceReport';
 import { customColors, customFonts } from '../Config/helper';
 import StockInfo from '../Screens/reports/StockInfo';
 import SaleOrder from '../Screens/sales/SaleOrder';
+import OrderPreview from '../Screens/sales/OrderPreview';
+import { useColorScheme } from 'react-native';
 
 const Stack = createStackNavigator();
 
 const AppStack = () => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
+
     return (
-        <Stack.Navigator initialRouteName="StartScreen" screenOptions={{
-            headerShown: true,
-            headerStyle: {
-                backgroundColor: customColors.primary,
-            },
-            headerTintColor: customColors.white,
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                fontSize: 18,
-                fontFamily: customFonts.plusJakartaSansBold
-            },
-        }}>
+        <Stack.Navigator
+            initialRouteName="StartScreen"
+            screenOptions={{
+                headerShown: true,
+                headerStyle: {
+                    backgroundColor: colors.primary,
+                },
+                headerTintColor: colors.white,
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                    fontSize: 18,
+                    fontFamily: customFonts.plusJakartaSansBold
+                },
+            }}>
             <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
@@ -57,7 +64,8 @@ const AppStack = () => {
             <Stack.Screen name="OpenCamera" component={OpenCamera} />
             <Stack.Screen name="StockClosing" component={StockClosing} options={{ title: 'Closing Stock' }} />
 
-            <Stack.Screen name="Orders" component={SaleOrder} />
+            <Stack.Screen name="Orders" component={SaleOrder} options={{ title: 'Sales order creation' }} />
+            <Stack.Screen name="OrderPreview" component={OrderPreview} options={{ title: 'Sales List' }} />
 
         </Stack.Navigator>
     );

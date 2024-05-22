@@ -1,15 +1,18 @@
 import React from 'react'
-import { useWindowDimensions } from 'react-native';
+import { useColorScheme, useWindowDimensions } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import DrawerScreen from './DrawerScreen';
 import AppStack from './AppStack';
+import { customColors } from '../Config/helper';
 
 
 const AppDrawer = () => {
     const Drawer = createDrawerNavigator();
     const dimensions = useWindowDimensions();
     const isLargeScreen = dimensions.width >= 768;
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
 
     return (
         <Drawer.Navigator

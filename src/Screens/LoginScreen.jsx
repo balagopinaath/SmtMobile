@@ -90,6 +90,7 @@ const LoginScreen = () => {
         try {
             await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
             await AsyncStorage.setItem('UserId', data.data[0].UserId);
+            await AsyncStorage.setItem('Company_Id', String(data.data[0].Company_Id));
             await AsyncStorage.setItem('userName', data.data[0].UserName);
             await AsyncStorage.setItem('Name', data.data[0].Name);
             await AsyncStorage.setItem('UserType', data.data[0].UserType);
