@@ -1,9 +1,9 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, Modal } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, Modal, useColorScheme } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { API } from '../../Config/Endpoint';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native'
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomRadioButton from '../../Components/CustomRadioButton';
 import LocationIndicator from '../../Components/LocationIndicator';
@@ -12,6 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RetailerVisit = () => {
     const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [formValues, setFormValues] = useState({
         Retailer_Id: selectedRetail,
         Retailer_Name: '',
@@ -44,7 +46,6 @@ const RetailerVisit = () => {
     }, [])
 
     const fetchCustomersData = async (companyId) => {
-        // console.log(`${API.retailerName}${companyId}`)
         try {
             const response = await fetch(`${API.retailerName}${companyId}`);
             if (!response.ok) {
@@ -130,11 +131,11 @@ const RetailerVisit = () => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles(colors).container}>
 
             <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
 
-            <View style={styles.radioView}>
+            <View style={styles(colors).radioView}>
                 <CustomRadioButton
                     label="New Retailer"
                     selected={selectedValue === 'new'}
@@ -166,14 +167,17 @@ const RetailerVisit = () => {
                         maxHeight={300}
                         search
                         searchPlaceholder="Search Retailer"
-                        style={styles.dropdown}
-                        placeholderStyle={styles.placeholderStyle}
-                        selectedTextStyle={styles.selectedTextStyle}
-                        inputSearchStyle={styles.inputSearchStyle}
+                        style={styles(colors).dropdown}
+                        placeholderStyle={styles(colors).placeholderStyle}
+                        containerStyle={styles(colors).dropdownContainer}
+                        selectedTextStyle={styles(colors).selectedTextStyle}
+                        inputSearchStyle={styles(colors).inputSearchStyle}
+                        maxFontSizeMultiplier={1.2}
                     />
 
                     <TextInput
-                        style={styles.textArea}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).textArea}
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
@@ -181,14 +185,14 @@ const RetailerVisit = () => {
                         onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
-                    <View style={styles.buttonGroup}>
+                    <View style={styles(colors).buttonGroup}>
                         <TouchableOpacity onPress={() => setShowCameraModal(true)}
-                            style={styles.button}
-                        ><Text style={styles.buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
+                            style={styles(colors).button}
+                        ><Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
 
                         <TouchableOpacity onPress={handleSubmit}
-                            style={styles.button}
-                        ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                            style={styles(colors).button}
+                        ><Text style={styles(colors).buttonText}>Submit</Text></TouchableOpacity>
                     </View>
 
                     <Modal
@@ -197,22 +201,22 @@ const RetailerVisit = () => {
                         transparent={true}
                         onRequestClose={() => setShowCameraModal(false)}
                     >
-                        <View style={styles.modalContainer}>
-                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles.closeButton}>
-                                <Icon name='close' size={30} color={customColors.white} />
+                        <View style={styles(colors).modalContainer}>
+                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).closeButton}>
+                                <Icon name='close' size={30} color={colors.white} />
                             </TouchableOpacity>
                             {
                                 !capturedPhotoPath ? (
                                     <CameraComponent onPhotoCapture={handlePhotoCapture} />
                                 ) : (
                                     capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
-                                        <View style={styles.previewImageContainer}>
+                                        <View style={styles(colors).previewImageContainer}>
                                             <Image
                                                 source={{ uri: 'file://' + capturedPhotoPath }}
-                                                style={styles.previewImage}
+                                                style={styles(colors).previewImage}
                                             />
-                                            <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
-                                                <Text style={styles.buttonText}>Retake Photo</Text>
+                                            <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
+                                                <Text style={styles(colors).buttonText}>Retake Photo</Text>
                                             </TouchableOpacity>
                                         </View>
                                     )
@@ -226,7 +230,8 @@ const RetailerVisit = () => {
             {selectedValue === 'new' &&
                 <View>
                     <TextInput
-                        style={styles.inputBox}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).inputBox}
                         value={formValues.Retailer_Name}
                         keyboardType="default"
                         autoCapitalize="characters"
@@ -235,7 +240,8 @@ const RetailerVisit = () => {
                     />
 
                     <TextInput
-                        style={styles.inputBox}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).inputBox}
                         value={formValues.Contact_Person}
                         keyboardType="default"
                         autoCapitalize="characters"
@@ -244,7 +250,8 @@ const RetailerVisit = () => {
                     />
 
                     <TextInput
-                        style={styles.inputBox}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).inputBox}
                         value={formValues.Mobile_No}
                         keyboardType="phone-pad"
                         autoCapitalize="none"
@@ -253,7 +260,8 @@ const RetailerVisit = () => {
                     />
 
                     <TextInput
-                        style={styles.inputBox}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).inputBox}
                         value={formValues.Location_Address}
                         keyboardType="default"
                         placeholder="Address"
@@ -261,7 +269,8 @@ const RetailerVisit = () => {
                     />
 
                     <TextInput
-                        style={styles.textArea}
+                        maxFontSizeMultiplier={1.2}
+                        style={styles(colors).textArea}
                         multiline={true}
                         numberOfLines={4}
                         placeholder='Enter a narration'
@@ -269,14 +278,14 @@ const RetailerVisit = () => {
                         onChangeText={(text) => handleInputChange('Narration', text)} // Ensure this is properly set
                     />
 
-                    <View style={styles.buttonGroup}>
+                    <View style={styles(colors).buttonGroup}>
                         <TouchableOpacity onPress={() => setShowCameraModal(true)}
-                            style={styles.button}
-                        ><Text style={styles.buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
+                            style={styles(colors).button}
+                        ><Text style={styles(colors).buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
 
                         <TouchableOpacity onPress={handleSubmit}
-                            style={styles.button}
-                        ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+                            style={styles(colors).button}
+                        ><Text style={styles(colors).buttonText}>Submit</Text></TouchableOpacity>
                     </View>
 
                     <Modal
@@ -285,22 +294,22 @@ const RetailerVisit = () => {
                         transparent={true}
                         onRequestClose={() => setShowCameraModal(false)}
                     >
-                        <View style={styles.modalContainer}>
-                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles.closeButton}>
-                                <Icon name='close' size={30} color={customColors.white} />
+                        <View style={styles(colors).modalContainer}>
+                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).closeButton}>
+                                <Icon name='close' size={30} color={colors.white} />
                             </TouchableOpacity>
                             {
                                 !capturedPhotoPath ? (
                                     <CameraComponent onPhotoCapture={handlePhotoCapture} />
                                 ) : (
                                     capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
-                                        <View style={styles.previewImageContainer}>
+                                        <View style={styles(colors).previewImageContainer}>
                                             <Image
                                                 source={{ uri: 'file://' + capturedPhotoPath }}
-                                                style={styles.previewImage}
+                                                style={styles(colors).previewImage}
                                             />
-                                            <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
-                                                <Text style={styles.buttonText}>Retake Photo</Text>
+                                            <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
+                                                <Text style={styles(colors).buttonText}>Retake Photo</Text>
                                             </TouchableOpacity>
                                         </View>
                                     )
@@ -317,25 +326,10 @@ const RetailerVisit = () => {
 
 export default RetailerVisit
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        backgroundColor: customColors.primary,
-        marginBottom: 20
-    },
-    headerText: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        color: customColors.white,
-        fontSize: 15,
-        fontWeight: '500',
-        textAlign: 'center',
-        marginLeft: 15
+        backgroundColor: colors.background,
     },
     radioView: {
         flexDirection: 'row',
@@ -350,31 +344,37 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         borderWidth: 0.5,
+        borderColor: colors.textPrimary,
+        backgroundColor: colors.background,
+    },
+    dropdownContainer: {
+        backgroundColor: colors.background, // Background color of the dropdown list
+        borderColor: colors.textPrimary, // Border color of the dropdown list
+        borderWidth: 0.5,
+        borderRadius: 10,
     },
     placeholderStyle: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 15,
-        fontWeight: '500'
+        ...typography.h6(colors),
+        fontWeight: '500',
+        color: colors.textSecondary,
     },
     selectedTextStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
-        fontWeight: '600'
+        ...typography.h6(colors),
+        fontWeight: '600',
+        color: colors.textPrimary,
     },
     inputSearchStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 14,
-        fontWeight: '400'
+        ...typography.h6(colors),
+        fontWeight: '400',
+        color: colors.textPrimary,
     },
     textArea: {
         borderWidth: 0.5,
         marginHorizontal: 20,
         borderRadius: 15,
         padding: 10,
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 14,
+        ...typography.h6(colors),
         fontWeight: '400',
-        // marginBottom: 25,
     },
     buttonGroup: {
         flexDirection: 'row',
@@ -409,13 +409,14 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
         alignSelf: 'center',
-        backgroundColor: customColors.primary,
-        color: customColors.white,
+        backgroundColor: colors.primary,
+        color: colors.white,
         borderRadius: 10,
         marginTop: 30
     },
     buttonText: {
         textAlign: 'center',
+        ...typography.button(colors),
         fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 14,
         fontWeight: '400',

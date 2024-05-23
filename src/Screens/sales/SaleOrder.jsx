@@ -1,16 +1,18 @@
-import { Alert, Button, Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, Image, KeyboardAvoidingView, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from 'react-native-element-dropdown';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
 
 const SaleOrder = ({ route }) => {
     const navigation = useNavigation();
     const pagerRef = useRef(null);
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
     const initialStockValue = {
@@ -222,7 +224,7 @@ const SaleOrder = ({ route }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
             <Dropdown
                 data={retailers}
                 labelField="Retailer_Name"
@@ -241,18 +243,20 @@ const SaleOrder = ({ route }) => {
                 maxHeight={300}
                 search
                 searchPlaceholder="Search Retailer"
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
+                style={styles(colors).dropdown}
+                containerStyle={styles(colors).dropdownContainer}
+                placeholderStyle={styles(colors).placeholderStyle}
+                selectedTextStyle={styles(colors).selectedTextStyle}
+                inputSearchStyle={styles(colors).inputSearchStyle}
             />
-            <View style={styles.narrationContainer}>
+            <View style={styles(colors).narrationContainer}>
                 <TextInput
-                    style={styles.narrationContainerInputText}
+                    maxFontSizeMultiplier={1.2}
+                    style={styles(colors).narrationContainerInputText}
                     placeholder='Narration'
                     onChangeText={(text) => setStockInputValue({ ...stockInputValue, Narration: text })}
                 />
-                <View style={styles.narrationContainerButtonGroup}>
+                <View style={styles(colors).narrationContainerButtonGroup}>
                     <CustomButton onPress={() => navigation.goBack()}>Cancel</CustomButton>
                     <CustomButton onPress={handlePreview}>Preview</CustomButton>
                 </View>
@@ -260,16 +264,16 @@ const SaleOrder = ({ route }) => {
 
             <View style={{}}>
                 <ScrollView horizontal
-                    contentContainerStyle={styles.tabContainer}
+                    contentContainerStyle={styles(colors).tabContainer}
                     showsHorizontalScrollIndicator={true}
                 >
                     {productData.map((item, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
-                                styles.tabButton,
+                                styles(colors).tabButton,
                                 selectedTab === index
-                                && styles.activeTab
+                                && styles(colors).activeTab
                             ]}
                             onPress={() => handleTabPress(index)}
                         >
@@ -287,7 +291,7 @@ const SaleOrder = ({ route }) => {
                         {productData.map((group, groupIndex) => (
                             <View key={groupIndex}>
                                 {group.GroupedProductArray.map((product, pIndex) => (
-                                    <View key={pIndex} style={styles.pagerViewContainer}>
+                                    <View key={pIndex} style={styles(colors).pagerViewContainer}>
                                         <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
                                             <Image
                                                 style={{
@@ -298,11 +302,11 @@ const SaleOrder = ({ route }) => {
                                                 }}
                                                 source={{ uri: product.productImageUrl }}
                                             />
-                                            <View style={styles.card}>
-                                                <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                                <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
+                                            <View style={styles(colors).card}>
+                                                <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
+                                                <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
                                                 <TextInput
-                                                    style={styles.pagerViewContainerInputText}
+                                                    style={styles(colors).pagerViewContainerInputText}
                                                     onChangeText={(text) =>
                                                         handleQuantityChange(product.Product_Id, text, product.Item_Rate)
                                                     }
@@ -330,17 +334,17 @@ const SaleOrder = ({ route }) => {
                         setModalVisible(!modalVisible);
                     }}
                 >
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Order Summary</Text>
+                    <View style={styles(colors).modalOverlay}>
+                        <View style={styles(colors).modalContent}>
+                            <Text style={styles(colors).modalTitle}>Order Summary</Text>
                             <Text>{stockInputValue.Retailer_Name}</Text>
-                            <ScrollView style={styles.tableContainer}>
-                                <View style={styles.tableHeader}>
-                                    <Text style={styles.headerText}>Name</Text>
-                                    <Text style={styles.headerText}>Qty</Text>
-                                    <Text style={styles.headerText}>UOM</Text>
-                                    <Text style={styles.headerText}>Rate</Text>
-                                    <Text style={styles.headerText}>Amount</Text>
+                            <ScrollView style={styles(colors).tableContainer}>
+                                <View style={styles(colors).tableHeader}>
+                                    <Text style={styles(colors).headerText}>Name</Text>
+                                    <Text style={styles(colors).headerText}>Qty</Text>
+                                    <Text style={styles(colors).headerText}>UOM</Text>
+                                    <Text style={styles(colors).headerText}>Rate</Text>
+                                    <Text style={styles(colors).headerText}>Amount</Text>
                                 </View>
                                 {productData.map((group, groupIndex) => (
                                     group.GroupedProductArray.map((product, pIndex) => {
@@ -350,30 +354,30 @@ const SaleOrder = ({ route }) => {
                                             const rate = quantityObj.Item_Rate || 0;
                                             const amount = qty * rate;
                                             return (
-                                                <View key={pIndex} style={styles.tableRow}>
-                                                    <Text style={styles.rowText}>{product.Product_Name}</Text>
-                                                    <Text style={styles.rowText}>{qty}</Text>
-                                                    <Text style={styles.rowText}>{product.UOM}</Text>
-                                                    <Text style={styles.rowText}>{rate}</Text>
-                                                    <Text style={styles.rowText}>{amount.toFixed(2)}</Text>
+                                                <View key={pIndex} style={styles(colors).tableRow}>
+                                                    <Text style={styles(colors).rowText}>{product.Product_Name}</Text>
+                                                    <Text style={styles(colors).rowText}>{qty}</Text>
+                                                    <Text style={styles(colors).rowText}>{product.UOM}</Text>
+                                                    <Text style={styles(colors).rowText}>{rate}</Text>
+                                                    <Text style={styles(colors).rowText}>{amount.toFixed(2)}</Text>
                                                 </View>
                                             );
                                         }
                                     })
                                 ))}
                             </ScrollView>
-                            <View style={styles.totalContainer}>
-                                <Text style={styles.totalText}>Total Amount: ₹{total.toFixed(2)}/-</Text>
-                                <Text style={styles.totalText}>In Words: {numberToWords(total)} only.</Text>
+                            <View style={styles(colors).totalContainer}>
+                                <Text style={styles(colors).totalText}>Total Amount: ₹{total.toFixed(2)}/-</Text>
+                                <Text style={styles(colors).totalText}>In Words: {numberToWords(total)} only.</Text>
                             </View>
                             <TouchableOpacity
-                                style={styles.closeButton}
+                                style={styles(colors).closeButton}
                                 onPress={handleSubmit}
                             >
                                 <Text>Submit Order</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.closeButton}
+                                style={styles(colors).closeButton}
                                 onPress={() => setModalVisible(!modalVisible)}
                             >
                                 <Text>Close</Text>
@@ -388,19 +392,17 @@ const SaleOrder = ({ route }) => {
 
 export default SaleOrder
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
     },
     narrationContainer: {
         marginHorizontal: 20,
         marginVertical: 10,
     },
     narrationContainerInputText: {
-        color: customColors.text,
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 16,
+        ...typography.h6(colors),
         borderWidth: 1,
         borderColor: '#a1a1a1',
         borderRadius: 8,
@@ -420,27 +422,31 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 0.5,
     },
+    dropdownContainer: {
+        backgroundColor: colors.background,
+        borderColor: colors.textPrimary,
+        borderWidth: 0.5,
+        borderRadius: 10,
+    },
     placeholderStyle: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 15,
+        ...typography.h6(colors),
         fontWeight: '500'
     },
     selectedTextStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 15,
+        ...typography.h6(colors),
         fontWeight: '600'
     },
     inputSearchStyle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 14,
+        ...typography.h6(colors),
         fontWeight: '400'
     },
     tabContainer: {
         height: 55,
         flexDirection: 'row',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
+        marginBottom: 50,
     },
     tabButton: {
         paddingVertical: 12,
@@ -449,10 +455,10 @@ const styles = StyleSheet.create({
         borderBottomColor: 'transparent',
     },
     activeTab: {
-        borderBottomColor: 'blue',
+        borderBottomColor: colors.primary,
     },
     pagerViewContainer: {
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
@@ -468,8 +474,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     pagerViewContainerText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 4,

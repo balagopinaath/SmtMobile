@@ -1,18 +1,21 @@
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable, useColorScheme } from 'react-native'
 import React from 'react'
-import { customColors, customFonts } from '../Config/helper'
+import { customColors, typography } from '../Config/helper'
 
 const CustomButton = ({ children, onPress }) => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
+
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
             <Pressable
                 onPress={onPress}
                 style={({ pressed }) => pressed
-                    ? [styles.buttonInterContainer, styles.pressed]
-                    : styles.buttonInterContainer
+                    ? [styles(colors).buttonInterContainer, styles(colors).pressed]
+                    : styles(colors).buttonInterContainer
                 }
-                android_ripple={{ color: customColors.accent }}>
-                <Text style={styles.buttonText}>{children}</Text>
+                android_ripple={{ color: colors.accent }}>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>{children}</Text>
             </Pressable>
         </View>
     )
@@ -20,22 +23,21 @@ const CustomButton = ({ children, onPress }) => {
 
 export default CustomButton
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         borderRadius: 28,
         margin: 4,
         overflow: 'hidden'
     },
     buttonInterContainer: {
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         paddingVertical: 8,
         paddingHorizontal: 20,
         elevation: 2,
     },
     buttonText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        color: customColors.white,
-        fontSize: 14,
+        ...typography.button(colors),
+        // color: colors.white,
         fontWeight: '500',
         textAlign: 'center',
     },

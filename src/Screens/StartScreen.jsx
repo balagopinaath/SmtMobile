@@ -1,13 +1,15 @@
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, useColorScheme } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 
 const StartScreen = () => {
     const navigation = useNavigation();
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
 
     useEffect(() => {
         setTimeout(() => {
@@ -42,25 +44,24 @@ const StartScreen = () => {
     }, [loggedIn, loading, navigation]);
 
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor={customColors.primary} />
-            <Text style={styles.logo}>Shri Foods</Text>
+        <View style={styles(colors).container}>
+            <StatusBar backgroundColor={colors.primary} />
+            <Text style={styles(colors).logo} maxFontSizeMultiplier={1.2}>Shri Foods</Text>
         </View>
     );
 };
 
 export default StartScreen;
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
-        backgroundColor: customColors.white,
+        backgroundColor: colors.white,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
     },
     logo: {
-        fontSize: 32,
-        color: customColors.primary,
-        fontFamily: customFonts.plusJakartaSansExtraBold
+        ...typography.h1(colors),
+        color: colors.primary,
     }
 });

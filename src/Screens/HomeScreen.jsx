@@ -55,7 +55,7 @@ const HomeScreen = () => {
                 <TouchableOpacity onPress={() => navigation.openDrawer()}>
                     <Icon name="menuunfold" color={colors.white} size={23} />
                 </TouchableOpacity>
-                <Text style={styles(colors).headerText}>Welcome, {name}!</Text>
+                <Text style={styles(colors).headerText} maxFontSizeMultiplier={1.2}>Welcome, {name}!</Text>
                 <TouchableOpacity>
                     {/* <Icon name="bells" color={colors.white} size={23} /> */}
                 </TouchableOpacity>
@@ -69,7 +69,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/retailer.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Retailers</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Retailers</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerVisit')}>
@@ -77,7 +77,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/entry.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Visit Entry</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visit Entry</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('AttendanceReport')}>
@@ -85,7 +85,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/attendance.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Attendance Report</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance Report</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('StockInfo')}>
@@ -93,7 +93,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/stock.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Stock Report</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Stock Report</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerLog')}>
@@ -101,7 +101,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/visitLog.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Visited Report</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visited Report</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Orders')}>
@@ -109,7 +109,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/sale.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Sale Order</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale Order</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('OrderPreview')}>
@@ -117,7 +117,7 @@ const HomeScreen = () => {
                         style={styles(colors).tinyLogo}
                         source={require('../../assets/images/sale-report.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Sale List</Text>
+                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale List</Text>
                 </TouchableOpacity>
             </View>
 
@@ -163,7 +163,7 @@ const styles = (colors) => StyleSheet.create({
     buttonText: {
         ...typography.body1(colors),
         textAlign: 'center',
-        fontWeight: '700',
+        fontWeight: 'bold',
         marginTop: 10,
     },
     tinyLogo: {

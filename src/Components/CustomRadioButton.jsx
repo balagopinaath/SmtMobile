@@ -1,17 +1,20 @@
-import { StyleSheet, Text, Dimensions, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, Dimensions, TouchableOpacity, useColorScheme } from 'react-native'
 import React from 'react'
-import { customColors, customFonts } from '../Config/helper'
+import { customColors, typography } from '../Config/helper'
 
 const { width } = Dimensions.get('window')
 
 const CustomRadioButton = ({ label, selected, onSelect }) => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
+
     return (
         <TouchableOpacity
-            style={[styles.radioButton,
-            { backgroundColor: selected ? customColors.accent : '#FFF' }]}
+            style={[styles(colors).radioButton,
+            { backgroundColor: selected ? colors.accent : '#FFF' }]}
             onPress={onSelect}
         >
-            <Text style={[styles.radioButtonText,
+            <Text style={[styles(colors).radioButtonText,
             { color: selected ? '#FFF' : '#000' }]}>
                 {label}
             </Text>
@@ -21,7 +24,7 @@ const CustomRadioButton = ({ label, selected, onSelect }) => {
 
 export default CustomRadioButton
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     radioButton: {
         padding: 12,
         borderRadius: 10,
@@ -34,7 +37,6 @@ const styles = StyleSheet.create({
         width: width * 0.4,
     },
     radioButtonText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 16,
+        ...typography.h6(colors),
     },
 })

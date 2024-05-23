@@ -1,17 +1,19 @@
-import { View, Text, StyleSheet, ToastAndroid, Alert, TextInput, TouchableOpacity, StatusBar } from 'react-native'
+import { View, Text, StyleSheet, ToastAndroid, Alert, TextInput, TouchableOpacity, StatusBar, useColorScheme } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'react-native-crypto-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../Config/Endpoint';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, customFonts, typography } from '../Config/helper';
 
 const LoginScreen = () => {
     const navigation = useNavigation();
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
     const [userId, setUserId] = useState("");
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
 
     const loginFunction = async () => {
         if (loginId && password) {
@@ -90,7 +92,7 @@ const LoginScreen = () => {
         try {
             await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
             await AsyncStorage.setItem('UserId', data.data[0].UserId);
-            await AsyncStorage.setItem('Company_Id', String(data.data[0].Company_Id));
+            await AsyncStorage.setItem('Company_Id', String(data.data[0].Company_id));
             await AsyncStorage.setItem('userName', data.data[0].UserName);
             await AsyncStorage.setItem('Name', data.data[0].Name);
             await AsyncStorage.setItem('UserType', data.data[0].UserType);
@@ -105,16 +107,17 @@ const LoginScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor={customColors.primary} />
-            <Text style={styles.title}>Welcome to Sales App</Text>
+        <View style={styles(colors).container}>
+            <StatusBar backgroundColor={colors.primary} />
+            <Text style={styles(colors).title} maxFontSizeMultiplier={1.2}>Welcome to Sales App</Text>
 
-            <Text style={styles.subtitle}>Let's start to manage your attendance more effectively with us!</Text>
+            <Text style={styles(colors).subtitle} maxFontSizeMultiplier={1.2}>Let's start to manage your attendance more effectively with us!</Text>
 
-            <View style={styles.inputContainer}>
-                <Icon name="mobile-phone" size={25} style={styles.inputIcon} color={customColors.accent} ></Icon>
+            <View style={styles(colors).inputContainer}>
+                <Icon name="mobile-phone" size={25} style={styles(colors).inputIcon} color={colors.accent} ></Icon>
                 <TextInput
-                    style={styles.textInput}
+                    maxFontSizeMultiplier={1.2}
+                    style={styles(colors).textInput}
                     textAlign='left'
                     placeholder='Enter your Mobile Number'
                     value={loginId}
@@ -123,10 +126,11 @@ const LoginScreen = () => {
                 />
             </View>
 
-            <View style={styles.inputContainer}>
-                <Icon name="lock" size={25} style={styles.inputIcon} color={customColors.accent} ></Icon>
+            <View style={styles(colors).inputContainer}>
+                <Icon name="lock" size={25} style={styles(colors).inputIcon} color={colors.accent} ></Icon>
                 <TextInput
-                    style={styles.textInput}
+                    maxFontSizeMultiplier={1.2}
+                    style={styles(colors).textInput}
                     placeholder='Enter your Password'
                     value={password}
                     onChangeText={(val) => setPassword(val)}
@@ -136,8 +140,8 @@ const LoginScreen = () => {
                 />
             </View>
 
-            <TouchableOpacity style={styles.loginButton} onPressOut={loginFunction} >
-                <Text style={styles.loginButtonText}>Login</Text>
+            <TouchableOpacity style={styles(colors).loginButton} onPressOut={loginFunction} >
+                <Text style={styles(colors).loginButtonText} maxFontSizeMultiplier={1.2}>Login</Text>
             </TouchableOpacity>
         </View>
     )
@@ -145,29 +149,27 @@ const LoginScreen = () => {
 
 export default LoginScreen
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
         padding: 20
     },
     title: {
-        fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 28,
+        ...typography.h2(colors),
         fontWeight: 'bold',
         marginBottom: 10,
     },
     subtitle: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 16,
+        ...typography.h6(colors),
         color: '#777',
         marginBottom: 40,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: customColors.secondary,
+        backgroundColor: colors.secondary,
         borderRadius: 10,
         paddingHorizontal: 15,
         marginBottom: 20,
@@ -177,12 +179,12 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
-        fontFamily: customFonts.plusJakartaSansMedium,
+        ...typography.h6(colors),
         fontSize: 16,
         marginLeft: 2.5
     },
     loginButton: {
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -190,7 +192,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     },
     loginButtonText: {
-        color: customColors.white,
-        fontSize: 18
+        ...typography.h5(colors),
+        color: colors.white,
     }
 });

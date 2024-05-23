@@ -1,12 +1,14 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AttendanceReport = () => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [attendanceData, setAttendanceData] = useState(null)
 
     const [show, setShow] = useState(false);
@@ -67,30 +69,32 @@ const AttendanceReport = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
 
-            <View style={styles.datePickerContainer}>
-                <View style={styles.datePickerWrapper}>
-                    <Text style={styles.dateTitle}>From</Text>
-                    <TouchableOpacity style={styles.datePicker} onPress={() => showDatePicker(true)}>
+            <View style={styles(colors).datePickerContainer}>
+                <View style={styles(colors).datePickerWrapper}>
+                    <Text style={styles(colors).dateTitle}>From</Text>
+                    <TouchableOpacity style={styles(colors).datePicker} onPress={() => showDatePicker(true)}>
                         <TextInput
-                            style={styles.textInput}
+                            maxFontSizeMultiplier={1.2}
+                            style={styles(colors).textInput}
                             value={selectedFromDate.toDateString()} // Display selected 'fromDate'
                             editable={false}
                         />
-                        <Icon name="calendar" color={customColors.accent} size={20} />
+                        <Icon name="calendar" color={colors.accent} size={20} />
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.datePickerWrapper}>
-                    <Text style={styles.dateTitle}>To</Text>
-                    <TouchableOpacity style={styles.datePicker} onPress={() => showDatePicker(false)}>
+                <View style={styles(colors).datePickerWrapper}>
+                    <Text style={styles(colors).dateTitle}>To</Text>
+                    <TouchableOpacity style={styles(colors).datePicker} onPress={() => showDatePicker(false)}>
                         <TextInput
-                            style={styles.textInput}
+                            maxFontSizeMultiplier={1.2}
+                            style={styles(colors).textInput}
                             value={selectedToDate.toDateString()} // Display selected 'toDate'
                             editable={false}
                         />
-                        <Icon name="calendar" color={customColors.accent} size={20} />
+                        <Icon name="calendar" color={colors.accent} size={20} />
                     </TouchableOpacity>
                 </View>
 
@@ -106,43 +110,43 @@ const AttendanceReport = () => {
                 )}
             </View>
 
-            <ScrollView style={styles.cardContainer}>
+            <ScrollView style={styles(colors).cardContainer}>
                 {attendanceData && attendanceData.map((log, index) => (
-                    <View key={index} style={styles.card}>
-                        <View style={styles.textContainer}>
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Attendance:</Text>
-                                <Text style={styles.cardTitle}>{index + 1}</Text>
+                    <View key={index} style={styles(colors).card}>
+                        <View style={styles(colors).textContainer}>
+                            <View style={styles(colors).rowContainer}>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Attendance:</Text>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{index + 1}</Text>
                             </View>
 
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Start KM:</Text>
-                                <Text style={styles.cardTitle}>{log.Start_KM}</Text>
+                            <View style={styles(colors).rowContainer}>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Start KM:</Text>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.Start_KM}</Text>
                             </View>
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Date:</Text>
-                                <Text style={styles.cardTitle}>{new Date(log.Start_Date).toISOString().substring(0, 10)}</Text>
+                            <View style={styles(colors).rowContainer}>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Date:</Text>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{new Date(log.Start_Date).toISOString().substring(0, 10)}</Text>
                             </View>
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>Start Time:</Text>
-                                <Text style={styles.cardTitle}>{new Date(log.Start_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>
+                            <View style={styles(colors).rowContainer}>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Start Time:</Text>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{new Date(log.Start_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>
                             </View>
 
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>End Time:</Text>
+                            <View style={styles(colors).rowContainer}>
+                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>End Time:</Text>
                                 {log.End_Date ?
-                                    <Text style={styles.cardTitle}>
+                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>
                                         {new Date(log.End_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                                     </Text> :
-                                    <Text style={styles.cardTitle}>Not Set</Text>
+                                    <Text maxFontSizeMultiplier={1.2} style={styles.cardTitle}>Not Set</Text>
                                 }
                             </View>
 
-                            <View style={styles.rowContainer}>
-                                <Text style={styles.label}>End KM:</Text>
+                            <View style={styles(colors).rowContainer}>
+                                <Text style={styles(colors).label}>End KM:</Text>
                                 {log.End_KM ?
-                                    <Text style={styles.cardTitle}>{log.End_KM}</Text> :
-                                    <Text style={styles.cardTitle}>Not Set</Text>
+                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.End_KM}</Text> :
+                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>Not Set</Text>
                                 }
 
                             </View>
@@ -157,23 +161,10 @@ const AttendanceReport = () => {
 
 export default AttendanceReport
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: customColors.primary,
-    },
-    headerText: {
-        textAlign: 'center',
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
-        color: customColors.white,
-        marginLeft: 15,
+        backgroundColor: colors.background,
     },
     datePickerContainer: {
         flexDirection: 'row',
@@ -181,9 +172,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
     dateTitle: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        color: customColors.text,
-        fontSize: 14,
+        ...typography.body1(colors),
+        color: colors.text,
         marginBottom: 5,
     },
     datePickerWrapper: {
@@ -195,15 +185,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: customColors.accent,
+        borderColor: colors.accent,
         borderRadius: 5,
         paddingHorizontal: 10,
     },
     textInput: {
         flex: 1,
-        color: customColors.text,
-        fontSize: 13.5,
-        fontFamily: customFonts.plusJakartaSansRegular,
+        color: colors.text,
+        ...typography.body1(colors),
     },
     cardContainer: {
         flex: 1,
@@ -218,7 +207,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 10,
         borderRadius: 10,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         padding: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -229,6 +218,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     label: {
+        ...typography.body1(colors),
         fontWeight: 'bold',
         marginRight: 5,
     },

@@ -1,15 +1,17 @@
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Accordion from '../../Components/Accordion';
 
 const StockInfo = () => {
     const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [logData, setLogData] = useState([])
     const [name, setName] = useState()
 
@@ -52,34 +54,34 @@ const StockInfo = () => {
     }
 
     const renderHeader = (item) => (
-        <View style={styles.header}>
-            <Text style={styles.headerText}>{item.Retailer_Name}</Text>
+        <View style={styles(colors).header}>
+            <Text maxFontSizeMultiplier={1.2} style={styles(colors).headerText}>{item.Retailer_Name}</Text>
         </View>
     )
 
     const renderContent = (item) => (
-        <View style={styles.content}>
-            <TouchableOpacity style={styles.editButton} onPress={() => editOption(item)} >
-                <Text style={styles.editButtonText}>Edit</Text>
+        <View style={styles(colors).content}>
+            <TouchableOpacity style={styles(colors).editButton} onPress={() => editOption(item)} >
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).editButtonText}>Edit</Text>
             </TouchableOpacity>
 
-            <View style={styles.row}>
-                <Text style={[styles.cell, styles.cellHead]}>SNo</Text>
-                <Text style={[styles.cell, styles.cellHead]}>Product Name</Text>
-                <Text style={[styles.cell, styles.cellHead]}>Quantity</Text>
+            <View style={styles(colors).row}>
+                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>SNo</Text>
+                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Product Name</Text>
+                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Quantity</Text>
             </View>
             {item.ProductCount.map((product, index) => (
-                <View key={index} style={styles.row}>
-                    <Text style={[styles.cell, styles.cellText]}>{product.S_No}</Text>
-                    <Text style={styles.cellMultiline}>{product.Product_Name}</Text>
-                    <Text style={styles.cell}>{product.ST_Qty}</Text>
+                <View key={index} style={styles(colors).row}>
+                    <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellText]}>{product.S_No}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cellMultiline}>{product.Product_Name}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cell}>{product.ST_Qty}</Text>
                 </View>
             ))}
         </View>
     )
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles(colors).container}>
             <Accordion
                 data={logData}
                 renderHeader={renderHeader}
@@ -91,7 +93,7 @@ const StockInfo = () => {
 
 export default StockInfo
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         padding: 10,
     },
@@ -101,12 +103,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         borderBottomWidth: 1,
-        borderBottomColor: customColors.primary,
+        borderBottomColor: colors.primary,
     },
     headerText: {
-        fontSize: 16,
-        fontFamily: customFonts.plusJakartaSansMedium,
-        color: customColors.text,
+        ...typography.h6(colors),
         fontWeight: '500',
     },
     content: {
@@ -114,43 +114,42 @@ const styles = StyleSheet.create({
     },
     editButton: {
         alignSelf: 'flex-end',
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         paddingVertical: 5,
         paddingHorizontal: 10,
         marginVertical: 5,
         borderRadius: 5,
     },
     editButtonText: {
+        ...typography.body1(colors),
         textAlign: 'center',
-        fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 14,
-        color: customColors.white,
+        color: colors.white,
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 5,
         borderBottomWidth: 0.75,
-        borderBottomColor: customColors.black,
+        borderBottomColor: colors.black,
     },
     cell: {
         flex: 1,
         textAlign: 'left',
         flexWrap: 'wrap',
+        ...typography.body1(colors),
     },
     cellMultiline: {
         flex: 2,
         textAlign: 'left',
         flexWrap: 'wrap',
+        ...typography.body1(colors),
     },
     cellHead: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
+        ...typography.body1(colors),
         fontWeight: '500'
     },
     cellText: {
-        fontSize: 12,
-        fontFamily: customFonts.plusJakartaSansBold,
+        ...typography.body1(colors),
         fontWeight: '500'
     }
 })

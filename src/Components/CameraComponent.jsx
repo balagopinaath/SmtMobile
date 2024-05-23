@@ -1,9 +1,11 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native'
-import React, { useState, useRef, useEffect } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, useColorScheme } from 'react-native'
+import React, { useRef, useEffect } from 'react'
 import { Camera, useCameraDevice, useCameraPermission, } from 'react-native-vision-camera'
-import { customColors } from '../Config/helper'
+import { customColors, typography } from '../Config/helper'
 
 const CameraComponent = ({ onPhotoCapture, showCamera }) => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const device = useCameraDevice('back');
     const camera = useRef(null);
     const { hasPermission, requestPermission } = useCameraPermission();
@@ -38,16 +40,16 @@ const CameraComponent = ({ onPhotoCapture, showCamera }) => {
     if (!hasPermission || device == null) return (<ActivityIndicator />);
 
     return (
-        <View style={[styles.container, showCamera && styles.fullScreen]}>
+        <View style={[styles(colors).container, showCamera && styles(colors).fullScreen]}>
             <Camera
                 ref={camera}
                 photo={true}
-                style={[styles.cameraView, showCamera && styles.fullScreen]}
+                style={[styles(colors).cameraView, showCamera && styles(colors).fullScreen]}
                 device={device}
                 isActive={true}
             />
-            <TouchableOpacity style={styles.captureButton} onPress={takePhoto}>
-                <Text style={styles.captureButtonText}>Take Photo</Text>
+            <TouchableOpacity style={styles(colors).captureButton} onPress={takePhoto}>
+                <Text style={styles(colors).captureButtonText}>Take Photo</Text>
             </TouchableOpacity>
         </View>
     )
@@ -55,7 +57,7 @@ const CameraComponent = ({ onPhotoCapture, showCamera }) => {
 
 export default CameraComponent
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
     },
     captureButton: {
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         borderRadius: 5,
         borderRadius: 30,
         justifyContent: 'center',
@@ -77,8 +79,7 @@ const styles = StyleSheet.create({
         marginTop: 25,
     },
     captureButtonText: {
-        color: customColors.white,
-        fontSize: 16,
+        ...typography.button(colors),
     },
     fullScreen: {
         width: '100%',

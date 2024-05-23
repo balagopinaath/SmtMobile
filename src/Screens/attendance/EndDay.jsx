@@ -1,14 +1,16 @@
-import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, ToastAndroid, Modal } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, TouchableOpacity, TextInput, Image, ToastAndroid, Modal, useColorScheme } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../../Components/CameraComponent';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, customFonts, typography } from '../../Config/helper';
 
 const EndDay = () => {
     const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [capturedPhotoPath, setCapturedPhotoPath] = useState(null);
     const [showCameraModal, setShowCameraModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -98,10 +100,11 @@ const EndDay = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.inputGroup}>
+        <View style={styles(colors).container}>
+            <View style={styles(colors).inputGroup}>
                 <TextInput
-                    style={styles.textInput}
+                    maxFontSizeMultiplier={1.2}
+                    style={styles(colors).textInput}
                     value={formValues.End_KM}
                     keyboardType='number-pad'
                     placeholder='Ending Kilometers'
@@ -109,18 +112,18 @@ const EndDay = () => {
                     onChangeText={handleInputChange}
                 />
                 <TouchableOpacity onPress={() => setShowCameraModal(true)}
-                    style={styles.cameraButton}
+                    style={styles(colors).cameraButton}
                 >
-                    <Text style={styles.buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text>
                 </TouchableOpacity>
             </View>
 
             <TouchableOpacity
-                style={[styles.submitButton, isSubmitting && styles.disabledButton]}
+                style={[styles(colors).submitButton, isSubmitting && styles(colors).disabledButton]}
                 onPress={handleSubmit}
                 disabled={isSubmitting}
             >
-                <Text style={styles.buttonText}>Close Attendance</Text>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Close Attendance</Text>
             </TouchableOpacity>
 
             <Modal
@@ -129,8 +132,8 @@ const EndDay = () => {
                 transparent={true}
                 onRequestClose={() => setShowCameraModal(false)}
             >
-                <View style={styles.modalContainer}>
-                    <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles.closeButton}>
+                <View style={styles(colors).modalContainer}>
+                    <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).closeButton}>
                         <Icon name='close' size={30} color={customColors.white} />
                     </TouchableOpacity>
                     {
@@ -138,13 +141,13 @@ const EndDay = () => {
                             <CameraComponent onPhotoCapture={handlePhotoCapture} />
                         ) : (
                             capturedPhotoPath && typeof capturedPhotoPath === 'string' && (
-                                <View style={styles.previewImageContainer}>
+                                <View style={styles(colors).previewImageContainer}>
                                     <Image
                                         source={{ uri: 'file://' + capturedPhotoPath }}
-                                        style={styles.previewImage}
+                                        style={styles(colors).previewImage}
                                     />
-                                    <TouchableOpacity onPress={clearPhoto} style={styles.clearPhotoButton}>
-                                        <Text style={styles.buttonText}>Retake Photo</Text>
+                                    <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
+                                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Retake Photo</Text>
                                     </TouchableOpacity>
                                 </View>
                             )
@@ -158,10 +161,10 @@ const EndDay = () => {
 
 export default EndDay
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
         justifyContent: 'center',
     },
     inputGroup: {
@@ -178,12 +181,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginTop: 20,
         marginHorizontal: 20,
-        fontFamily: customFonts.plusJakartaSansMedium,
-        color: customColors.text,
-        fontSize: 14,
+        ...typography.h6(colors),
+        color: colors.text,
     },
     cameraButton: {
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         borderRadius: 5,
         justifyContent: 'center',
         paddingVertical: 10,
@@ -191,9 +193,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     buttonText: {
-        fontFamily: customFonts.plusJakartaSansMedium,
-        color: customColors.white,
-        fontSize: 16,
+        ...typography.h6(colors),
+        color: colors.white,
     },
     previewImageContainer: {
         justifyContent: 'center',
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     submitButton: {
-        backgroundColor: customColors.accent,
+        backgroundColor: colors.accent,
         justifyContent: 'center',
         alignContent: 'center',
         paddingVertical: 10,

@@ -1,9 +1,11 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, View, TouchableOpacity, ScrollView, useColorScheme } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/AntDesign';
 import { customColors } from '../Config/helper';
 
 const Accordion = ({ data, renderHeader, renderContent }) => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [expanded, setExpanded] = useState(false);
 
     const toggleAccordion = (index) => {
@@ -15,22 +17,22 @@ const Accordion = ({ data, renderHeader, renderContent }) => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles(colors).container}>
             {data.map((item, index) => (
-                <View key={index} style={styles.itemContainer}>
+                <View key={index} style={styles(colors).itemContainer}>
                     <TouchableOpacity onPress={() => toggleAccordion(index)}>
-                        <View style={styles.headerContent}>
+                        <View style={styles(colors).headerContent}>
                             {renderHeader(item)}
                             <Icon
                                 name={expanded === index ? 'upcircleo' : 'circledowno'}
                                 size={20}
-                                color={customColors.black}
-                                style={styles.icon}
+                                color={colors.black}
+                                style={styles(colors).icon}
                             />
                         </View>
                     </TouchableOpacity>
                     {expanded === index && (
-                        <View style={styles.contentContainer}>
+                        <View style={styles(colors).contentContainer}>
                             {renderContent(item)}
                         </View>
                     )}
@@ -42,13 +44,13 @@ const Accordion = ({ data, renderHeader, renderContent }) => {
 
 export default Accordion
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         padding: 10,
     },
     itemContainer: {
         marginBottom: 10,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: colors.secondary,
         borderRadius: 5,
     },
     headerContent: {
@@ -59,8 +61,10 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         padding: 10,
+        backgroundColor: colors.background,
     },
     icon: {
         marginLeft: 10,
+        // color: colors.white,
     },
 })

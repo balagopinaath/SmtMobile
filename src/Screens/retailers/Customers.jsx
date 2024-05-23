@@ -56,10 +56,10 @@ const Customers = () => {
         <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })}>
             <View style={styles(colors).retailerContainer}>
                 <View style={styles(colors).retailerInfo}>
-                    <Text style={styles(colors).retailerName}>{item.Retailer_Name}</Text>
-                    <Text style={styles(colors).retailerMobile}>{item.Mobile_No}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerName}>{item.Retailer_Name}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerMobile}>{item.Mobile_No}</Text>
                 </View>
-                <Text style={styles(colors).retailerArea}>{item.AreaGet}</Text>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerArea}>{item.AreaGet}</Text>
             </View>
         </TouchableOpacity>
     );
@@ -67,6 +67,7 @@ const Customers = () => {
     return (
         <View style={styles(colors).container}>
             <TextInput
+                maxFontSizeMultiplier={1.2}
                 value={searchQuery}
                 style={styles(colors).searchInput}
                 placeholder="Search by retailer name"
@@ -74,8 +75,8 @@ const Customers = () => {
                 returnKeyType="search"
             />
             <View style={styles(colors).retailerHeading}>
-                <Text style={styles(colors).retailerTitle}>Retailer Info</Text>
-                <Text style={styles(colors).retailerTitle}>Area</Text>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerTitle}>Retailer Info</Text>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerTitle}>Area</Text>
             </View>
 
             {loading ? (
@@ -91,7 +92,7 @@ const Customers = () => {
 
                     ) : (
                         <View style={styles(colors).noDataText}>
-                            <Text style={{ ...typography.h5(colors) }}>No data found</Text>
+                            <Text maxFontSizeMultiplier={1.2} style={{ ...typography.h5(colors) }}>No data found</Text>
                         </View>
                     )}
                 </>

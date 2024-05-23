@@ -1,14 +1,14 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { customColors, customFonts } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RetailerVisitLog = () => {
-    const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [logData, setLogData] = useState(null)
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -56,13 +56,14 @@ const RetailerVisitLog = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
 
-            <View style={styles.datePickerContainer}>
-                <View style={styles.datePickerWrapper}>
-                    <TouchableOpacity style={styles.datePicker} onPress={showDatepicker}>
+            <View style={styles(colors).datePickerContainer}>
+                <View style={styles(colors).datePickerWrapper}>
+                    <TouchableOpacity style={styles(colors).datePicker} onPress={showDatepicker}>
                         <TextInput
-                            style={styles.textInput}
+                            maxFontSizeMultiplier={1.2}
+                            style={styles(colors).textInput}
                             value={selectedDate.toDateString()} // Display selected 'fromDate'
                             editable={false}
                         />
@@ -81,21 +82,21 @@ const RetailerVisitLog = () => {
             </View>
 
 
-            <ScrollView style={styles.cardContainer}>
+            <ScrollView style={styles(colors).cardContainer}>
                 {logData && logData.map((log, index) => (
-                    <View key={index} style={styles.card}>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.cardTitle}>{log.IsExistingRetailer === 0 ? 'New Retailer' : 'Existing Retailer'}</Text>
-                            <Text style={styles.cardTitle}>{log.Reatailer_Name}</Text>
-                            <Text style={styles.cardSubtitle}>{log.Contact_Mobile}</Text>
-                            <Text style={styles.cardText}>{log.Location_Address}</Text>
-                            <Text style={styles.cardText}>{log.Narration}</Text>
+                    <View key={index} style={styles(colors).card}>
+                        <View style={styles(colors).textContainer}>
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.IsExistingRetailer === 0 ? 'New Retailer' : 'Existing Retailer'}</Text>
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.Reatailer_Name}</Text>
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardSubtitle}>{log.Contact_Mobile}</Text>
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>{log.Location_Address}</Text>
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>{log.Narration}</Text>
                         </View>
                         {log.imageUrl && (
-                            <View style={styles.imageContainer}>
+                            <View style={styles(colors).imageContainer}>
                                 <Image
                                     source={{ uri: log.imageUrl }}
-                                    style={styles.cardImage}
+                                    style={styles(colors).cardImage}
                                     resizeMode="contain"
                                     onError={() => console.warn('Image failed to load:', log.imageUrl)}
                                 />
@@ -110,23 +111,10 @@ const RetailerVisitLog = () => {
 
 export default RetailerVisitLog
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: customColors.background,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: customColors.primary,
-    },
-    headerText: {
-        textAlign: 'center',
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
-        color: customColors.white,
-        marginLeft: 15,
+        backgroundColor: colors.background,
     },
     cardContainer: {
         flex: 1,
@@ -136,7 +124,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: customColors.accent,
+        borderColor: colors.accent,
         borderRadius: 5,
         paddingHorizontal: 10,
     },
@@ -151,22 +139,20 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     dateTitle: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        color: customColors.text,
-        fontSize: 14,
+        ...typography.body2(colors),
+        color: colors.text,
         marginBottom: 5,
     },
     textInput: {
         flex: 1,
-        color: customColors.text,
-        fontSize: 13.5,
-        fontFamily: customFonts.plusJakartaSansRegular,
+        color: colors.text,
+        ...typography.body1(colors),
     },
     card: {
         flexDirection: 'row',
         marginBottom: 10,
         borderRadius: 10,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         padding: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -183,19 +169,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardTitle: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 16,
+        ...typography.h5(colors),
         marginBottom: 5,
     },
     cardSubtitle: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
-        color: customColors.gray,
+        ...typography.h6(colors),
+        // color: colors.gray,
         marginBottom: 5,
     },
     cardText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         marginBottom: 10,
     },
     cardImage: {

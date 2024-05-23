@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import IconFont from 'react-native-vector-icons/Fontisto';
 import { API } from '../../Config/Endpoint';
 import { customColors, typography } from '../../Config/helper';
-import CustomButton from '../../Components/CustomButton';
 
 const AttendanceInfo = () => {
     const navigation = useNavigation();
@@ -94,11 +93,11 @@ const AttendanceInfo = () => {
     return (
         <View style={styles(colors).card}>
             <View style={styles(colors).cardHeader}>
-                <Text style={styles(colors).cardTitle}>Today Attendance</Text>
+                <Text style={styles(colors).cardTitle} maxFontSizeMultiplier={1.2}>Today Attendance</Text>
 
                 {!activeStatus && (
                     <TouchableOpacity style={styles(colors).startButton} onPress={() => { navigation.navigate('Attendance') }} >
-                        <Text style={styles(colors).buttonText}>Start Day</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Start Day</Text>
                     </TouchableOpacity>
                 )}
             </View>
@@ -108,17 +107,17 @@ const AttendanceInfo = () => {
                     <View style={styles(colors).cardItem}>
                         <View style={styles(colors).itemIcon}>
                             <IconFont name="date" color={colors.black} size={20} />
-                            <Text style={styles(colors).text}>Date</Text>
+                            <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>Date</Text>
                         </View>
-                        <Text style={styles(colors).text}>{date}</Text>
+                        <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>{date}</Text>
                     </View>
 
                     <View style={styles(colors).cardItem}>
                         <View style={styles(colors).itemIcon}>
                             <Icon name="time-outline" color={colors.black} size={20} />
-                            <Text style={styles(colors).text}>Time In</Text>
+                            <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>Time In</Text>
                         </View>
-                        <Text style={styles(colors).text}>{time}</Text>
+                        <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>{time}</Text>
                     </View>
 
                     <TouchableOpacity
@@ -127,7 +126,7 @@ const AttendanceInfo = () => {
                             navigation.navigate('EndDay');
                             setActiveStatus(0);
                         }}>
-                        <Text style={styles(colors).buttonText}>End Day</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>End Day</Text>
                     </TouchableOpacity>
                 </View>
             )}

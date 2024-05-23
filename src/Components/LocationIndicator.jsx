@@ -1,10 +1,12 @@
-import { PermissionsAndroid, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native'
+import { PermissionsAndroid, StyleSheet, Text, TouchableOpacity, View, Alert, useColorScheme } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 
 const LocationIndicator = ({ onLocationUpdate }) => {
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const [currentLocation, setCurrentLocation] = useState(
         {
             'latitude': '',
@@ -95,26 +97,26 @@ const LocationIndicator = ({ onLocationUpdate }) => {
     };
 
     return (
-        <View style={styles.card}>
-            <Text style={styles.cardTitle}>Location Status</Text>
-            <View style={styles.cardContent}>
-                <View style={styles.row}>
+        <View style={styles(colors).card}>
+            <Text style={styles(colors).cardTitle}>Location Status</Text>
+            <View style={styles(colors).cardContent}>
+                <View style={styles(colors).row}>
                     <View style={locationPermissionGranted ? styles.active : styles.inActive}>
-                        <Text style={styles.text}>Permission</Text>
+                        <Text style={styles.text} maxFontSizeMultiplier={1.2}>Permission</Text>
                     </View>
-                    <View style={locationEnabled ? styles.active : styles.inActive}>
-                        <Text style={styles.text}>Location</Text>
+                    <View style={locationEnabled ? styles(colors).active : styles(colors).inActive}>
+                        <Text style={styles(colors).text} maxFontSizeMultiplier={1.2} >Location</Text>
                     </View>
-                    <View style={(currentLocation.latitude && currentLocation.longitude) ? styles.active : styles.inActive}>
-                        <Text style={styles.text}>Position</Text>
+                    <View style={(currentLocation.latitude && currentLocation.longitude) ? styles(colors).active : styles(colors).inActive}>
+                        <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>Position</Text>
                     </View>
                 </View>
-                <View style={styles.buttonGroup}>
-                    <TouchableOpacity onPress={refreshLocation} style={styles.refreshButton}>
-                        <Text style={styles.refreshButtonText}>Refresh Status</Text>
+                <View style={styles(colors).buttonGroup}>
+                    <TouchableOpacity onPress={refreshLocation} style={styles(colors).refreshButton}>
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).refreshButtonText}>Refresh Status</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={fetchEvent} style={styles.refreshButton}>
-                        <Text style={styles.refreshButtonText}>Fetch Location</Text>
+                    <TouchableOpacity onPress={fetchEvent} style={styles(colors).refreshButton}>
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).refreshButtonText}>Fetch Location</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -124,9 +126,9 @@ const LocationIndicator = ({ onLocationUpdate }) => {
 
 export default LocationIndicator
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     card: {
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderRadius: 10,
         padding: 15,
         elevation: 3,
@@ -134,8 +136,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
     cardTitle: {
-        fontSize: 13,
-        fontFamily: customFonts.plusJakartaSansRegular,
+        ...typography.body1(colors),
         fontWeight: 'bold',
         marginBottom: 10,
         borderBottomWidth: 1,
@@ -167,10 +168,9 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     text: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         fontWeight: '500',
-        color: customColors.text,
+        color: colors.text,
     },
     buttonGroup: {
         flexDirection: 'row',
@@ -179,16 +179,15 @@ const styles = StyleSheet.create({
     refreshButton: {
         borderWidth: 0.5,
         padding: 5,
-        borderColor: customColors.accent,
+        borderColor: colors.accent,
         borderRadius: 5,
         marginHorizontal: 5,
         marginTop: 10,
         alignItems: 'center',
     },
     refreshButtonText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         fontWeight: '500',
-        color: customColors.text,
+        color: colors.text,
     },
 })

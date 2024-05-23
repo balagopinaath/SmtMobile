@@ -4,7 +4,7 @@ import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { API } from '../../Config/Endpoint';
-import { customFonts, customColors, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
@@ -99,39 +99,39 @@ const CustomersDetails = ({ route }) => {
 
             <View style={styles(colors).retailersContainer}>
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Name:</Text>
-                    <Text style={styles(colors).infoText}>{item.Retailer_Name}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Name:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{item.Retailer_Name}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Address:</Text>
-                    <Text style={styles(colors).infoText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Address:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Contact Person:</Text>
-                    <Text style={styles(colors).infoText}>{item.Contact_Person}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Contact Person:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{item.Contact_Person}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Channel:</Text>
-                    <Text style={styles(colors).infoText}>{item.Retailer_Channel_Id}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Channel:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{item.Retailer_Channel_Id}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>GST:</Text>
-                    <Text style={styles(colors).infoText}>{item.Gstno}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>GST:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{item.Gstno}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Distributor:</Text>
-                    <Text style={styles(colors).infoText}>{item.Distributor_Id}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Distributor:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).infoText}>{item.Distributor_Id}</Text>
                 </View>
 
                 <View style={styles(colors).retailersInner}>
-                    <Text style={styles(colors).labelText}>Contact:</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).labelText}>Contact:</Text>
                     <TouchableOpacity onPress={handleCall}>
-                        <Text style={[styles(colors).infoText, styles(colors).link]}>{item.Mobile_No}</Text>
+                        <Text maxFontSizeMultiplier={1.2} style={[styles(colors).infoText, styles(colors).link]}>{item.Mobile_No}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -149,7 +149,7 @@ const CustomersDetails = ({ route }) => {
                         style={styles(colors).tinyLogo}
                         source={require('../../../assets/images/whatsapp.png')}
                     />
-                    <Text style={styles(colors).buttonText}>WhatsApp</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>WhatsApp</Text>
                 </TouchableOpacity>
 
                 {latitude !== null && longitude !== null && (
@@ -158,7 +158,7 @@ const CustomersDetails = ({ route }) => {
                             style={styles(colors).tinyLogo}
                             source={require('../../../assets/images/map.png')}
                         />
-                        <Text style={styles(colors).buttonText}>Maps</Text>
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Maps</Text>
                     </TouchableOpacity>
                 )}
 
@@ -167,7 +167,7 @@ const CustomersDetails = ({ route }) => {
                         style={styles(colors).tinyLogo}
                         source={require('../../../assets/images/pin.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Update Location</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Update Location</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => { navigation.navigate('StockClosing', { item }) }} >
@@ -175,7 +175,7 @@ const CustomersDetails = ({ route }) => {
                         style={styles(colors).tinyLogo}
                         source={require('../../../assets/images/packages.png')}
                     />
-                    <Text style={styles(colors).buttonText}>Closing Stock</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Closing Stock</Text>
                 </TouchableOpacity>
             </View>
 
@@ -190,17 +190,6 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         backgroundColor: colors.background,
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 15,
-        backgroundColor: colors.primary,
-    },
-    headerText: {
-        ...typography.h6,
-        // color: customColors.white,
-        marginLeft: 15
     },
     retailersContainer: {
         width: '90%',
@@ -219,16 +208,16 @@ const styles = (colors) => StyleSheet.create({
     },
     labelText: {
         width: 100,
-        ...typography.h6,
+        ...typography.body1(colors),
         fontWeight: 'bold',
         marginRight: 10,
     },
     infoText: {
         flex: 1,
-        ...typography.h6,
+        ...typography.body1(colors),
     },
     link: {
-        ...typography.h4,
+        ...typography.h6(colors),
         color: 'blue',
         textDecorationLine: 'underline',
     },

@@ -1,15 +1,17 @@
-import { Button, Image, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../Config/Endpoint';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 import CustomButton from '../Components/CustomButton';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
     const { item, isEdit } = route.params;
+    const scheme = useColorScheme();
+    const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const pagerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState(0);
     const [productData, setProductData] = useState([])
@@ -178,14 +180,14 @@ const StockClosing = ({ route }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.retailerInfo}>
-                <Text style={styles.retailerLabel}>Retailer Name: {item.Retailer_Name}</Text>
+        <View style={styles(colors).container}>
+            <View style={styles(colors).retailerInfo}>
+                <Text style={styles(colors).retailerLabel}>Retailer Name: {item.Retailer_Name}</Text>
             </View>
 
-            <View style={styles.narrationContainer}>
+            <View style={styles(colors).narrationContainer}>
                 <TextInput
-                    style={styles.narrationContainerInputText}
+                    style={styles(colors).narrationContainerInputText}
                     placeholder='Narration'
                     onChangeText={(text) =>
                         setStockInputValue({
@@ -194,25 +196,25 @@ const StockClosing = ({ route }) => {
                         })
                     }
                 />
-                <View style={styles.narrationContainerButtonGroup}>
+                <View style={styles(colors).narrationContainerButtonGroup}>
                     <CustomButton onPress={() => navigation.goBack()}>Cancel</CustomButton>
                     <CustomButton onPress={postClosingStock}>Update</CustomButton>
                 </View>
             </View>
 
             <View style={{ flex: 1 }}>
-                <ScrollView horizontal contentContainerStyle={styles.tabContainer} showsHorizontalScrollIndicator={true}>
+                <ScrollView horizontal contentContainerStyle={styles(colors).tabContainer} showsHorizontalScrollIndicator={true}>
                     {productData.map((item, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
-                                styles.tabButton,
+                                styles(colors).tabButton,
                                 selectedTab === index
-                                && styles.activeTab
+                                && styles(colors).activeTab
                             ]}
                             onPress={() => { handleTabPress(index) }}
                         >
-                            <Text>{item.Pro_Group}</Text>
+                            <Text maxFontSizeMultiplier={1.2}>{item.Pro_Group}</Text>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
@@ -228,7 +230,7 @@ const StockClosing = ({ route }) => {
                                 {item.GroupedProductArray.map((product, pIndex) => {
                                     const stockCount = getStockCount(product.Product_Id);
                                     return (
-                                        <View key={pIndex} style={styles.pagerViewContainer}>
+                                        <View key={pIndex} style={styles(colors).pagerViewContainer}>
                                             <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
                                                 <Image
                                                     style={{
@@ -241,13 +243,13 @@ const StockClosing = ({ route }) => {
                                                         uri: product.productImageUrl,
                                                     }}
                                                 />
-                                                <View style={styles.card}>
-                                                    <Text style={styles.pagerViewContainerText}>{product.Product_Name}</Text>
-                                                    <Text style={styles.pagerViewContainerSubText}>{product.UOM}</Text>
-                                                    <Text style={styles.dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
-                                                    <Text style={[styles.dateText, stockCount.hasPreviousBalance && styles.highlightedText]}>Previous Stock: {stockCount.previousBalance}</Text>
+                                                <View style={styles(colors).card}>
+                                                    <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
+                                                    <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
+                                                    <Text style={styles(colors).dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
+                                                    <Text style={[styles(colors).dateText, stockCount.hasPreviousBalance && styles(colors).highlightedText]}>Previous Stock: {stockCount.previousBalance}</Text>
                                                     <TextInput
-                                                        style={styles.pagerViewContainerInputText}
+                                                        style={styles(colors).pagerViewContainerInputText}
                                                         onChangeText={(text) =>
                                                             handleStockInputChange(
                                                                 product.Product_Id,
@@ -285,20 +287,19 @@ const StockClosing = ({ route }) => {
 
 export default StockClosing
 
-const styles = StyleSheet.create({
+const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: customColors.background,
+        backgroundColor: colors.background,
     },
     retailerInfo: {
         alignItems: 'center',
         marginVertical: 15,
     },
     retailerLabel: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 15,
-        color: customColors.accent,
+        ...typography.h6(colors),
+        color: colors.accent,
         fontWeight: '500',
     },
     narrationContainer: {
@@ -306,9 +307,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     narrationContainerInputText: {
-        color: customColors.text,
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 16,
+        ...typography.h6(colors),
         borderWidth: 1,
         borderColor: '#a1a1a1',
         borderRadius: 8,
@@ -321,11 +320,12 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     tabContainer: {
-        height: 55,
+        height: 50,
         flexDirection: 'row',
-        backgroundColor: '#f0f0f0',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
+        marginBottom: 50
     },
     tabButton: {
         paddingVertical: 12,
@@ -334,10 +334,10 @@ const styles = StyleSheet.create({
         borderBottomColor: 'transparent',
     },
     activeTab: {
-        borderBottomColor: 'blue',
+        borderBottomColor: colors.primary,
     },
     pagerViewContainer: {
-        backgroundColor: customColors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
@@ -353,8 +353,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     pagerViewContainerText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 4,
@@ -365,21 +364,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     pagerViewContainerSubText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 12,
+        ...typography.body2(colors),
         color: '#666',
         fontWeight: '500',
         marginBottom: 10,
     },
     dateText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        ...typography.body1(colors),
         color: '#444',
         marginBottom: 4,
     },
     pagerViewContainerInputText: {
-        fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 14,
+        ...typography.body1(colors),
         padding: 8,
         borderWidth: 1,
         borderColor: '#ccc',

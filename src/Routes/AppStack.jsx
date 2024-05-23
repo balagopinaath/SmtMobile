@@ -47,7 +47,7 @@ const AppStack = () => {
             <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
 
-            <Stack.Screen name="Customers" component={Customers} options={{ title: 'Retailers' }} />
+            <Stack.Screen name="Customers" component={Customers} options={{ title: 'Retailers', }} />
             <Stack.Screen name="CustomersDetails" component={CustomersDetails} options={{ title: 'Retailer Details' }} />
             <Stack.Screen name="AddCustomer" component={AddCustomer} />
             <Stack.Screen name="EditCustomer" component={EditCustomer} />
