@@ -1,4 +1,11 @@
-import { useColorScheme } from 'react-native';
+import { useColorScheme, Dimensions } from 'react-native';
+
+const deviceWidth = Dimensions.get('window').width;
+
+const responsiveFontSize = (baseFontSize) => {
+    const baseWidth = 375;
+    return baseFontSize * (deviceWidth / baseWidth);
+}
 
 export const customFonts = {
     plusJakartaSansBold: "PlusJakartaSans-Bold",
@@ -50,57 +57,57 @@ export const customColors = {
 export const typography = {
     h1: (colors) => ({
         fontFamily: customFonts.plusJakartaSansExtraBold,
-        fontSize: 32,
+        fontSize: responsiveFontSize(32),
         color: colors.textPrimary,
     }),
     h2: (colors) => ({
         fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 28,
+        fontSize: responsiveFontSize(28),
         color: colors.textPrimary,
     }),
     h3: (colors) => ({
         fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 24,
+        fontSize: responsiveFontSize(24),
         color: colors.textPrimary,
     }),
     h4: (colors) => ({
         fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 20,
+        fontSize: responsiveFontSize(20),
         color: colors.textPrimary,
     }),
     h5: (colors) => ({
         fontFamily: customFonts.plusJakartaSansMedium,
-        fontSize: 18,
+        fontSize: responsiveFontSize(18),
         color: colors.textPrimary,
     }),
     h6: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 16,
+        fontSize: responsiveFontSize(16),
         color: colors.textPrimary,
     }),
     body1: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
         color: colors.textPrimary,
     }),
     body2: (colors) => ({
         fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 12,
+        fontSize: responsiveFontSize(12),
         color: colors.textSecondary,
     }),
     button: (colors) => ({
         fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
+        fontSize: responsiveFontSize(14),
         color: colors.white,
     }),
     caption: (colors) => ({
         fontFamily: customFonts.plusJakartaSansLight,
-        fontSize: 12,
+        fontSize: responsiveFontSize(12),
         color: colors.textSecondary,
     }),
     overline: (colors) => ({
         fontFamily: customFonts.plusJakartaSansLight,
-        fontSize: 10,
+        fontSize: responsiveFontSize(10),
         color: colors.textSecondary,
     }),
 };

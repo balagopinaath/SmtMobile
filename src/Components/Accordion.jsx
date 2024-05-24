@@ -22,7 +22,7 @@ const Accordion = ({ data, renderHeader, renderContent }) => {
                 <View key={index} style={styles(colors).itemContainer}>
                     <TouchableOpacity onPress={() => toggleAccordion(index)}>
                         <View style={styles(colors).headerContent}>
-                            {renderHeader(item)}
+                            {renderHeader(item, index)}
                             <Icon
                                 name={expanded === index ? 'upcircleo' : 'circledowno'}
                                 size={20}

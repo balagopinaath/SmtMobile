@@ -1,10 +1,11 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { customColors, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Accordion from '../../Components/Accordion';
 
 const RetailerVisitLog = () => {
     const scheme = useColorScheme();
@@ -55,9 +56,46 @@ const RetailerVisitLog = () => {
         setShowDatePicker(true);
     };
 
+    const renderHeader = (item) => {
+        return (
+            < View style={styles(colors).header} >
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).headerText}>{item.Reatailer_Name}</Text>
+            </View >
+        )
+    }
+
+    const renderContent = (item) => {
+        return (
+            <View style={styles(colors).card}>
+                <View style={styles(colors).textContainer}>
+                    <Text style={styles(colors).boldText}> {item.IsExistingRetailer === 1 ? 'Existing Retailer' : 'New Retailer'}</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>
+                        Contact Person:
+                        <Text style={styles(colors).boldText}> {item.Contact_Mobile}</Text>
+                    </Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>
+                        Address:
+                        <Text style={styles(colors).boldText}> {item.Location_Address}</Text>
+                    </Text>
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>
+                        Narration:
+                        <Text style={styles(colors).boldText}> {item.Narration}</Text>
+                    </Text>
+                </View>
+                {item.imageUrl && (
+                    <Image
+                        source={{ uri: item.imageUrl }}
+                        style={styles(colors).cardImage}
+                        resizeMode="contain"
+                        onError={() => console.warn('Image failed to load:', item.imageUrl)}
+                    />
+                )}
+            </View>
+        );
+    }
+
     return (
         <View style={styles(colors).container}>
-
             <View style={styles(colors).datePickerContainer}>
                 <View style={styles(colors).datePickerWrapper}>
                     <TouchableOpacity style={styles(colors).datePicker} onPress={showDatepicker}>
@@ -81,29 +119,14 @@ const RetailerVisitLog = () => {
                 )}
             </View>
 
-
             <ScrollView style={styles(colors).cardContainer}>
-                {logData && logData.map((log, index) => (
-                    <View key={index} style={styles(colors).card}>
-                        <View style={styles(colors).textContainer}>
-                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.IsExistingRetailer === 0 ? 'New Retailer' : 'Existing Retailer'}</Text>
-                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.Reatailer_Name}</Text>
-                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardSubtitle}>{log.Contact_Mobile}</Text>
-                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>{log.Location_Address}</Text>
-                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardText}>{log.Narration}</Text>
-                        </View>
-                        {log.imageUrl && (
-                            <View style={styles(colors).imageContainer}>
-                                <Image
-                                    source={{ uri: log.imageUrl }}
-                                    style={styles(colors).cardImage}
-                                    resizeMode="contain"
-                                    onError={() => console.warn('Image failed to load:', log.imageUrl)}
-                                />
-                            </View>
-                        )}
-                    </View>
-                ))}
+                {logData && (
+                    <Accordion
+                        data={logData}
+                        renderHeader={renderHeader}
+                        renderContent={renderContent}
+                    />
+                )}
             </ScrollView>
         </View>
     )
@@ -138,53 +161,46 @@ const styles = (colors) => StyleSheet.create({
         marginRight: 10,
         marginVertical: 15,
     },
-    dateTitle: {
-        ...typography.body2(colors),
-        color: colors.text,
-        marginBottom: 5,
-    },
     textInput: {
         flex: 1,
         color: colors.text,
         ...typography.body1(colors),
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.primary,
+    },
+    headerText: {
+        ...typography.h6(colors),
+        fontWeight: '500',
+    },
     card: {
         flexDirection: 'row',
-        marginBottom: 10,
         borderRadius: 10,
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
-        padding: 15,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
     },
     textContainer: {
-        flex: 1,
+        width: '50%',
+        width: '50%',
     },
-    imageContainer: {
-        width: 100,
-        height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardTitle: {
-        ...typography.h5(colors),
-        marginBottom: 5,
-    },
-    cardSubtitle: {
-        ...typography.h6(colors),
-        // color: colors.gray,
-        marginBottom: 5,
+    cardImage: {
+        width: '50%',
+        borderRadius: 10,
     },
     cardText: {
         ...typography.body1(colors),
         marginBottom: 10,
     },
-    cardImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8,
-        marginTop: 10,
+    boldText: {
+        ...typography.body1(colors),
+        fontWeight: 'bold',
     },
 })

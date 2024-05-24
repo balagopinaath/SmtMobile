@@ -161,13 +161,16 @@ const Attendance = (locationData) => {
                                     <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
                                         <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Retake Photo</Text>
                                     </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => setShowCameraModal(false)} style={[styles(colors).submitButton, { marginTop: 15, backgroundColor: colors.primary }]}>
+                                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Okay</Text>
+                                    </TouchableOpacity>
                                 </View>
                             )
                         )
                     }
                 </View>
-            </Modal>
-        </View>
+            </Modal >
+        </View >
     )
 }
 
@@ -214,7 +217,7 @@ const styles = (colors) => StyleSheet.create({
         marginTop: 20,
     },
     buttonText: {
-        ...typography.h6(colors),
+        ...typography.button(colors),
         color: colors.white,
     },
     submitButton: {
@@ -254,7 +257,7 @@ const styles = (colors) => StyleSheet.create({
     },
     clearPhotoButton: {
         marginTop: 25,
-        backgroundColor: 'red',
+        backgroundColor: colors.accent,
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 5,

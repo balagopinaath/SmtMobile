@@ -150,6 +150,7 @@ const styles = (colors) => StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 6,
+        // maxWidth: '80%'
     },
     cardHeader: {
         flexDirection: 'row',

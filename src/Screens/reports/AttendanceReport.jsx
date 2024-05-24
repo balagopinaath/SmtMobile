@@ -1,10 +1,11 @@
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Accordion from '../../Components/Accordion';
 
 const AttendanceReport = () => {
     const scheme = useColorScheme();
@@ -68,18 +69,47 @@ const AttendanceReport = () => {
         }
     }
 
+    const renderHeader = (item, index) => (
+        <View style={styles(colors).header}>
+            <Text maxFontSizeMultiplier={1.2} style={styles(colors).headerText}>Attendance {index + 1}</Text>
+        </View>
+    )
+
+    const renderContent = (item) => {
+        const startKM = item.Start_KM;
+        const endKM = item.End_KM;
+        const kmDifference = endKM ? endKM - startKM : "Not Set";
+
+        return (
+            <View style={styles(colors).contentContainer}>
+                <View style={styles(colors).contentDetails}>
+                    <Text style={styles(colors).contentText}>Date: {new Date(item.Start_Date).toISOString().substring(0, 10)}</Text>
+                    <Text style={styles(colors).contentText}>Start Time: {new Date(item.Start_Date).toLocaleTimeString()}</Text>
+                    <Text style={styles(colors).contentText}>End Time: {item.End_Date ? new Date(item.End_Date).toLocaleTimeString() : 'Not Set'}</Text>
+                    <Text style={styles(colors).contentText}>Start KM: {startKM}</Text>
+                    <Text style={styles(colors).contentText}>End KM: {endKM || 'Not Set'}</Text>
+                    <Text style={styles(colors).contentText}>KM Difference: {kmDifference}</Text>
+                </View>
+                {item.startKmImageUrl && (
+                    <Image source={{ uri: item.startKmImageUrl }} style={styles(colors).image} />
+                )}
+            </View>
+        )
+    }
+
     return (
         <View style={styles(colors).container}>
 
             <View style={styles(colors).datePickerContainer}>
                 <View style={styles(colors).datePickerWrapper}>
                     <Text style={styles(colors).dateTitle}>From</Text>
-                    <TouchableOpacity style={styles(colors).datePicker} onPress={() => showDatePicker(true)}>
+                    <TouchableOpacity activeOpacity={0.7} style={styles(colors).datePicker} onPress={() => showDatePicker(true)}>
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedFromDate.toDateString()} // Display selected 'fromDate'
+                            value={selectedFromDate.toDateString()}
                             editable={false}
+                            placeholder='Select Date'
                         />
                         <Icon name="calendar" color={colors.accent} size={20} />
                     </TouchableOpacity>
@@ -87,7 +117,7 @@ const AttendanceReport = () => {
 
                 <View style={styles(colors).datePickerWrapper}>
                     <Text style={styles(colors).dateTitle}>To</Text>
-                    <TouchableOpacity style={styles(colors).datePicker} onPress={() => showDatePicker(false)}>
+                    <TouchableOpacity activeOpacity={0.7} style={styles(colors).datePicker} onPress={() => showDatePicker(false)}>
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
@@ -100,61 +130,29 @@ const AttendanceReport = () => {
 
                 {show && (
                     <DateTimePicker
-                        value={isSelectingFromDate ? selectedFromDate : selectedToDate} // Use 'selectedFromDate' or 'selectedToDate' based on selection
+                        value={isSelectingFromDate ? selectedFromDate : selectedToDate}
                         onChange={selectDateFn}
                         mode="date"
+                        display="default"
                         timeZoneOffsetInMinutes={0}
-                        style={{ flex: 1 }}
+                        style={{ width: '100%' }}
                         testID="dateTimePicker"
                     />
                 )}
             </View>
 
             <ScrollView style={styles(colors).cardContainer}>
-                {attendanceData && attendanceData.map((log, index) => (
-                    <View key={index} style={styles(colors).card}>
-                        <View style={styles(colors).textContainer}>
-                            <View style={styles(colors).rowContainer}>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Attendance:</Text>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{index + 1}</Text>
-                            </View>
+                {attendanceData && (
+                    <Accordion
+                        data={attendanceData}
+                        renderHeader={renderHeader}
+                        renderContent={renderContent}
+                    />
+                )}
 
-                            <View style={styles(colors).rowContainer}>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Start KM:</Text>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.Start_KM}</Text>
-                            </View>
-                            <View style={styles(colors).rowContainer}>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Date:</Text>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{new Date(log.Start_Date).toISOString().substring(0, 10)}</Text>
-                            </View>
-                            <View style={styles(colors).rowContainer}>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>Start Time:</Text>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{new Date(log.Start_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</Text>
-                            </View>
-
-                            <View style={styles(colors).rowContainer}>
-                                <Text maxFontSizeMultiplier={1.2} style={styles(colors).label}>End Time:</Text>
-                                {log.End_Date ?
-                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>
-                                        {new Date(log.End_Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                                    </Text> :
-                                    <Text maxFontSizeMultiplier={1.2} style={styles.cardTitle}>Not Set</Text>
-                                }
-                            </View>
-
-                            <View style={styles(colors).rowContainer}>
-                                <Text style={styles(colors).label}>End KM:</Text>
-                                {log.End_KM ?
-                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>{log.End_KM}</Text> :
-                                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cardTitle}>Not Set</Text>
-                                }
-
-                            </View>
-
-                        </View>
-                    </View>
-                ))}
             </ScrollView>
+
+
         </View>
     )
 }
@@ -180,6 +178,8 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         marginRight: 10,
         marginVertical: 15,
+        minWidth: 100, // Minimum width
+        maxWidth: 250,
     },
     datePicker: {
         flexDirection: 'row',
@@ -189,49 +189,42 @@ const styles = (colors) => StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.primary,
+    },
+    headerText: {
+        ...typography.h6(colors),
+        fontWeight: '500',
+    },
     textInput: {
         flex: 1,
         color: colors.text,
         ...typography.body1(colors),
     },
     cardContainer: {
-        flex: 1,
         padding: 15,
     },
-    rowContainer: {
+    contentContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 5,
+        justifyContent: 'space-between',
     },
-    card: {
-        flexDirection: 'row',
-        marginBottom: 10,
-        borderRadius: 10,
-        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
-        padding: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+    contentDetails: {
+        width: '50%',
+        padding: 10,
     },
-    textContainer: {
-        flex: 1,
-    },
-    label: {
-        ...typography.body1(colors),
-        fontWeight: 'bold',
-        marginRight: 5,
-    },
-    imageContainer: {
-        width: 100,
+    image: {
+        width: '50%',
         height: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
+        resizeMode: 'contain',
     },
-    cardImage: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8,
-        marginTop: 10,
+    contentText: {
+        ...typography.body1(colors),
+        fontWeight: '600',
+        marginBottom: 5,
     },
 })
