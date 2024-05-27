@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, useColorScheme } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, useColorScheme, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
@@ -48,7 +48,7 @@ const HomeScreen = () => {
     }
 
     return (
-        <View style={styles(colors).container}>
+        <ScrollView style={styles(colors).container}>
             <StatusBar backgroundColor={colors.primary} />
 
             <View style={styles(colors).headerContainer}>
@@ -121,7 +121,7 @@ const HomeScreen = () => {
                 </TouchableOpacity>
             </View>
 
-        </View >
+        </ScrollView >
     )
 }
 

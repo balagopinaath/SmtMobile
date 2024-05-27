@@ -1,5 +1,5 @@
-const baseURL = "http://shrifoodsapi.erpsmt.in/"
-// const baseURL = "http://192.168.1.2:9001/"
+// const baseURL = "http://shrifoodsapi.erpsmt.in/"
+const baseURL = "http://192.168.1.2:9001/"
 
 export const API = {
     login: baseURL + 'api/login',
@@ -13,6 +13,7 @@ export const API = {
     retailerName: baseURL + 'api/masters/retailers/dropDown?Company_Id=',
     retailerLocation: baseURL + 'api/masters/retailerLocation',
     areaRetailers: baseURL + 'api/masters/retailers/areaRetailers?Company_Id=',
+    retailerInfo: baseURL + 'api/masters/retailers/retaileDetails?Retailer_Id=',
 
     routes: baseURL + 'api/masters/routes',
     areas: baseURL + 'api/masters/areas',
