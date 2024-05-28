@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme, Platform } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Share from 'react-native-share';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const OrderPreview = () => {
     const navigation = useNavigation();
@@ -133,7 +134,7 @@ const OrderPreview = () => {
                             </TouchableOpacity>
                         )}
                         <TouchableOpacity style={styles(colors).downloadButton} onPress={() => downloadItemPDF(item)}>
-                            <Text style={styles(colors).downloadButtonText}>Download PDF</Text>
+                            <Text style={styles(colors).downloadButtonText}>Share PDF</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -147,121 +148,196 @@ const OrderPreview = () => {
     }
 
     useEffect(() => {
-        if (logData.Retailer_Id) {
-            console.log(`${API.retailerInfo}${logData.Retailer_Id}`)
-            fetch(`${API.retailerInfo}${logData.Retailer_Id}`)
+        if (logData && logData.length > 0 && logData[0].Retailer_Id) {
+            console.log(`${API.retailerInfo}${logData[0].Retailer_Id}`);
+            fetch(`${API.retailerInfo}${logData[0].Retailer_Id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(data.data[0].Reatailer_Address);
+                        setRetailerInfo(data.data[0]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching retailer data:', error);
+                });
         }
-    }, [])
+    }, []);
+
+    function numberToWords(num) {
+        const under20 = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        const thousand = ['Thousand', 'Million', 'Billion'];
+
+        if (num < 20) return under20[num];
+        if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 === 0 ? '' : ' ' + under20[num % 10]);
+        if (num < 1000) return under20[Math.floor(num / 100)] + ' hundred' + (num % 100 === 0 ? '' : ' ' + numberToWords(num % 100));
+
+        for (let i = 0; i < thousand.length; i++) {
+            let decimal = Math.pow(1000, i + 1);
+            if (num < decimal) {
+                return numberToWords(Math.floor(num / Math.pow(1000, i))) + ' ' + thousand[i - 1] + (num % Math.pow(1000, i) === 0 ? '' : ' ' + numberToWords(num % Math.pow(1000, i)));
+            }
+        }
+        return num;
+    }
 
     const generateItemPDF = async (item) => {
-        let htmlContent = `
+        if (!retailerInfo) {
+            console.error('Retailer information is missing');
+            return;
+        }
+
+        const totalAmountWords = numberToWords(item.Total_Invoice_value);
+
+        const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
-            <head>
-                <meta charset="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Sales Order</title>
-                <link
-                    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-                    rel="stylesheet"
-                    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-                    crossorigin="anonymous"
-                />
-                <style>
-                    .header-text {
-                        font-size: 1.5rem;
-                        font-weight: bold;
-                    }
-                    .address, .bank-details {
-                        font-size: 0.9rem;
-                    }
-                    .details-text {
-                        font-size: 1rem;
-                    }
-                    .table th, .table td {
-                        vertical-align: middle;
-                    }
-                    .total-text {
-                        font-size: 1.1rem;
-                        font-weight: bold;
-                    }
-                </style>
-            </head>
-            <body>
-                <img src="https://www.shrifoodsindia.com/web/image/website/1/logo/shrifoodsindia?unique=1c9d31f" 
-                    class="img-fluid mx-auto d-block"
-                >
-                <div class="container mt-4">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h1 class="header-text">${item.Branch_Name}</h1>
-                            <p class="address">Madurai - Tamilnadu</p>
-                        </div>
-                        <div class="col-sm-6 text-end">
-                            <table className='table mb-0'>
-                                <tbody>
-                                     <tr>
-                                        <td className='border-0 p-1'>GST</td>
-                                        <td className='border-0 p-1'>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='border-0 p-1'>Account No</td>
-                                        <td className='border-0 p-1'>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='border-0 p-1'>IFSC</td>
-                                        <td className='border-0 p-1'>-</td>
-                                    </tr>
-                                    <tr>
-                                        <td className='border-0 p-1'>Bank</td>
-                                        <td className='border-0 p-1'>-</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+        <head>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Sales Order</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+            <style>
+                .header-text {
+                    font-size: 1.5rem;
+                    font-weight: bold;
+                }
+
+                .address,
+                .bank-details {
+                    font-size: 0.9rem;
+                }
+
+                .details-text {
+                    font-size: 1rem;
+                }
+
+                .table th,
+                .table td {
+                    vertical-align: middle;
+                }
+
+                .total-text {
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                }
+
+                .py-3 {
+                    padding-top: 1rem !important;
+                    padding-bottom: 1rem !important;
+                }
+
+                .py-md-5 {
+                    padding-top: 3rem !important;
+                    padding-bottom: 3rem !important;
+                }
+            </style>
+        </head>
+        <body>
+            <section class="py-3 py-md-5">
+                <div class="container border border-black">
+                    <div class="row justify-content-center">
+                        <div class="col-12 col-lg-9 col-xl-8 col-xxl-7">
+                            <div class="row gy-3 mb-3 align-items-center">
+                                <div class="col-auto">
+                                    <a href="#!" class="d-block">
+                                        <img src="https://www.shrifoodsindia.com/web/image/website/1/logo/shrifoodsindia?unique=1c9d31f" class="img-fluid" alt="BootstrapBrain Logo" width="135" height="44" />
+                                    </a>
+                                </div>
+                                <div class="col">
+                                    <div class="text-center">
+                                        <h4 class="mb-0">Sale Order</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <h4>From</h4>
+                                    <address>
+                                        <strong>${item.Branch_Name}</strong><br />
+                                        153, Chitrakara Street, Valaiyal Kadai,<br />
+                                        Madurai, Tamil Nadu 625001.<br />
+                                        GSTIN: 33CDHPK1650E1ZZ<br />
+                                        Phone: (809) 822-2822<br />
+                                    </address>
+                                </div>
+                                <div class="col">
+                                    <h4>Bill To</h4>
+                                    <address>
+                                        <strong>${retailerInfo.Retailer_Name}</strong><br />
+                                        ${retailerInfo.Reatailer_Address} <br />
+                                        ${retailerInfo.AreaGet} <br />
+                                        ${retailerInfo.StateGet} - ${retailerInfo.PinCode}<br />
+                                        GSTIN: ${retailerInfo.Gstno}<br />
+                                        Phone: ${retailerInfo.Mobile_No}<br />
+                                    </address>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12 col-md-8">
+                                    <h4>Order #Id</h4>
+                                    <div>
+                                        <span>Date:</span>
+                                        <span>${new Date(item.So_Date).toLocaleDateString()}</span>
+                                    </div>
+                                    <div>
+                                        <span>Order Taken:</span>
+                                        <span>${item.Created_BY_Name}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr class= "table-primary">
+                                                    <th scope="col">Sno</th>
+                                                    <th scope="col">Product</th>
+                                                    <th scope="col">Quantity</th>
+                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-group-divider">
+                                                ${item.Products_List.map((product, index) => `
+                                                    <tr>
+                                                        <td>${index + 1}</td>
+                                                        <td>${product.Product_Name}</td>
+                                                        <td>${product.Bill_Qty}</td>
+                                                        <td>${product.Item_Rate}</td>
+                                                        <td>₹ ${product.Amount}</td>
+                                                    </tr>
+                                                `).join('')}
+                                                <tr>
+                                                    <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
+                                                    <td class="text-end">₹ ${item.Total_Invoice_value}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row" colspan="5" class="text-start">Total Amount in Words</th>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" class="text-start">${totalAmountWords}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <hr />
                     <div class="row">
-                        <div class="col-sm-6">
-                            <p class="details-text">Retailer: ${item.Retailer_Name}</p>
-                        </div>
-                        <div class="col-sm-6 text-end">
-                            <p class="details-text">Date: ${new Date(item.So_Date).toLocaleDateString()}</p>
-                            <p class="details-text">Order taken by: ${item.Created_BY_Name}</p>
+                        <div class="col-12">
+                            <p class="text-muted mt-5">
+                                This is an automatically generated bill. Please verify all details before making any payments.
+                            </p>
                         </div>
                     </div>
-                    <hr />
-                    <table class="table">
-                        <thead>
-                            <tr class="table-primary">
-                                <th>Sno</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Rate</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    `;
-
-        item.Products_List.forEach((product, index) => {
-            htmlContent += `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${product.Product_Name}</td>
-                <td>${product.Bill_Qty}</td>
-                <td>₹ ${product.Item_Rate}</td>
-                <td>₹ ${product.Amount}</td>
-            </tr>
-        `;
-        });
-
-        htmlContent += `
-                        </tbody>
-                    </table>
-                    <p class="text-end total-text">Total: ₹ ${item.Total_Invoice_value}</p>
                 </div>
-            </body>
+                
+            </section>
+        </body>
         </html>
     `;
 
@@ -331,7 +407,14 @@ const OrderPreview = () => {
                 )}
             </View>
 
-            <Accordion data={logData} renderHeader={renderHeader} renderContent={renderContent} />
+            <ScrollView style={styles(colors).scrollContainer}>
+                <Accordion
+                    data={logData}
+                    renderHeader={renderHeader}
+                    renderContent={renderContent}
+                />
+            </ScrollView>
+
         </View>
     )
 }
@@ -342,6 +425,9 @@ const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
+    },
+    scrollContainer: {
+        marginBottom: 100,
     },
     datePickerContainer: {
         flexDirection: 'row',
@@ -374,12 +460,12 @@ const styles = (colors) => StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
         borderBottomWidth: 1,
-        borderBottomColor: customColors.primary,
+        borderBottomColor: colors.primary,
     },
     headerText: {
         fontSize: 16,
         fontFamily: customFonts.plusJakartaSansMedium,
-        color: customColors.text,
+        color: colors.text,
         fontWeight: '500',
     },
     content: {
@@ -463,14 +549,14 @@ const styles = (colors) => StyleSheet.create({
         marginTop: 10,
     },
     editButton: {
-        backgroundColor: customColors.secondary,
+        backgroundColor: colors.secondary,
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
         marginVertical: 20,
     },
     editButtonText: {
-        color: customColors.black,
+        color: colors.black,
         fontSize: 16,
         fontFamily: customFonts.plusJakartaSansBold,
     },
@@ -480,12 +566,12 @@ const styles = (colors) => StyleSheet.create({
         borderRadius: 5,
     },
     downloadButtonText: {
-        color: customColors.white,
+        color: colors.white,
         fontSize: 16,
         fontFamily: customFonts.plusJakartaSansBold,
     },
     downloadButton: {
-        backgroundColor: customColors.primary,
+        backgroundColor: colors.primary,
         padding: 15,
         borderRadius: 5,
         alignItems: 'center',
@@ -500,7 +586,7 @@ const styles = (colors) => StyleSheet.create({
         justifyContent: 'space-around',
         paddingVertical: 5,
         borderBottomWidth: 0.75,
-        borderBottomColor: customColors.black,
+        borderBottomColor: colors.black,
     },
     cell: {
         textAlign: 'center',

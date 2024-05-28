@@ -51,6 +51,7 @@ const AttendanceReport = () => {
     };
 
     const fetchAttendance = async (fromDay, toDay, id) => {
+        console.log(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`)
         try {
             const response = await fetch(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`, {
                 method: 'GET',

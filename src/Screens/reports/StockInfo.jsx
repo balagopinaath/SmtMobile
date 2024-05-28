@@ -1,4 +1,4 @@
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -15,23 +15,25 @@ const StockInfo = () => {
     const [logData, setLogData] = useState([])
     const [name, setName] = useState()
 
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
     useEffect(() => {
         (async () => {
             try {
-                const currentDate = new Date();
                 const userId = await AsyncStorage.getItem('UserId');
                 const userName = await AsyncStorage.getItem('Name');
                 setName(userName)
-                fetchStockLog(currentDate.toISOString(), userId);
+                fetchStockLog(selectedDate.toISOString(), userId);
             } catch (err) {
                 console.log(err);
             }
         })();
-    }, [])
+    }, [selectedDate])
 
-    const fetchStockLog = async (toDay, id) => {
+    const fetchStockLog = async (day, id) => {
         try {
-            const response = await fetch(`${API.closingStockReport}${id}&reqDate=${toDay}`, {
+            const response = await fetch(`${API.closingStockReport}${id}&reqDate=${day}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,6 +51,17 @@ const StockInfo = () => {
         }
     }
 
+    const handleDateChange = (event, selectedDate) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setSelectedDate(selectedDate);
+        }
+    };
+
+    const showDatepicker = () => {
+        setShowDatePicker(true);
+    };
+
     const editOption = (item) => {
         navigation.navigate('StockClosing', { item, isEdit: true })
     }
@@ -59,35 +72,64 @@ const StockInfo = () => {
         </View>
     )
 
-    const renderContent = (item) => (
-        <View style={styles(colors).content}>
-            <TouchableOpacity style={styles(colors).editButton} onPress={() => editOption(item)} >
-                <Text maxFontSizeMultiplier={1.2} style={styles(colors).editButtonText}>Edit</Text>
-            </TouchableOpacity>
+    const renderContent = (item) => {
+        const currentDate = new Date().toISOString().split('T')[0];
+        const orderDate = new Date(item.ST_Date).toISOString().split('T')[0];
 
-            <View style={styles(colors).row}>
-                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>SNo</Text>
-                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Product Name</Text>
-                <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Quantity</Text>
-            </View>
-            {item.ProductCount.map((product, index) => (
-                <View key={index} style={styles(colors).row}>
-                    <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellText]}>{product.S_No}</Text>
-                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cellMultiline}>{product.Product_Name}</Text>
-                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).cell}>{product.ST_Qty}</Text>
+        return (
+            <View style={styles(colors).content}>
+                {currentDate === orderDate && (
+                    <TouchableOpacity style={styles(colors).editButton} onPress={() => editOption(item)} >
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).editButtonText}>Edit</Text>
+                    </TouchableOpacity>
+                )}
+
+                <View style={styles(colors).row}>
+                    <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>SNo</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Product Name</Text>
+                    <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellHead]}>Quantity</Text>
                 </View>
-            ))}
-        </View>
-    )
+                {item.ProductCount.map((product, index) => (
+                    <View key={index} style={styles(colors).row}>
+                        <Text maxFontSizeMultiplier={1.2} style={[styles(colors).cell, styles(colors).cellText]}>{product.S_No}</Text>
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).cellMultiline}>{product.Product_Name}</Text>
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).cell}>{product.ST_Qty}</Text>
+                    </View>
+                ))}
+            </View>
+        )
+    }
 
     return (
-        <ScrollView style={styles(colors).container}>
+        <View style={styles(colors).container}>
+            <View style={styles(colors).datePickerContainer}>
+                <View style={styles(colors).datePickerWrapper}>
+                    <TouchableOpacity style={styles(colors).datePicker} onPress={showDatepicker}>
+                        <TextInput
+                            maxFontSizeMultiplier={1.2}
+                            style={styles(colors).textInput}
+                            value={selectedDate.toDateString()} // Display selected 'fromDate'
+                            editable={false}
+                        />
+                        <Icon name="calendar" color={colors.accent} size={20} />
+                    </TouchableOpacity>
+                </View>
+
+                {showDatePicker && (
+                    <DateTimePicker
+                        value={selectedDate}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateChange}
+                    />
+                )}
+            </View>
             <Accordion
                 data={logData}
                 renderHeader={renderHeader}
                 renderContent={renderContent}
             />
-        </ScrollView>
+        </View>
     )
 }
 
@@ -96,6 +138,29 @@ export default StockInfo
 const styles = (colors) => StyleSheet.create({
     container: {
         padding: 10,
+    },
+    datePickerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 20,
+    },
+    datePickerWrapper: {
+        flex: 1,
+        marginRight: 10,
+        marginVertical: 15,
+    },
+    datePicker: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: colors.accent,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+    },
+    textInput: {
+        flex: 1,
+        color: colors.text,
+        ...typography.body1(colors),
     },
     header: {
         flexDirection: 'row',

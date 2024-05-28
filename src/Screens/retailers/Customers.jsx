@@ -80,7 +80,7 @@ const Customers = () => {
             </View>
 
             {loading ? (
-                <ActivityIndicator style={styles(colors).activityIndicator} size="large" color={customColors.primary} />
+                <ActivityIndicator style={styles(colors).activityIndicator} size="large" color={colors.primary} />
             ) : (
                 <>
                     {filteredData.length > 0 ? (

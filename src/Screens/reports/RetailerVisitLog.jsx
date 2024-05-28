@@ -1,4 +1,4 @@
-import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -105,7 +105,7 @@ const RetailerVisitLog = () => {
                             value={selectedDate.toDateString()} // Display selected 'fromDate'
                             editable={false}
                         />
-                        <Icon name="calendar" color={customColors.accent} size={20} />
+                        <Icon name="calendar" color={colors.accent} size={20} />
                     </TouchableOpacity>
                 </View>
 
@@ -143,14 +143,6 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         padding: 15,
     },
-    datePicker: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: colors.accent,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-    },
     datePickerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -160,6 +152,14 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         marginRight: 10,
         marginVertical: 15,
+    },
+    datePicker: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: colors.accent,
+        borderRadius: 5,
+        paddingHorizontal: 10,
     },
     textInput: {
         flex: 1,

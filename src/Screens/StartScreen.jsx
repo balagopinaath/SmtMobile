@@ -55,7 +55,7 @@ export default StartScreen;
 
 const styles = (colors) => StyleSheet.create({
     container: {
-        backgroundColor: colors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         flex: 1,
         alignItems: "center",
         justifyContent: "center",

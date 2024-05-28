@@ -37,7 +37,7 @@ const Attendance = (locationData) => {
     }, [])
 
     const handleLocationUpdate = (locationData) => {
-        // Update latitude and longitude in formValues state
+        setLocation(locationData);
         setFormValues(prevState => ({
             ...prevState,
             Latitude: locationData.latitude,
@@ -59,22 +59,27 @@ const Attendance = (locationData) => {
     };
 
     const handleSubmit = async () => {
-        if (isSubmitting) return; // Prevent multiple submissions
-        setIsSubmitting(true); // Set submitting state to true
+        if (isSubmitting) return;
+        setIsSubmitting(true);
+
+        const { UserId, Start_KM, Latitude, Longitude, Start_KM_Pic } = formValues;
+
+        if (!UserId || !Start_KM || !Latitude || !Longitude || !Start_KM_Pic) {
+            Alert.alert('Location Permission', 'Please ensure location services are enabled.');
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
             setLoading(true);
-            if (!formValues.Latitude || !formValues.Longitude) {
-                Alert.alert('Location Permission', 'Please enable location services.');
-                return;
-            }
 
             const formData = new FormData();
-            formData.append('UserId', formValues.UserId);
-            formData.append('Start_KM', formValues.Start_KM);
-            formData.append('Latitude', location.latitude);
-            formData.append('Longitude', location.longitude);
+            formData.append('UserId', UserId);
+            formData.append('Start_KM', Start_KM);
+            formData.append('Latitude', Latitude);
+            formData.append('Longitude', Longitude);
             formData.append("Start_KM_Pic", {
-                uri: `file://${formValues.Start_KM_Pic}`,
+                uri: `file://${Start_KM_Pic}`,
                 name: 'photo.jpg',
                 type: 'image/jpeg'
             });

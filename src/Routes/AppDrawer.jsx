@@ -20,7 +20,7 @@ const AppDrawer = () => {
             screenOptions={{
                 drawerType: isLargeScreen ? 'permanent' : 'front',
                 drawerStyle: {
-                    backgroundColor: '#c6cbef',
+                    backgroundColor: colors.background === "#000000" ? colors.black : '#c6cbef',
                     width: "70%",
                 },
                 // overlayColor: 'transparent',

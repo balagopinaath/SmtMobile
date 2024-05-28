@@ -225,39 +225,32 @@ const SaleOrder = ({ route }) => {
 
     return (
         <View style={styles(colors).container}>
-            <Dropdown
-                data={retailers}
-                labelField="Retailer_Name"
-                valueField="Retailer_Id"
-                placeholder="Select Retailer"
-                value={selectedRetail}
-                onChange={item => {
-                    setSelectedRetail(item.Retailer_Id);
-                    setStockInputValue(prevState => ({
-                        ...prevState,
-                        Retailer_Id: item.Retailer_Id,
-                        Retailer_Name: item.Retailer_Name,
-                        Company_Id: item.Company_Id,
-                    }));
-                }}
-                maxHeight={300}
-                search
-                searchPlaceholder="Search Retailer"
-                style={styles(colors).dropdown}
-                containerStyle={styles(colors).dropdownContainer}
-                placeholderStyle={styles(colors).placeholderStyle}
-                selectedTextStyle={styles(colors).selectedTextStyle}
-                inputSearchStyle={styles(colors).inputSearchStyle}
-            />
-            <View style={styles(colors).narrationContainer}>
-                <TextInput
-                    maxFontSizeMultiplier={1.2}
-                    style={styles(colors).narrationContainerInputText}
-                    placeholder='Narration'
-                    onChangeText={(text) => setStockInputValue({ ...stockInputValue, Narration: text })}
+            <View >
+                <Dropdown
+                    data={retailers}
+                    labelField="Retailer_Name"
+                    valueField="Retailer_Id"
+                    placeholder="Select Retailer"
+                    value={selectedRetail}
+                    onChange={item => {
+                        setSelectedRetail(item.Retailer_Id);
+                        setStockInputValue(prevState => ({
+                            ...prevState,
+                            Retailer_Id: item.Retailer_Id,
+                            Retailer_Name: item.Retailer_Name,
+                            Company_Id: item.Company_Id,
+                        }));
+                    }}
+                    maxHeight={300}
+                    search
+                    searchPlaceholder="Search Retailer"
+                    style={styles(colors).dropdown}
+                    containerStyle={styles(colors).dropdownContainer}
+                    placeholderStyle={styles(colors).placeholderStyle}
+                    selectedTextStyle={styles(colors).selectedTextStyle}
+                    inputSearchStyle={styles(colors).inputSearchStyle}
                 />
-                <View style={styles(colors).narrationContainerButtonGroup}>
-                    <CustomButton onPress={() => navigation.goBack()}>Cancel</CustomButton>
+                <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
                     <CustomButton onPress={handlePreview}>Preview</CustomButton>
                 </View>
             </View>
@@ -370,18 +363,26 @@ const SaleOrder = ({ route }) => {
                                 <Text style={styles(colors).totalText}>Total Amount: ₹{total.toFixed(2)}/-</Text>
                                 <Text style={styles(colors).totalText}>In Words: {numberToWords(total)} only.</Text>
                             </View>
-                            <TouchableOpacity
-                                style={styles(colors).closeButton}
-                                onPress={handleSubmit}
-                            >
-                                <Text>Submit Order</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles(colors).closeButton}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
-                                <Text>Close</Text>
-                            </TouchableOpacity>
+                            <TextInput
+                                maxFontSizeMultiplier={1.2}
+                                style={styles(colors).narrationContainerInputText}
+                                placeholder='Narration'
+                                onChangeText={(text) => setStockInputValue({ ...stockInputValue, Narration: text })}
+                            />
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginVertical: 15 }}>
+                                <TouchableOpacity
+                                    style={styles(colors).closeButton}
+                                    onPress={handleSubmit}
+                                >
+                                    <Text style={styles(colors).closeButtonText}>Submit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles(colors).closeButton}
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                >
+                                    <Text style={styles(colors).closeButtonText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </Modal>
@@ -396,23 +397,6 @@ const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
-    },
-    narrationContainer: {
-        marginHorizontal: 20,
-        marginVertical: 10,
-    },
-    narrationContainerInputText: {
-        ...typography.h6(colors),
-        borderWidth: 1,
-        borderColor: '#a1a1a1',
-        borderRadius: 8,
-        padding: 12,
-        marginHorizontal: 'auto',
-    },
-    narrationContainerButtonGroup: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginVertical: 15,
     },
     dropdown: {
         marginHorizontal: 20,
@@ -446,7 +430,7 @@ const styles = (colors) => StyleSheet.create({
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        marginBottom: 50,
+        marginBottom: 20,
     },
     tabButton: {
         paddingVertical: 12,
@@ -480,15 +464,12 @@ const styles = (colors) => StyleSheet.create({
         marginBottom: 4,
     },
     pagerViewContainerSubText: {
-        fontFamily: customFonts.plusJakartaSansRegular,
-        fontSize: 12,
-        color: '#666',
+        ...typography.body2(colors),
         fontWeight: '500',
         marginBottom: 10,
     },
     pagerViewContainerInputText: {
-        fontFamily: customFonts.plusJakartaSansSemiBold,
-        fontSize: 14,
+        ...typography.body1(colors),
         padding: 8,
         borderWidth: 1,
         borderColor: '#ccc',
@@ -499,21 +480,22 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderColor: colors.background === "#000000" ? colors.black : colors.white,
     },
     modalContent: {
-        backgroundColor: 'white',
+        width: '90%',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         padding: 20,
-        width: '90%', // Adjust size according to your preference
         borderRadius: 10,
     },
     modalTitle: {
-        fontSize: 20,
+        ...typography.h4(colors),
         fontWeight: 'bold',
         marginBottom: 10,
     },
     tableContainer: {
-        maxHeight: 300, // Set a max height for scrollable content
+        maxHeight: 300,
     },
     tableHeader: {
         flexDirection: 'row',
@@ -523,6 +505,7 @@ const styles = (colors) => StyleSheet.create({
     headerText: {
         flex: 1, // Equal width columns
         textAlign: 'center',
+        ...typography.body2(colors),
         fontWeight: 'bold',
         padding: 10,
     },
@@ -534,27 +517,42 @@ const styles = (colors) => StyleSheet.create({
     rowText: {
         flex: 1,
         textAlign: 'center',
+        ...typography.body2(colors),
         padding: 10,
-    },
-    closeButton: {
-        marginTop: 10,
-        alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#ddd',
-        borderRadius: 5,
     },
     totalContainer: {
         paddingVertical: 20,
         borderTopWidth: 1,
         borderTopColor: '#ddd',  // Light grey border for a subtle separation
         marginTop: 10,
-        backgroundColor: 'white', // White background for the total section
-        // alignItems: 'center', // Center alignment of total text
+        marginHorizontal: 10,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
+        alignItems: 'flex-end',
     },
-
     totalText: {
-        fontSize: 16,
+        ...typography.body1(colors),
         fontWeight: 'bold',
-        color: '#333', // Dark grey color for text for better readability
+    },
+    narrationContainerInputText: {
+        ...typography.h6(colors),
+        borderWidth: 1,
+        borderColor: '#a1a1a1',
+        borderRadius: 8,
+        padding: 12,
+        marginHorizontal: 15,
+    },
+    closeButton: {
+        marginTop: 10,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: colors.accent,
+        borderRadius: 30,
+    },
+    closeButtonText: {
+        ...typography.h6(colors),
+        fontWeight: '700',
+        color: colors.white
     }
+
 })

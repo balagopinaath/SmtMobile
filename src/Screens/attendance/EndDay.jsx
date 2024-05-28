@@ -134,7 +134,7 @@ const EndDay = () => {
             >
                 <View style={styles(colors).modalContainer}>
                     <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).closeButton}>
-                        <Icon name='close' size={30} color={customColors.white} />
+                        <Icon name='close' size={30} color={colors.white} />
                     </TouchableOpacity>
                     {
                         !capturedPhotoPath ? (

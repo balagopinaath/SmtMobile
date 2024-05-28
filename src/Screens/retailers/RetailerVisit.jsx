@@ -420,7 +420,7 @@ const styles = (colors) => StyleSheet.create({
         fontFamily: customFonts.plusJakartaSansBold,
         fontSize: 14,
         fontWeight: '400',
-        color: customColors.white
+        color: colors.white
     },
     clearPhotoButton: {
         marginTop: 20,
