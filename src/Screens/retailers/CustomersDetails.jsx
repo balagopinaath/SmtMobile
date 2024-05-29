@@ -1,4 +1,4 @@
-import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid, ScrollView, Image, useColorScheme } from 'react-native';
+import { Linking, StyleSheet, Text, TouchableOpacity, View, PermissionsAndroid, Alert, ToastAndroid, ScrollView, Image, useColorScheme, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Geolocation from '@react-native-community/geolocation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -15,7 +15,6 @@ const CustomersDetails = ({ route }) => {
     const longitude = item.Longitude;
     const phoneNumber = item.Mobile_No;
     const [userId, setUserId] = useState('');
-    const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -47,51 +46,63 @@ const CustomersDetails = ({ route }) => {
         }
     };
 
-    const getCurrentLocation = (successCallback) => {
-        Geolocation.getCurrentPosition(
-            position => {
-                const { latitude, longitude } = position.coords;
-                successCallback(latitude, longitude);
-            },
-            error => {
-                console.error('Error getting location:', error);
-                switch (error.code) {
-                    case 1: console.error('Location permission denied'); break;
-                    case 2: console.error('Position unavailable'); break;
-                    case 3: console.error('Request timeout'); break;
-                    default: console.error('An unknown error occurred'); break;
-                }
-            },
-            { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }
-        );
-    };
-
     const handleUpdateLocation = () => {
-        getCurrentLocation(async (lat, long) => {
-            fetch(API.retailerLocation, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    EntryBy: userId,
-                    Latitude: lat.toString(),
-                    Longitude: long.toString(),
-                    Retailer_Id: item.Retailer_Id
-                })
-            }).then(res => res.json())
-                .then(data => {
-                    setRefresh(!refresh);
-                    if (data.status === 'Success') {
-                        Alert.alert(data.message);
-                        ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG);
-                        console.log('Successfully updated location');
-                    } else {
-                        Alert.alert(data.message);
+        Alert.alert(
+            'Update Location',
+            'Are you sure you want to update the location?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel'
+                },
+                {
+                    text: 'OK',
+                    onPress: async () => {
+                        try {
+                            Geolocation.getCurrentPosition(
+                                async (position) => {
+                                    const { latitude, longitude } = position.coords;
+
+                                    const response = await fetch(API.retailerLocation, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            EntryBy: userId,
+                                            Latitude: latitude.toString(),
+                                            Longitude: longitude.toString(),
+                                            Retailer_Id: item.Retailer_Id
+                                        })
+                                    });
+
+                                    if (!response.ok) {
+                                        throw new Error('Failed to update location');
+                                    }
+
+                                    const data = await response.json();
+                                    if (data.status === 'Success') {
+                                        Alert.alert(data.message);
+                                        ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG);
+                                        console.log('Successfully updated location');
+                                    } else {
+                                        Alert.alert(data.message);
+                                    }
+                                },
+                                error => {
+                                    console.error('Error getting location:', error);
+                                    Alert.alert('Error', 'Failed to get current location. Please try again later.');
+                                },
+                                { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }
+                            );
+                        } catch (error) {
+                            console.error('Error updating location:', error);
+                            Alert.alert('Error', 'Failed to update location. Please try again later.');
+                        }
                     }
-                })
-                .catch(error => {
-                    console.error('Error in fetching data:', error);
-                });
-        });
+                }
+            ],
+            { cancelable: false }
+        );
     };
 
     return (

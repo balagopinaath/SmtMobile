@@ -37,7 +37,7 @@ const Attendance = (locationData) => {
     }, [])
 
     const handleLocationUpdate = (locationData) => {
-        setLocation(locationData);
+        // setLocation(locationData);
         setFormValues(prevState => ({
             ...prevState,
             Latitude: locationData.latitude,
@@ -64,7 +64,7 @@ const Attendance = (locationData) => {
 
         const { UserId, Start_KM, Latitude, Longitude, Start_KM_Pic } = formValues;
 
-        if (!UserId || !Start_KM || !Latitude || !Longitude || !Start_KM_Pic) {
+        if (!Latitude || !Longitude) {
             Alert.alert('Location Permission', 'Please ensure location services are enabled.');
             setIsSubmitting(false);
             return;

@@ -99,8 +99,8 @@ const OrderPreview = () => {
                         <Text style={styles(colors).invoiceTitle}>Order Summary</Text>
                         <Text style={styles(colors).invoiceDate}>Date: {new Date(item.So_Date).toLocaleDateString()}</Text>
                     </View>
-
                 </View>
+
                 <View style={styles(colors).invoiceBody}>
                     <View style={styles(colors).invoiceRow}>
                         <Text style={styles(colors).invoiceLabel}>Retailer:</Text>
@@ -143,13 +143,11 @@ const OrderPreview = () => {
     };
 
     const editOption = (item) => {
-        // console.log(item)
         navigation.navigate('Orders', { item, isEdit: true })
     }
 
     useEffect(() => {
         if (logData && logData.length > 0 && logData[0].Retailer_Id) {
-            console.log(`${API.retailerInfo}${logData[0].Retailer_Id}`);
             fetch(`${API.retailerInfo}${logData[0].Retailer_Id}`)
                 .then(res => res.json())
                 .then(data => {
@@ -365,7 +363,7 @@ const OrderPreview = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles(colors).container}>
             <View style={styles(colors).datePickerContainer}>
                 <View style={styles(colors).datePickerWrapper}>
                     <Text style={styles(colors).dateTitle}>From</Text>
@@ -426,25 +424,22 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         padding: 10,
     },
-    scrollContainer: {
-        marginBottom: 100,
-    },
     datePickerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 20,
+        marginHorizontal: 15,
+        justifyContent: 'space-between',
+    },
+    datePickerWrapper: {
+        flex: 1,
+        marginRight: 10,
+        minWidth: 100,
+        maxWidth: 250,
     },
     dateTitle: {
         ...typography.body1(colors),
         color: colors.text,
         marginBottom: 5,
-    },
-    datePickerWrapper: {
-        flex: 1,
-        marginRight: 10,
-        marginVertical: 15,
-        minWidth: 100, // Minimum width
-        maxWidth: 250,
     },
     datePicker: {
         flexDirection: 'row',
@@ -453,6 +448,11 @@ const styles = (colors) => StyleSheet.create({
         borderColor: colors.accent,
         borderRadius: 5,
         paddingHorizontal: 10,
+        height: 50,
+        justifyContent: 'space-between',
+    },
+    textInput: {
+        ...typography.body1(colors),
     },
     header: {
         flexDirection: 'row',
@@ -463,6 +463,7 @@ const styles = (colors) => StyleSheet.create({
         borderBottomColor: colors.primary,
     },
     headerText: {
+        ...typography.body1(colors),
         fontSize: 16,
         fontFamily: customFonts.plusJakartaSansMedium,
         color: colors.text,
@@ -488,13 +489,11 @@ const styles = (colors) => StyleSheet.create({
         marginBottom: 10,
     },
     invoiceTitle: {
-        fontSize: 18,
+        ...typography.h6(colors),
         fontWeight: 'bold',
-        color: colors.text,
     },
     invoiceDate: {
-        fontSize: 14,
-        color: colors.text,
+        ...typography.body1(colors),
     },
     invoiceBody: {
         padding: 10,
@@ -509,22 +508,17 @@ const styles = (colors) => StyleSheet.create({
         marginBottom: 5,
     },
     invoiceLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.text,
+        ...typography.h6(colors),
     },
     invoiceValue: {
-        fontSize: 16,
-        color: colors.text,
+        ...typography.body1(colors),
     },
     invoiceProducts: {
         marginTop: 10,
     },
     invoiceProductsTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        ...typography.h6(colors),
         marginBottom: 5,
-        color: colors.text,
     },
     productRowHeader: {
         flexDirection: 'row',
@@ -541,7 +535,7 @@ const styles = (colors) => StyleSheet.create({
     productCell: {
         width: '25%',
         textAlign: 'center',
-        color: colors.text,
+        ...typography.body1(colors),
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -556,9 +550,8 @@ const styles = (colors) => StyleSheet.create({
         marginVertical: 20,
     },
     editButtonText: {
-        color: colors.black,
-        fontSize: 16,
-        fontFamily: customFonts.plusJakartaSansBold,
+        ...typography.h6(colors),
+        fontWeight: '700'
     },
     downloadButton: {
         padding: 10,
@@ -566,9 +559,9 @@ const styles = (colors) => StyleSheet.create({
         borderRadius: 5,
     },
     downloadButtonText: {
+        ...typography.h6(colors),
+        fontWeight: '700',
         color: colors.white,
-        fontSize: 16,
-        fontFamily: customFonts.plusJakartaSansBold,
     },
     downloadButton: {
         backgroundColor: colors.primary,
@@ -577,29 +570,8 @@ const styles = (colors) => StyleSheet.create({
         alignItems: 'center',
         marginVertical: 20,
     },
-    contentInner: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 5,
-        borderBottomWidth: 0.75,
-        borderBottomColor: colors.black,
-    },
-    cell: {
-        textAlign: 'center',
-        flexWrap: 'wrap',
-    },
-    cell: {
-        flex: 2,
-        textAlign: 'center',
-        flexWrap: 'wrap',
-    },
-    cellHead: {
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
-        fontWeight: '500'
+    scrollContainer: {
+        marginTop: 15,
+        marginBottom: 100,
     },
 })

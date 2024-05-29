@@ -220,7 +220,7 @@ const StockClosing = ({ route }) => {
                 </ScrollView>
                 <ScrollView>
                     <PagerView
-                        style={{ marginTop: 15 }}
+                        style={{ marginTop: 15, marginBottom: 100, }}
                         initialPage={selectedTab}
                         ref={pagerRef}
                         onPageSelected={onPageSelected}
@@ -266,7 +266,7 @@ const StockClosing = ({ route }) => {
                                                             )?.ST_Qty
                                                                 || '').toString()
                                                         }
-                                                        placeholder="Closing Stock Quantity"
+                                                        placeholder="Closing Stock Qty"
                                                         keyboardType='number-pad'
                                                     />
                                                 </View>
@@ -375,7 +375,7 @@ const styles = (colors) => StyleSheet.create({
         marginBottom: 4,
     },
     pagerViewContainerInputText: {
-        ...typography.body1(colors),
+        ...typography.body2(colors),
         padding: 8,
         borderWidth: 1,
         borderColor: '#ccc',

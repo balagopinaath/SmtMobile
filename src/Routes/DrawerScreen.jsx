@@ -61,7 +61,7 @@ const DrawerScreen = ({ navigation }) => {
                 style={styles(colors).drawerItem}
                 onPress={() => navigation.navigate('HomeScreen')}
             >
-                <Icon name="home" size={20} color={colors.background === "#000000" ? colors.black : colors.white} />
+                <Icon name="home" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
                 <Text style={styles(colors).drawerText}>Home</Text>
             </TouchableOpacity>
 
@@ -70,7 +70,7 @@ const DrawerScreen = ({ navigation }) => {
                     style={styles(colors).drawerItem}
                     onPress={() => navigation.navigate('Customers')}
                 >
-                    <Icon name="team" size={20} color={colors.black} />
+                    <Icon name="team" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
                     <Text style={styles(colors).drawerText}>Retailers List</Text>
                 </TouchableOpacity>
 
@@ -78,14 +78,14 @@ const DrawerScreen = ({ navigation }) => {
                     style={styles(colors).drawerItem}
                     onPress={() => navigation.navigate('AttendanceReport')}
                 >
-                    <Icon name="filetext1" size={20} color={colors.black} />
+                    <Icon name="filetext1" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
                     <Text style={styles(colors).drawerText}>Attendance Report</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles(colors).drawerItem}
                     onPress={() => navigation.navigate('RetailerLog')}
                 >
-                    <Icon name="filetext1" size={20} color={colors.black} />
+                    <Icon name="filetext1" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
                     <Text style={styles(colors).drawerText}>Visited Report</Text>
                 </TouchableOpacity>
             </View>
