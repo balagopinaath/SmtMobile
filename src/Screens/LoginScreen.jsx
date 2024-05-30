@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'react-native-crypto-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../Config/Endpoint';
-import { customColors, customFonts, typography } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 
 const LoginScreen = () => {
     const navigation = useNavigation();

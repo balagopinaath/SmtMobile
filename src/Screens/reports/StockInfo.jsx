@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Accordion from '../../Components/Accordion';
@@ -108,7 +108,7 @@ const StockInfo = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedDate.toDateString()} // Display selected 'fromDate'
+                            value={selectedDate ? new Intl.DateTimeFormat('en-GB').format(selectedDate) : ''}
                             editable={false}
                         />
                         <Icon name="calendar" color={colors.accent} size={20} />

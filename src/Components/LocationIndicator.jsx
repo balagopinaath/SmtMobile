@@ -101,8 +101,8 @@ const LocationIndicator = ({ onLocationUpdate }) => {
             <Text style={styles(colors).cardTitle}>Location Status</Text>
             <View style={styles(colors).cardContent}>
                 <View style={styles(colors).row}>
-                    <View style={locationPermissionGranted ? styles.active : styles.inActive}>
-                        <Text style={styles.text} maxFontSizeMultiplier={1.2}>Permission</Text>
+                    <View style={locationPermissionGranted ? styles(colors).active : styles(colors).inActive}>
+                        <Text style={styles(colors).text} maxFontSizeMultiplier={1.2}>Permission</Text>
                     </View>
                     <View style={locationEnabled ? styles(colors).active : styles(colors).inActive}>
                         <Text style={styles(colors).text} maxFontSizeMultiplier={1.2} >Location</Text>

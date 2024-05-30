@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { API } from '../../Config/Endpoint';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native'
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import { Dropdown } from 'react-native-element-dropdown';
 import CustomRadioButton from '../../Components/CustomRadioButton';
 import LocationIndicator from '../../Components/LocationIndicator';
@@ -417,10 +417,7 @@ const styles = (colors) => StyleSheet.create({
     buttonText: {
         textAlign: 'center',
         ...typography.button(colors),
-        fontFamily: customFonts.plusJakartaSansBold,
-        fontSize: 14,
         fontWeight: '400',
-        color: colors.white
     },
     clearPhotoButton: {
         marginTop: 20,

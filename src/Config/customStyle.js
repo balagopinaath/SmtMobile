@@ -1,5 +1,5 @@
-import { StyleSheet, Appearance } from 'react-native';
-import { customColors, customcustomColors, customFonts } from './helper';
+import { StyleSheet, Appearance, useColorScheme } from 'react-native';
+import { customColors, customFonts } from './helper';
 
 const getTheme = () => {
     const colorScheme = Appearance.getColorScheme();
@@ -7,6 +7,8 @@ const getTheme = () => {
 }
 
 const customStyles = (theme) => {
+    const scheme = useColorScheme();
+    // const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
     const colors = theme === 'dark' ? darkColors : lightColors;
 
     return StyleSheet.create({

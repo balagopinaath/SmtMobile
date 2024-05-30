@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CameraComponent from '../../Components/CameraComponent';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 
 const EndDay = () => {
     const navigation = useNavigation();

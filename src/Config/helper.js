@@ -1,4 +1,4 @@
-import { useColorScheme, Dimensions } from 'react-native';
+import { Dimensions } from 'react-native';
 
 const deviceWidth = Dimensions.get('window').width;
 
@@ -40,19 +40,7 @@ export const customColors = {
         black: "#000000",
         white: "#ffffff",
     },
-
-    background: "#ffffff",
-    primary: "#20c997",
-    secondary: "#f5f5f5",
-    accent: "#FF7043",
-
-    surface: '#1E1E1E',
-    textPrimary: "#212121",
-    textSecondary: '#757575',
-    black: "#000000",
-    white: "#ffffff",
 }
-
 
 export const typography = {
     h1: (colors) => ({

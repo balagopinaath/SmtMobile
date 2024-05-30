@@ -108,7 +108,7 @@ const AttendanceReport = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedFromDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                            value={selectedFromDate ? new Intl.DateTimeFormat('en-GB').format(selectedFromDate) : ''}
                             editable={false}
                             placeholder='Select Date'
                         />
@@ -122,7 +122,7 @@ const AttendanceReport = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedToDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                            value={selectedToDate ? new Intl.DateTimeFormat('en-GB').format(selectedToDate) : ''}
                             editable={false}
                         />
                         <Icon name="calendar" color={colors.accent} size={20} />

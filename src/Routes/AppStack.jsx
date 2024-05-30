@@ -16,7 +16,7 @@ import AttendanceInfo from '../Screens/attendance/AttendanceInfo';
 import RetailerVisit from '../Screens/retailers/RetailerVisit';
 import RetailerVisitLog from '../Screens/reports/RetailerVisitLog';
 import AttendanceReport from '../Screens/reports/AttendanceReport';
-import { customColors, customFonts } from '../Config/helper';
+import { customColors, typography } from '../Config/helper';
 import StockInfo from '../Screens/reports/StockInfo';
 import SaleOrder from '../Screens/sales/SaleOrder';
 import OrderPreview from '../Screens/sales/OrderPreview';
@@ -38,9 +38,9 @@ const AppStack = () => {
                 },
                 headerTintColor: colors.white,
                 headerTitleStyle: {
-                    fontWeight: 'bold',
-                    fontSize: 18,
-                    fontFamily: customFonts.plusJakartaSansBold
+                    ...typography.h5(colors),
+                    fontWeight: '600',
+                    color: colors.white,
                 },
             }}>
             <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />

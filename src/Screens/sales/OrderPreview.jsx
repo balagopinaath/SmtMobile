@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Accordion from '../../Components/Accordion';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
@@ -464,9 +464,6 @@ const styles = (colors) => StyleSheet.create({
     },
     headerText: {
         ...typography.body1(colors),
-        fontSize: 16,
-        fontFamily: customFonts.plusJakartaSansMedium,
-        color: colors.text,
         fontWeight: '500',
     },
     content: {

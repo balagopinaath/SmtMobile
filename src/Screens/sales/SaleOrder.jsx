@@ -5,7 +5,7 @@ import PagerView from 'react-native-pager-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Dropdown } from 'react-native-element-dropdown';
 import { API } from '../../Config/Endpoint';
-import { customColors, customFonts, typography } from '../../Config/helper';
+import { customColors, typography } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
 
 const SaleOrder = ({ route }) => {

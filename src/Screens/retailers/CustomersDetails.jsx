@@ -148,9 +148,9 @@ const CustomersDetails = ({ route }) => {
             </View>
 
             <View style={styles(colors).buttonContainer}>
-                {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('EditCustomer', { item })}>
+                {/* <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('EditCustomer', { item })}>
                     <CustomAntIcon name="edit" size={20} color="blue" />
-                    <Text style={styles.buttonText}>Edit Retailers</Text>
+                    <Text style={styles(colors).buttonText}>Edit Retailers</Text>
                 </TouchableOpacity> */}
 
                 <TouchableOpacity style={styles(colors).button} onPress={() => {

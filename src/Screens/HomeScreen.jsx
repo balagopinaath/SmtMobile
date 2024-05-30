@@ -48,7 +48,7 @@ const HomeScreen = () => {
     }
 
     return (
-        <ScrollView style={styles(colors).container}>
+        <View style={styles(colors).container}>
             <StatusBar backgroundColor={colors.primary} />
 
             <View style={styles(colors).headerContainer}>
@@ -57,71 +57,73 @@ const HomeScreen = () => {
                 </TouchableOpacity>
                 <Text style={styles(colors).headerText} maxFontSizeMultiplier={1.2}>Welcome, {name}!</Text>
                 <TouchableOpacity>
-                    {/* <Icon name="bells" color={colors.white} size={23} /> */}
+                    <Icon name="bells" color={colors.white} size={23} />
                 </TouchableOpacity>
             </View>
 
-            <AttendanceInfo />
+            <ScrollView>
+                <AttendanceInfo />
 
-            <View style={styles(colors).buttonContainer}>
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Customers')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/retailer.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Retailers</Text>
-                </TouchableOpacity>
+                <View style={styles(colors).buttonContainer}>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Customers')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/retailer.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Retailers</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerVisit')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/entry.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visit Entry</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerVisit')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/entry.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visit Log</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('AttendanceReport')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/attendance.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance Report</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Orders')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/sale.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale Order</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('StockInfo')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/stock.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Stock Report</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('StockInfo')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/stock.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Stock Entry</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerLog')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/visitLog.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visited Report</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerLog')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/visitLog.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visited Entry</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('Orders')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/sale.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale Order</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('OrderPreview')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/sale-report.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale Entry</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('OrderPreview')}>
-                    <Image
-                        style={styles(colors).tinyLogo}
-                        source={require('../../assets/images/sale-report.png')}
-                    />
-                    <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale List</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('AttendanceReport')}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/attendance.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance Entry</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
 
-        </ScrollView >
+        </View >
     )
 }
 

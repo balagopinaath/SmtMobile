@@ -102,7 +102,7 @@ const RetailerVisitLog = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedDate.toDateString()} // Display selected 'fromDate'
+                            value={selectedDate ? new Intl.DateTimeFormat('en-GB').format(selectedDate) : ''}
                             editable={false}
                         />
                         <Icon name="calendar" color={colors.accent} size={20} />
