@@ -94,7 +94,7 @@ const HomeScreen = () => {
                             style={styles(colors).tinyLogo}
                             source={require('../../assets/images/stock.png')}
                         />
-                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Stock Entry</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Stock List</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('RetailerLog')}>
@@ -102,7 +102,7 @@ const HomeScreen = () => {
                             style={styles(colors).tinyLogo}
                             source={require('../../assets/images/visitLog.png')}
                         />
-                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visited Entry</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Visited List</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('OrderPreview')}>
@@ -110,7 +110,7 @@ const HomeScreen = () => {
                             style={styles(colors).tinyLogo}
                             source={require('../../assets/images/sale-report.png')}
                         />
-                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Sale Entry</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Order List</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate('AttendanceReport')}>
@@ -118,7 +118,7 @@ const HomeScreen = () => {
                             style={styles(colors).tinyLogo}
                             source={require('../../assets/images/attendance.png')}
                         />
-                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance Entry</Text>
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance List</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
