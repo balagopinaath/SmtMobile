@@ -46,7 +46,7 @@ const StartScreen = () => {
     return (
         <View style={styles(colors).container}>
             <StatusBar backgroundColor={colors.primary} />
-            <Text style={styles(colors).logo} maxFontSizeMultiplier={1.2}>Shri Foods</Text>
+            <Text style={styles(colors).logo} maxFontSizeMultiplier={1.2}>Pukal Virpanai</Text>
         </View>
     );
 };

@@ -19,8 +19,9 @@ import AttendanceReport from '../Screens/reports/AttendanceReport';
 import { customColors, typography } from '../Config/helper';
 import StockInfo from '../Screens/reports/StockInfo';
 import SaleOrder from '../Screens/sales/SaleOrder';
-import OrderPreview from '../Screens/sales/OrderPreview';
+import OrderPreview from '../Screens/reports/OrderPreview';
 import { useColorScheme } from 'react-native';
+import ProfileScreen from '../Screens/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,7 @@ const AppStack = () => {
             <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: 'Profile Details', }} />
 
             <Stack.Screen name="Customers" component={Customers} options={{ title: 'Retailers', }} />
             <Stack.Screen name="CustomersDetails" component={CustomersDetails} options={{ title: 'Retailer Details' }} />
@@ -54,7 +56,7 @@ const AppStack = () => {
             <Stack.Screen name="RetailerVisit" component={RetailerVisit} options={{ title: 'Retailer Visit' }} />
 
             <Stack.Screen name="RetailerLog" component={RetailerVisitLog} options={{ title: 'Retailer Visit Log' }} />
-            <Stack.Screen name="StockInfo" component={StockInfo} options={{ title: 'Closing Stock Report' }} />
+            <Stack.Screen name="StockInfo" component={StockInfo} options={{ title: 'Stock List' }} />
             <Stack.Screen name="AttendanceReport" component={AttendanceReport} options={{ title: 'Attendance Report' }} />
 
             <Stack.Screen name="AttendanceInfo" component={AttendanceInfo} />
@@ -62,9 +64,9 @@ const AppStack = () => {
             <Stack.Screen name="EndDay" component={EndDay} options={{ title: 'Close Attendance' }} />
 
             <Stack.Screen name="OpenCamera" component={OpenCamera} />
-            <Stack.Screen name="StockClosing" component={StockClosing} options={{ title: 'Closing Stock' }} />
+            <Stack.Screen name="StockClosing" component={StockClosing} options={{ headerShown: false }} />
 
-            <Stack.Screen name="Orders" component={SaleOrder} options={{ title: 'Sales order creation' }} />
+            <Stack.Screen name="Orders" component={SaleOrder} options={{ headerShown: false }} />
             <Stack.Screen name="OrderPreview" component={OrderPreview} options={{ title: 'Sales List' }} />
 
         </Stack.Navigator>

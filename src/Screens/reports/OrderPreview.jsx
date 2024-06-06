@@ -60,7 +60,6 @@ const OrderPreview = () => {
     };
 
     const fetchSaleOrder = async (from, to, userId, company) => {
-        console.log(`${API.saleOrder}?Fromdate=${from}&Todate=${to}&Company_Id=${company}&Created_by=${userId}&Sales_Person_Id=${userId}`)
         try {
             const response = await fetch(`${API.saleOrder}?Fromdate=${from}&Todate=${to}&Company_Id=${company}&Created_by=${userId}&Sales_Person_Id=${userId}`, {
                 method: 'GET',
@@ -371,7 +370,7 @@ const OrderPreview = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedFromDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                            value={selectedFromDate ? new Intl.DateTimeFormat('en-GB').format(selectedFromDate) : ''}
                             editable={false}
                             placeholder='Select Date'
                         />
@@ -385,7 +384,7 @@ const OrderPreview = () => {
                         <TextInput
                             maxFontSizeMultiplier={1.2}
                             style={styles(colors).textInput}
-                            value={selectedToDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                            value={selectedToDate ? new Intl.DateTimeFormat('en-GB').format(selectedToDate) : ''}
                             editable={false}
                         />
                         <Icon name="calendar" color={colors.accent} size={20} />

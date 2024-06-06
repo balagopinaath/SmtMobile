@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PagerView from 'react-native-pager-view';
@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../Config/Endpoint';
 import { customColors, typography } from '../Config/helper';
 import CustomButton from '../Components/CustomButton';
+import { Dropdown } from 'react-native-element-dropdown';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const StockClosing = ({ route }) => {
     const navigation = useNavigation();
@@ -30,11 +32,21 @@ const StockClosing = ({ route }) => {
 
     const [stockInputValue, setStockInputValue] = useState(initialStockValue)
     const [closingStockValues, setClosingStockValues] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const [productPacks, setProductPacks] = useState([])
+    const [dropdownData, setDropdownData] = useState([])
+    const [selectedProductGroup, setSelectedProductGroup] = useState(dropdownData[0]?.Pack_Id || 0);
+    const [filteredProductData, setFilteredProductData] = useState([]);
+    const [selectedProductPack, setSelectedProductPack] = useState(null);
 
     useEffect(() => {
         (async () => {
             try {
                 const userId = await AsyncStorage.getItem('UserId');
+                const companyId = await AsyncStorage.getItem('Company_Id');
+                fetchproductPacks(companyId)
+
                 setStockInputValue(prev => ({
                     ...prev,
                     Created_by: userId
@@ -74,6 +86,7 @@ const StockClosing = ({ route }) => {
             .then(data => {
                 if (data.success) {
                     setProductData(data.data)
+                    filterProductDataByPack(0, data.data)
                 }
             }).catch(e => console.error(e))
     };
@@ -86,6 +99,45 @@ const StockClosing = ({ route }) => {
                     setProductClosingData(data.data)
                 }
             }).catch(e => console.error(e))
+    };
+
+    const fetchproductPacks = async (id) => {
+        try {
+            const response = await fetch(`${API.productPacks}${id}`);
+            const jsonData = await response.json();
+
+            if (jsonData.success) {
+                const dropdownOptions = [
+                    { Pack: "All", Pack_Id: 0 },
+                    ...jsonData.data.filter(pack => pack.Pack_Id !== 0)
+                ];
+                setDropdownData(dropdownOptions);
+                const initialPackId = dropdownOptions[0]?.Pack_Id || 0;
+                setSelectedProductGroup(initialPackId);
+                filterProductDataByPack(initialPackId, productData);
+
+                setProductPacks(jsonData.data);
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        }
+    };
+
+    const filterProductDataByPack = (packId, data) => {
+        const filteredData = (data || productData).map(group => {
+            const filteredGroup = {
+                ...group,
+                GroupedProductArray: group.GroupedProductArray.filter(product => product.Pack_Id === packId || packId === 0)
+            };
+            return filteredGroup.GroupedProductArray.length ? filteredGroup : null;
+        }).filter(group => group !== null);
+
+        setFilteredProductData(filteredData);
+    };
+
+    const handlePackSelection = (packId) => {
+        setSelectedProductPack(packId);
+        filterProductDataByPack(packId);
     };
 
     const getStockCount = (productId) => {
@@ -179,32 +231,56 @@ const StockClosing = ({ route }) => {
         }
     }
 
+    const handleUpdatePress = () => {
+        setModalVisible(true);
+    };
+
+    const handleModalSubmit = () => {
+        setModalVisible(false);
+        postClosingStock();
+    };
+
     return (
         <View style={styles(colors).container}>
+            <View style={styles(colors).headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Icon name="arrowleft" color={colors.white} size={23} />
+                </TouchableOpacity>
+                <Text style={styles(colors).headerContainerText} maxFontSizeMultiplier={1.2}>Closing Stock</Text>
+                <TouchableOpacity onPress={handleUpdatePress}>
+                    <Text style={{
+                        textAlign: 'center',
+                        ...typography.body1(colors),
+                        color: colors.white
+                    }}>
+                        UPDATE
+                    </Text>
+                </TouchableOpacity>
+            </View>
             <View style={styles(colors).retailerInfo}>
                 <Text style={styles(colors).retailerLabel}>Retailer Name: {item.Retailer_Name}</Text>
             </View>
 
-            <View style={styles(colors).narrationContainer}>
-                <TextInput
-                    style={styles(colors).narrationContainerInputText}
-                    placeholder='Narration'
-                    onChangeText={(text) =>
-                        setStockInputValue({
-                            ...stockInputValue,
-                            Narration: text,
-                        })
-                    }
-                />
-                <View style={styles(colors).narrationContainerButtonGroup}>
-                    <CustomButton onPress={() => navigation.goBack()}>Cancel</CustomButton>
-                    <CustomButton onPress={postClosingStock}>Update</CustomButton>
-                </View>
-            </View>
+            <Dropdown
+                data={dropdownData}
+                labelField='Pack'
+                valueField="Pack_Id"
+                placeholder="Select Product Group"
+                value={selectedProductGroup}
+                onChange={item => {
+                    setSelectedProductGroup(item.Pack_Id);
+                    handlePackSelection(item.Pack_Id);
+                }}
+                maxHeight={300}
+                style={styles(colors).dropdown}
+                containerStyle={styles(colors).dropdownContainer}
+                placeholderStyle={styles(colors).placeholderStyle}
+                selectedTextStyle={styles(colors).selectedTextStyle}
+            />
 
             <View style={{ flex: 1 }}>
                 <ScrollView horizontal contentContainerStyle={styles(colors).tabContainer} showsHorizontalScrollIndicator={true}>
-                    {productData.map((item, index) => (
+                    {filteredProductData.map((item, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
@@ -225,62 +301,94 @@ const StockClosing = ({ route }) => {
                         ref={pagerRef}
                         onPageSelected={onPageSelected}
                     >
-                        {productData?.map((item, index) => (
-                            <View key={index}>
-                                {item.GroupedProductArray.map((product, pIndex) => {
-                                    const stockCount = getStockCount(product.Product_Id);
-                                    return (
-                                        <View key={pIndex} style={styles(colors).pagerViewContainer}>
-                                            <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
-                                                <Image
-                                                    style={{
-                                                        width: 125,
-                                                        height: 125,
-                                                        borderRadius: 8,
-                                                        marginRight: 10,
-                                                    }}
-                                                    source={{
-                                                        uri: product.productImageUrl,
-                                                    }}
-                                                />
-                                                <View style={styles(colors).card}>
-                                                    <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
-                                                    <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
-                                                    <Text style={styles(colors).dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
-                                                    <Text style={[styles(colors).dateText, stockCount.hasPreviousBalance && styles(colors).highlightedText]}>Previous Stock: {stockCount.previousBalance}</Text>
-                                                    <TextInput
-                                                        style={styles(colors).pagerViewContainerInputText}
-                                                        onChangeText={(text) =>
-                                                            handleStockInputChange(
-                                                                product.Product_Id,
-                                                                text,
-                                                                getClosingStockDate(product.Product_Id),
-                                                                stockCount.previousBalance
-                                                            )
-                                                        }
-                                                        value={
-                                                            (closingStockValues.find(
-                                                                (ooo) =>
-                                                                    Number(ooo?.Product_Id) ===
-                                                                    Number(product?.Product_Id)
-                                                            )?.ST_Qty
-                                                                || '').toString()
-                                                        }
-                                                        placeholder="Closing Stock Qty"
-                                                        keyboardType='number-pad'
+
+                        {filteredProductData.length > 0 ? (
+                            filteredProductData?.map((item, index) => (
+                                <View key={index}>
+                                    {item.GroupedProductArray.map((product, pIndex) => {
+                                        const stockCount = getStockCount(product.Product_Id);
+                                        return (
+                                            <View key={pIndex} style={styles(colors).pagerViewContainer}>
+                                                <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                                                    <Image
+                                                        style={{
+                                                            width: 125,
+                                                            height: 125,
+                                                            borderRadius: 8,
+                                                            marginRight: 10,
+                                                        }}
+                                                        source={{
+                                                            uri: product.productImageUrl,
+                                                        }}
                                                     />
+                                                    <View style={styles(colors).card}>
+                                                        <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
+                                                        <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
+                                                        <Text style={styles(colors).dateText}>Closing Date: {getClosingStockDate(product.Product_Id).toLocaleDateString()}</Text>
+                                                        <Text style={[styles(colors).dateText, stockCount.hasPreviousBalance && styles(colors).highlightedText]}>Previous Stock: {stockCount.previousBalance}</Text>
+                                                        <TextInput
+                                                            style={styles(colors).pagerViewContainerInputText}
+                                                            onChangeText={(text) =>
+                                                                handleStockInputChange(
+                                                                    product.Product_Id,
+                                                                    text,
+                                                                    getClosingStockDate(product.Product_Id),
+                                                                    stockCount.previousBalance
+                                                                )
+                                                            }
+                                                            value={
+                                                                (closingStockValues.find(
+                                                                    (ooo) =>
+                                                                        Number(ooo?.Product_Id) ===
+                                                                        Number(product?.Product_Id)
+                                                                )?.ST_Qty
+                                                                    || '').toString()
+                                                            }
+                                                            placeholder="Closing Stock Qty"
+                                                            keyboardType='number-pad'
+                                                        />
+                                                    </View>
                                                 </View>
                                             </View>
-                                        </View>
-                                    );
-                                })}
-                            </View>
-                        ))}
+                                        );
+                                    })}
+                                </View>
+                            ))
+                        ) : null}
 
                     </PagerView>
 
                 </ScrollView>
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(false);
+                }}
+            >
+                <View style={styles(colors).modalOverlay}>
+                    <View style={styles(colors).modalContainer}>
+                        <Text style={styles(colors).modalTitle}>Confirmation</Text>
+                        <TextInput
+                            style={styles(colors).modalInputText}
+                            placeholder='Narration'
+                            onChangeText={(text) =>
+                                setStockInputValue({
+                                    ...stockInputValue,
+                                    Narration: text,
+                                })
+                            }
+                        />
+                        <View style={{ marginVertical: 20, marginHorizontal: 75 }}>
+                            <CustomButton onPress={handleModalSubmit}>Update</CustomButton>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
         </View>
     )
 }
@@ -293,26 +401,54 @@ const styles = (colors) => StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: colors.background,
     },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 20,
+        backgroundColor: colors.primary,
+    },
+    headerContainerText: {
+        ...typography.h5(colors),
+        color: colors.white,
+        flex: 1,
+        marginHorizontal: 10,
+    },
     retailerInfo: {
         alignItems: 'center',
-        marginVertical: 15,
+        marginTop: 15,
     },
     retailerLabel: {
         ...typography.h6(colors),
         color: colors.accent,
         fontWeight: '500',
+        marginBottom: 15
+    },
+    dropdown: {
+        marginHorizontal: 20,
+        marginBottom: 15,
+        height: 45,
+        padding: 15,
+        borderRadius: 10,
+        borderWidth: 0.5,
+    },
+    dropdownContainer: {
+        backgroundColor: colors.background,
+        borderColor: colors.textPrimary,
+        borderWidth: 0.5,
+        borderRadius: 10,
+    },
+    placeholderStyle: {
+        ...typography.h6(colors),
+        fontWeight: '500'
+    },
+    selectedTextStyle: {
+        ...typography.h6(colors),
+        fontWeight: '600'
     },
     narrationContainer: {
         marginHorizontal: 20,
         marginVertical: 10,
-    },
-    narrationContainerInputText: {
-        ...typography.h6(colors),
-        borderWidth: 1,
-        borderColor: '#a1a1a1',
-        borderRadius: 8,
-        padding: 12,
-        marginHorizontal: 'auto',
     },
     narrationContainerButtonGroup: {
         flexDirection: 'row',
@@ -382,5 +518,38 @@ const styles = (colors) => StyleSheet.create({
         borderRadius: 4,
         marginTop: 5,
     },
-
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: '80%',
+        padding: 20,
+        backgroundColor: colors.white,
+        borderRadius: 10,
+        shadowColor: colors.black,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    modalTitle: {
+        ...typography.h6(colors),
+        fontWeight: 'bold',
+        marginBottom: 15,
+        color: colors.text,
+    },
+    modalInputText: {
+        ...typography.h6(colors),
+        borderWidth: 1,
+        borderColor: '#a1a1a1',
+        borderRadius: 8,
+        padding: 12,
+        marginHorizontal: 'auto',
+    },
 })

@@ -3,6 +3,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { useColorScheme } from 'react-native';
 
 import AppDrawer from './Routes/AppDrawer';
+import { AuthProvider } from './Config/AuthContext';
 
 let navigation;
 export const navigationRef = React.createRef();
@@ -19,9 +20,11 @@ const App = () => {
   const scheme = useColorScheme();
 
   return (
-    <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme} ref={navigationRef} onReady={() => setTopLevelNavigator(navigationRef)}>
-      <AppDrawer />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer theme={scheme === 'dark' ? DarkTheme : DefaultTheme} ref={navigationRef} onReady={() => setTopLevelNavigator(navigationRef)}>
+        <AppDrawer />
+      </NavigationContainer>
+    </AuthProvider>
   );
 };
 

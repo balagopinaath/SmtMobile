@@ -49,20 +49,13 @@ const DrawerScreen = ({ navigation }) => {
 
     return (
         <View style={styles(colors).drawerContainer}>
-            <View style={styles(colors).profileImgContainer}>
-                <Image
-                    source={{ uri: 'https://img.freepik.com/free-psd/3d-rendering-avatar_23-2150833562.jpg?t=st=1714973719~exp=1714977319~hmac=b38dd421ab9645d53faf8619446c5aba90e335bde5eb4c1605a725e7bc8753f6&w=740' }} // Replace with image source
-                    style={styles(colors).profileImg}
-                />
-            </View>
-            <Text style={styles(colors).profileName}>{name}</Text>
 
             <TouchableOpacity
                 style={styles(colors).drawerItem}
-                onPress={() => navigation.navigate('HomeScreen')}
+                onPress={() => navigation.navigate('ProfileScreen')}
             >
-                <Icon name="home" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
-                <Text style={styles(colors).drawerText}>Home</Text>
+                <Icon name="user" size={20} color={colors.background === "#000000" ? colors.white : colors.black} />
+                <Text style={styles(colors).drawerText}>My Account</Text>
             </TouchableOpacity>
 
             <View>
@@ -107,6 +100,7 @@ const styles = (colors) => StyleSheet.create({
     drawerContainer: {
         flex: 1,
         padding: 20,
+        marginTop: 125,
     },
     profileImgContainer: {
         alignItems: 'center',

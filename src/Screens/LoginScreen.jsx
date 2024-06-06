@@ -5,9 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CryptoJS from 'react-native-crypto-js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API } from '../Config/Endpoint';
+import { storeInfo } from '../Config/AuthContext';
 import { customColors, typography } from '../Config/helper';
 
 const LoginScreen = () => {
+    const { setAuthInfo } = storeInfo();
     const navigation = useNavigation();
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
@@ -26,31 +28,29 @@ const LoginScreen = () => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        UserName: loginId,
-                        Password: passHash
+                        username: loginId,
+                        password: password
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch');
-                }
-
                 const data = await response.json();
+                console.log('data', data)
 
                 if (data.success) {
-                    await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
-                    await setData(data);
-                    if (Number(data.data[0].UserTypeId) === Number(6)) {
-                        checkAttendanceHistory(data.data[0].UserId);
+                    await AsyncStorage.setItem('userToken', data.user.Autheticate_Id);
+                    await setData(data.user);
+                    setAuthInfo(data.user);
+                    if (Number(data.user.UserTypeId) === Number(6)) {
+                        checkAttendanceHistory(data.user.UserId);
                     } else {
                         navigation.replace("HomeScreen");
                     }
                 } else {
-                    Alert.alert(data);
+                    Alert.alert(data.message);
                 }
             } catch (error) {
                 console.error('Error during login:', error);
-                Alert.alert('Failed to log in. Please try again.');
+                Alert.alert(data.message);
             }
         } else {
             if (!loginId) {
@@ -63,6 +63,7 @@ const LoginScreen = () => {
     }
 
     const checkAttendanceHistory = async (userId) => {
+        console.log(`${API.MyLastAttendance}${userId}`)
         try {
             const response = await fetch(`${API.MyLastAttendance}${userId}`, {
                 method: 'GET',
@@ -72,6 +73,7 @@ const LoginScreen = () => {
             });
 
             const attendanceHistory = await response.json();
+            console.log('att data', attendanceHistory.message)
 
             if (attendanceHistory.data.length === 0) {
                 navigation.replace("Attendance");
@@ -90,17 +92,17 @@ const LoginScreen = () => {
 
     const setData = async (data) => {
         try {
-            await AsyncStorage.setItem('userToken', data.data[0].Autheticate_Id);
-            await AsyncStorage.setItem('UserId', data.data[0].UserId);
-            await AsyncStorage.setItem('Company_Id', String(data.data[0].Company_id));
-            await AsyncStorage.setItem('userName', data.data[0].UserName);
-            await AsyncStorage.setItem('Name', data.data[0].Name);
-            await AsyncStorage.setItem('UserType', data.data[0].UserType);
-            await AsyncStorage.setItem('branchId', String(data.data[0].BranchId));
-            await AsyncStorage.setItem('branchName', data.data[0].BranchName);
-            await AsyncStorage.setItem('userType', data.data[0].UserType);
-            await AsyncStorage.setItem('userTypeId', data.data[0].UserTypeId);
-            setUserId(data.data[0].UserId)
+            await AsyncStorage.setItem('userToken', data.Autheticate_Id);
+            await AsyncStorage.setItem('UserId', data.UserId);
+            await AsyncStorage.setItem('Company_Id', String(data.Company_id));
+            await AsyncStorage.setItem('userName', data.UserName);
+            await AsyncStorage.setItem('Name', data.Name);
+            await AsyncStorage.setItem('UserType', data.UserType);
+            await AsyncStorage.setItem('branchId', String(data.BranchId));
+            await AsyncStorage.setItem('branchName', data.BranchName);
+            await AsyncStorage.setItem('userType', data.UserType);
+            await AsyncStorage.setItem('userTypeId', data.UserTypeId);
+            setUserId(data.UserId)
         } catch (e) {
             console.error('Error storing data:', e);
         }

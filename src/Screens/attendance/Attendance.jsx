@@ -63,6 +63,8 @@ const Attendance = (locationData) => {
         setIsSubmitting(true);
 
         const { UserId, Start_KM, Latitude, Longitude, Start_KM_Pic } = formValues;
+        console.log(formValues)
+        console.log(API.attendance)
 
         if (!Latitude || !Longitude) {
             Alert.alert('Location Permission', 'Please ensure location services are enabled.');
@@ -92,15 +94,17 @@ const Attendance = (locationData) => {
                 body: formData
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to post data to server');
-            }
             const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message);
+            }
+
             ToastAndroid.show(responseData.message, ToastAndroid.LONG);
             navigation.replace('HomeScreen');
         } catch (error) {
             console.error('Error posting data:', error);
-            Alert.alert('Error', 'Failed to submit data. Please try again later.');
+            Alert.alert(responseData.message);
         } finally {
             setLoading(false);
             setIsSubmitting(false); // Reset submitting state

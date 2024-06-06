@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList, useColorScheme } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList, useColorScheme, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API } from '../../Config/Endpoint';
 import { customColors, typography } from '../../Config/helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Customers = () => {
     const navigation = useNavigation();
@@ -53,14 +54,25 @@ const Customers = () => {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })}>
-            <View style={styles(colors).retailerContainer}>
-                <View style={styles(colors).retailerInfo}>
-                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerName}>{item.Retailer_Name}</Text>
-                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerMobile}>{item.Mobile_No}</Text>
-                </View>
-                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerArea}>{item.AreaGet}</Text>
+        <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })} style={styles(colors).card} >
+            {/* <Image source={{ uri: item.imageUrl }} style={styles(colors).image} /> */}
+
+            <View style={styles(colors).cardContent}>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerName}>{item.Retailer_Name.trim()}</Text>
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerDetail}>
+                    <Icon name="call-outline" size={16} color={colors.primary} /> {item.Mobile_No || 'N/A'}
+                </Text>
+
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerDetail}>
+                    <Icon name="location-outline" size={16} color={colors.primary} /> {item.AreaGet}, {item.StateGet}
+                </Text>
+
+                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerDetail}>
+                    <Icon name="business-outline" size={16} color={colors.primary} /> {item.Company_Name}
+                </Text>
+
             </View>
+            <Icon name="chevron-forward" size={24} color={colors.primary} style={styles(colors).chevronIcon} />
         </TouchableOpacity>
     );
 
@@ -74,10 +86,6 @@ const Customers = () => {
                 onChangeText={handleSearch}
                 returnKeyType="search"
             />
-            <View style={styles(colors).retailerHeading}>
-                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerTitle}>Retailer Info</Text>
-                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerTitle}>Area</Text>
-            </View>
 
             {loading ? (
                 <ActivityIndicator style={styles(colors).activityIndicator} size="large" color={colors.primary} />
@@ -88,10 +96,11 @@ const Customers = () => {
                             data={filteredData}
                             renderItem={renderItem}
                             keyExtractor={(item, index) => index.toString()}
+                            contentContainerStyle={styles(colors).listContainer}
                         />
 
                     ) : (
-                        <View style={styles(colors).noDataText}>
+                        <View style={styles(colors).noDataContainer}>
                             <Text maxFontSizeMultiplier={1.2} style={{ ...typography.h5(colors) }}>No data found</Text>
                         </View>
                     )}
@@ -108,6 +117,7 @@ const styles = (colors) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
+        padding: 10,
     },
     activityIndicator: {
         flex: 1,
@@ -121,16 +131,15 @@ const styles = (colors) => StyleSheet.create({
         borderColor: colors.textSecondary,
         borderWidth: 1,
         borderRadius: 15,
-        backgroundColor: colors.secondary
+        backgroundColor: colors.secondary,
+        marginBottom: 30
     },
-    retailerContainer: {
+    card: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
-        padding: 15,
+        padding: 10,
         marginVertical: 8,
-        marginHorizontal: 10,
         borderRadius: 10,
         shadowColor: colors.surface,
         shadowOffset: {
@@ -140,43 +149,39 @@ const styles = (colors) => StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        marginHorizontal: 15,
     },
-    retailerInfo: {
-        flex: 2,
-        flexDirection: 'column',
+    image: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
         marginRight: 10,
     },
-    retailerHeading: {
-        flexDirection: 'row',
-        alignContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        backgroundColor: colors.background,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    retailerTitle: {
+    cardContent: {
         flex: 1,
-        ...typography.h6(colors),
-        fontWeight: '600',
+        justifyContent: 'center',
+    },
+    retailerDetails: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     retailerName: {
         ...typography.h6(colors),
         fontWeight: '700',
-        marginBottom: 5,
+        marginBottom: 2,
     },
-    retailerMobile: {
+    retailerDetail: {
         ...typography.body1(colors),
         fontWeight: '400',
+        marginVertical: 2,
     },
-    retailerArea: {
-        ...typography.body1(colors),
-        fontWeight: '400',
-        paddingHorizontal: 50,
-        textAlign: 'right',
+    chevronIcon: {
+        marginLeft: 'auto',
     },
-    noDataText: {
+    listContainer: {
+        paddingBottom: 10,
+    },
+    noDataContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

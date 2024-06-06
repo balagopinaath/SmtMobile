@@ -7,6 +7,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { API } from '../../Config/Endpoint';
 import { customColors, typography } from '../../Config/helper';
 import CustomButton from '../../Components/CustomButton';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 const SaleOrder = ({ route }) => {
     const navigation = useNavigation();
@@ -36,6 +37,11 @@ const SaleOrder = ({ route }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [saleOrderId, setSaleOrderId] = useState(null);
 
+    const [productPacks, setProductPacks] = useState([])
+    const [dropdownData, setDropdownData] = useState([])
+    const [selectedProductGroup, setSelectedProductGroup] = useState(dropdownData[0]?.Pack_Id || 0);
+    const [filteredProductData, setFilteredProductData] = useState([]);
+    const [selectedProductPack, setSelectedProductPack] = useState(null);
 
     useEffect(() => {
         const initialize = async () => {
@@ -46,6 +52,7 @@ const SaleOrder = ({ route }) => {
 
                 fetchRetailers(companyId);
                 fetchGroupedproducts(companyId);
+                fetchproductPacks(companyId)
 
                 setStockInputValue(prev => ({
                     ...prev,
@@ -101,14 +108,53 @@ const SaleOrder = ({ route }) => {
     }
 
     const fetchGroupedproducts = async (id) => {
-        console.log(`${API.groupedProducts}${id}`)
         fetch(`${API.groupedProducts}${id}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     setProductData(data.data)
+                    filterProductDataByPack(0, data.data)
                 }
             }).catch(e => console.error(e))
+    };
+
+    const fetchproductPacks = async (id) => {
+        try {
+            const response = await fetch(`${API.productPacks}${id}`);
+            const jsonData = await response.json();
+
+            if (jsonData.success) {
+                const dropdownOptions = [
+                    { Pack: "All", Pack_Id: 0 },
+                    ...jsonData.data.filter(pack => pack.Pack_Id !== 0)
+                ];
+                setDropdownData(dropdownOptions);
+                const initialPackId = dropdownOptions[0]?.Pack_Id || 0;
+                setSelectedProductGroup(initialPackId);
+                filterProductDataByPack(initialPackId, productData);
+
+                setProductPacks(jsonData.data);
+            }
+        } catch (err) {
+            console.error("Error fetching data:", err);
+        }
+    };
+
+    const filterProductDataByPack = (packId, data) => {
+        const filteredData = (data || productData).map(group => {
+            const filteredGroup = {
+                ...group,
+                GroupedProductArray: group.GroupedProductArray.filter(product => product.Pack_Id === packId || packId === 0)
+            };
+            return filteredGroup.GroupedProductArray.length ? filteredGroup : null;
+        }).filter(group => group !== null);
+
+        setFilteredProductData(filteredData);
+    };
+
+    const handlePackSelection = (packId) => {
+        setSelectedProductPack(packId);
+        filterProductDataByPack(packId);
     };
 
     const handleTabPress = (index) => {
@@ -205,7 +251,7 @@ const SaleOrder = ({ route }) => {
             });
 
             const data = await response.json();
-            console.log('post data', data)
+            // console.log('post data', data)
 
             if (data.success) {
                 Alert.alert('Success', data.message);
@@ -225,42 +271,70 @@ const SaleOrder = ({ route }) => {
 
     return (
         <View style={styles(colors).container}>
-            <View >
-                <Dropdown
-                    data={retailers}
-                    labelField="Retailer_Name"
-                    valueField="Retailer_Id"
-                    placeholder="Select Retailer"
-                    value={selectedRetail}
-                    onChange={item => {
-                        setSelectedRetail(item.Retailer_Id);
-                        setStockInputValue(prevState => ({
-                            ...prevState,
-                            Retailer_Id: item.Retailer_Id,
-                            Retailer_Name: item.Retailer_Name,
-                            Company_Id: item.Company_Id,
-                        }));
-                    }}
-                    maxHeight={300}
-                    search
-                    searchPlaceholder="Search Retailer"
-                    style={styles(colors).dropdown}
-                    containerStyle={styles(colors).dropdownContainer}
-                    placeholderStyle={styles(colors).placeholderStyle}
-                    selectedTextStyle={styles(colors).selectedTextStyle}
-                    inputSearchStyle={styles(colors).inputSearchStyle}
-                />
-                <View style={{ marginHorizontal: 20, marginBottom: 10 }}>
-                    <CustomButton onPress={handlePreview}>Preview</CustomButton>
-                </View>
+            <View style={styles(colors).headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Icon name="arrowleft" color={colors.white} size={23} />
+                </TouchableOpacity>
+                <Text style={styles(colors).headerContainerText} maxFontSizeMultiplier={1.2}>Sale order creation</Text>
+                <TouchableOpacity onPress={handlePreview}>
+                    <Text style={{
+                        textAlign: 'center',
+                        ...typography.body1(colors),
+                        color: colors.white
+                    }}>
+                        PREVIEW
+                    </Text>
+                </TouchableOpacity>
             </View>
+            <Dropdown
+                data={retailers}
+                labelField="Retailer_Name"
+                valueField="Retailer_Id"
+                placeholder="Select Retailer"
+                value={selectedRetail}
+                onChange={item => {
+                    setSelectedRetail(item.Retailer_Id);
+                    setStockInputValue(prevState => ({
+                        ...prevState,
+                        Retailer_Id: item.Retailer_Id,
+                        Retailer_Name: item.Retailer_Name,
+                        Company_Id: item.Company_Id,
+                    }));
+                }}
+                maxHeight={300}
+                search
+                searchPlaceholder="Search Retailer"
+                style={styles(colors).dropdown}
+                containerStyle={styles(colors).dropdownContainer}
+                placeholderStyle={styles(colors).placeholderStyle}
+                selectedTextStyle={styles(colors).selectedTextStyle}
+                inputSearchStyle={styles(colors).inputSearchStyle}
+            />
+
+            <Dropdown
+                data={dropdownData}
+                labelField='Pack'
+                valueField="Pack_Id"
+                placeholder="Select Product Group"
+                value={selectedProductGroup}
+                onChange={item => {
+                    setSelectedProductGroup(item.Pack_Id);
+                    handlePackSelection(item.Pack_Id);
+                }}
+                maxHeight={300}
+                style={styles(colors).dropdown}
+                containerStyle={styles(colors).dropdownContainer}
+                placeholderStyle={styles(colors).placeholderStyle}
+                selectedTextStyle={styles(colors).selectedTextStyle}
+            />
+
 
             <View style={{}}>
                 <ScrollView horizontal
                     contentContainerStyle={styles(colors).tabContainer}
                     showsHorizontalScrollIndicator={true}
                 >
-                    {productData.map((item, index) => (
+                    {filteredProductData.map((item, index) => (
                         <TouchableOpacity
                             key={index}
                             style={[
@@ -281,40 +355,46 @@ const SaleOrder = ({ route }) => {
                         ref={pagerRef}
                         onPageSelected={onPageSelected}
                     >
-                        {productData.map((group, groupIndex) => (
-                            <View key={groupIndex}>
-                                {group.GroupedProductArray.map((product, pIndex) => (
-                                    <View key={pIndex} style={styles(colors).pagerViewContainer}>
-                                        <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
-                                            <Image
-                                                style={{
-                                                    width: 125,
-                                                    height: 125,
-                                                    borderRadius: 8,
-                                                    marginRight: 10,
-                                                }}
-                                                source={{ uri: product.productImageUrl }}
-                                            />
-                                            <View style={styles(colors).card}>
-                                                <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
-                                                <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
-                                                <TextInput
-                                                    style={styles(colors).pagerViewContainerInputText}
-                                                    onChangeText={(text) =>
-                                                        handleQuantityChange(product.Product_Id, text, product.Item_Rate)
-                                                    }
-                                                    value={
-                                                        quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
-                                                    }
-                                                    placeholder="Quantity"
-                                                    keyboardType='number-pad'
+
+
+                        {filteredProductData.length > 0 ? (
+                            filteredProductData.map((group, groupIndex) => (
+                                <View key={groupIndex}>
+                                    {group.GroupedProductArray.map((product, pIndex) => (
+                                        <View key={pIndex} style={styles(colors).pagerViewContainer}>
+                                            <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                                                <Image
+                                                    style={{
+                                                        width: 125,
+                                                        height: 125,
+                                                        borderRadius: 8,
+                                                        marginRight: 10,
+                                                    }}
+                                                    source={{ uri: product.productImageUrl }}
                                                 />
+                                                <View style={styles(colors).card}>
+                                                    <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
+                                                    <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
+                                                    <TextInput
+                                                        style={styles(colors).pagerViewContainerInputText}
+                                                        onChangeText={(text) =>
+                                                            handleQuantityChange(product.Product_Id, text, product.Item_Rate)
+                                                        }
+                                                        value={
+                                                            quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
+                                                        }
+                                                        placeholder="Quantity"
+                                                        keyboardType='number-pad'
+                                                    />
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
-                                ))}
-                            </View>
-                        ))}
+                                    ))}
+                                </View>
+                            ))
+                        ) : (
+                            null
+                        )}
 
                     </PagerView>
                 </ScrollView>
@@ -398,9 +478,22 @@ const styles = (colors) => StyleSheet.create({
         flex: 1,
         backgroundColor: colors.background,
     },
+    headerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 20,
+        backgroundColor: colors.primary,
+    },
+    headerContainerText: {
+        ...typography.h5(colors),
+        color: colors.white,
+        flex: 1,
+        marginHorizontal: 10,
+    },
     dropdown: {
         marginHorizontal: 20,
-        marginVertical: 20,
+        marginVertical: 15,
         height: 45,
         padding: 15,
         borderRadius: 10,

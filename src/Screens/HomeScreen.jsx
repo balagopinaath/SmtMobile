@@ -144,7 +144,7 @@ const styles = (colors) => StyleSheet.create({
     },
     headerText: {
         ...typography.h5(colors),
-        color: '#ffffff',
+        color: colors.white,
         flex: 1,
         marginHorizontal: 10,
     },
