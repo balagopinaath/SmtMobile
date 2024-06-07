@@ -37,6 +37,7 @@ const styles = (colors) => StyleSheet.create({
         width: width * 0.4,
     },
     radioButtonText: {
-        ...typography.h6(colors),
+        ...typography.body1(colors),
+        fontWeight: '600'
     },
 })

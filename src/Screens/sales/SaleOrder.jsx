@@ -315,7 +315,7 @@ const SaleOrder = ({ route }) => {
                 data={dropdownData}
                 labelField='Pack'
                 valueField="Pack_Id"
-                placeholder="Select Product Group"
+                placeholder="Select Pack"
                 value={selectedProductGroup}
                 onChange={item => {
                     setSelectedProductGroup(item.Pack_Id);

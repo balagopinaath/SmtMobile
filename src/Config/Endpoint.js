@@ -1,10 +1,10 @@
-// const baseURL = "http://shrifoodsapi.erpsmt.in/"
-const baseURL = "http://192.168.1.3:9001/"
+const baseURL = "http://shrifoodsapi.erpsmt.in/"
+// const baseURL = "http://192.168.1.3:9001/"
 
 export const API = {
-    // login: 'https://apiweb.erpsmt.in/api/login',     // build time endpoint
+    login: 'https://erpsmt.in/user/api/login',     // build time endpoint
     // login: 'https://api.smttask.in/user/api/login',    // test endpoint
-    login: 'http://192.168.1.3:7001/user/api/login',
+    // login: 'http://192.168.1.3:7001/user/api/login',
     changePassword: 'http://192.168.1.3:7001/user/api/users/changePassword',
     delete: baseURL + 'api/deleteMyAccount',
 

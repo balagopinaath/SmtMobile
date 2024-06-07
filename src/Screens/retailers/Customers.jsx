@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput, FlatList, useColorScheme, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { API } from '../../Config/Endpoint';
@@ -53,9 +53,8 @@ const Customers = () => {
         }
     };
 
-    const renderItem = ({ item }) => (
+    const renderItem = useCallback(({ item }) => (
         <TouchableOpacity onPress={() => navigation.push('CustomersDetails', { item })} style={styles(colors).card} >
-            {/* <Image source={{ uri: item.imageUrl }} style={styles(colors).image} /> */}
 
             <View style={styles(colors).cardContent}>
                 <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerName}>{item.Retailer_Name.trim()}</Text>
@@ -74,7 +73,9 @@ const Customers = () => {
             </View>
             <Icon name="chevron-forward" size={24} color={colors.primary} style={styles(colors).chevronIcon} />
         </TouchableOpacity>
-    );
+    ), [colors, navigation]);
+
+    const memoizedRenderItem = useMemo(() => renderItem, [renderItem]);
 
     return (
         <View style={styles(colors).container}>
@@ -94,7 +95,7 @@ const Customers = () => {
                     {filteredData.length > 0 ? (
                         <FlatList
                             data={filteredData}
-                            renderItem={renderItem}
+                            renderItem={memoizedRenderItem}
                             keyExtractor={(item, index) => index.toString()}
                             contentContainerStyle={styles(colors).listContainer}
                         />
@@ -138,7 +139,7 @@ const styles = (colors) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
-        padding: 10,
+        padding: 15,
         marginVertical: 8,
         borderRadius: 10,
         shadowColor: colors.surface,
@@ -150,12 +151,6 @@ const styles = (colors) => StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
         marginHorizontal: 15,
-    },
-    image: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        marginRight: 10,
     },
     cardContent: {
         flex: 1,

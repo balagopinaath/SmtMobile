@@ -64,25 +64,23 @@ const styles = (colors) => StyleSheet.create({
         justifyContent: 'center',
     },
     cameraView: {
-        width: '80%',
+        width: '90%',
         aspectRatio: 1,
+    },
+    fullScreen: {
+        width: '100%',
+        height: '100%',
     },
     captureButton: {
         backgroundColor: colors.accent,
-        borderRadius: 5,
         borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 15,
         paddingHorizontal: 30,
-        marginBottom: 30,
-        marginTop: 25,
+        marginTop: 40,
     },
     captureButtonText: {
         ...typography.button(colors),
-    },
-    fullScreen: {
-        width: '100%',
-        height: '100%',
     },
 })

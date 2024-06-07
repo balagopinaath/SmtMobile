@@ -79,6 +79,10 @@ const RetailerVisit = () => {
 
     const handleSubmit = async () => {
         const formData = new FormData();
+        if (formValues.Mobile_No.trim() === '') {
+            ToastAndroid.show('Mobile Number cannot be empty', ToastAndroid.LONG);
+            return;
+        }
 
         formData.append("Mode", selectedValue === 'exist' ? 1 : 2);
 
@@ -188,7 +192,11 @@ const RetailerVisit = () => {
                     <View style={styles(colors).buttonGroup}>
                         <TouchableOpacity onPress={() => setShowCameraModal(true)}
                             style={styles(colors).button}
-                        ><Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>{!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}</Text></TouchableOpacity>
+                        >
+                            <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>
+                                {!capturedPhotoPath ? 'Take Photo' : 'Preview Photo'}
+                            </Text>
+                        </TouchableOpacity>
 
                         <TouchableOpacity onPress={handleSubmit}
                             style={styles(colors).button}
@@ -217,6 +225,9 @@ const RetailerVisit = () => {
                                             />
                                             <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
                                                 <Text style={styles(colors).buttonText}>Retake Photo</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).button}>
+                                                <Text style={styles(colors).buttonText}>Okay</Text>
                                             </TouchableOpacity>
                                         </View>
                                     )
@@ -311,6 +322,9 @@ const RetailerVisit = () => {
                                             <TouchableOpacity onPress={clearPhoto} style={styles(colors).clearPhotoButton}>
                                                 <Text style={styles(colors).buttonText}>Retake Photo</Text>
                                             </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => setShowCameraModal(false)} style={styles(colors).button}>
+                                                <Text style={styles(colors).buttonText}>Okay</Text>
+                                            </TouchableOpacity>
                                         </View>
                                     )
                                 )
@@ -343,8 +357,8 @@ const styles = (colors) => StyleSheet.create({
         height: 45,
         padding: 15,
         borderRadius: 10,
-        borderWidth: 0.5,
-        borderColor: colors.textPrimary,
+        borderColor: '#ccc',
+        borderWidth: 1,
         backgroundColor: colors.background,
     },
     dropdownContainer: {
@@ -369,11 +383,13 @@ const styles = (colors) => StyleSheet.create({
         color: colors.textPrimary,
     },
     textArea: {
-        borderWidth: 0.5,
+        borderWidth: 1,
         marginHorizontal: 20,
-        borderRadius: 15,
+        borderColor: '#ccc',
+        borderRadius: 5,
         padding: 10,
-        ...typography.h6(colors),
+        ...typography.body1(colors),
+        color: colors.text,
         fontWeight: '400',
     },
     buttonGroup: {
@@ -400,7 +416,7 @@ const styles = (colors) => StyleSheet.create({
     },
     previewImage: {
         width: 350,
-        height: 350,
+        height: 450,
         resizeMode: 'cover',
         borderRadius: 10,
     },
@@ -420,10 +436,15 @@ const styles = (colors) => StyleSheet.create({
         fontWeight: '400',
     },
     clearPhotoButton: {
-        marginTop: 20,
-        backgroundColor: 'red',
+        width: 150,
+        height: 50,
+        marginTop: 30,
+        backgroundColor: colors.accent,
+        color: colors.white,
         padding: 10,
-        borderRadius: 5,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignSelf: 'center',
     },
     inputBox: {
         borderWidth: 1,
@@ -432,5 +453,7 @@ const styles = (colors) => StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 20,
+        ...typography.body1(colors),
+        color: colors.text,
     },
 })
