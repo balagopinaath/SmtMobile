@@ -43,6 +43,9 @@ const SaleOrder = ({ route }) => {
     const [filteredProductData, setFilteredProductData] = useState([]);
     const [selectedProductPack, setSelectedProductPack] = useState(null);
 
+    const [isImageModalVisible, setImageModalVisible] = useState(false);
+    const [currentImage, setCurrentImage] = useState(null);
+
     useEffect(() => {
         const initialize = async () => {
             try {
@@ -149,6 +152,7 @@ const SaleOrder = ({ route }) => {
             return filteredGroup.GroupedProductArray.length ? filteredGroup : null;
         }).filter(group => group !== null);
 
+        // console.log("Filtered Data:", JSON.stringify(filteredData, null, 2)); // Debug log
         setFilteredProductData(filteredData);
     };
 
@@ -269,6 +273,11 @@ const SaleOrder = ({ route }) => {
         }
     }
 
+    const handleImagePress = (imageUrl) => {
+        setCurrentImage(imageUrl);
+        setImageModalVisible(true);
+    };
+
     return (
         <View style={styles(colors).container}>
             <View style={styles(colors).headerContainer}>
@@ -357,44 +366,48 @@ const SaleOrder = ({ route }) => {
                     >
 
 
-                        {filteredProductData.length > 0 ? (
-                            filteredProductData.map((group, groupIndex) => (
-                                <View key={groupIndex}>
-                                    {group.GroupedProductArray.map((product, pIndex) => (
-                                        <View key={pIndex} style={styles(colors).pagerViewContainer}>
-                                            <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                        {filteredProductData.map((group, groupIndex) => (
+                            <View key={groupIndex}>
+                                {group.GroupedProductArray.map((product, pIndex) => (
+                                    <View key={pIndex} style={styles(colors).pagerViewContainer}>
+                                        <View style={{ flexDirection: 'row', }}>
+                                            <TouchableOpacity style={{
+                                                width: "50%",
+                                                height: 100,
+                                                aspectRatio: 1
+                                            }} onPress={() => handleImagePress(product.productImageUrl)}>
                                                 <Image
                                                     style={{
-                                                        width: 125,
-                                                        height: 125,
+                                                        width: "100%",
+                                                        height: "100%",
                                                         borderRadius: 8,
                                                         marginRight: 10,
+                                                        resizeMode: 'contain'
                                                     }}
                                                     source={{ uri: product.productImageUrl }}
                                                 />
-                                                <View style={styles(colors).card}>
-                                                    <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
-                                                    <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
-                                                    <TextInput
-                                                        style={styles(colors).pagerViewContainerInputText}
-                                                        onChangeText={(text) =>
-                                                            handleQuantityChange(product.Product_Id, text, product.Item_Rate)
-                                                        }
-                                                        value={
-                                                            quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
-                                                        }
-                                                        placeholder="Quantity"
-                                                        keyboardType='number-pad'
-                                                    />
-                                                </View>
+                                            </TouchableOpacity>
+                                            <View style={styles(colors).card}>
+                                                <Text style={styles(colors).pagerViewContainerText}>{product.Product_Name}</Text>
+                                                <Text style={styles(colors).pagerViewContainerSubText}>{product.UOM}</Text>
+                                                <TextInput
+                                                    style={styles(colors).pagerViewContainerInputText}
+                                                    onChangeText={(text) =>
+                                                        handleQuantityChange(product.Product_Id, text, product.Item_Rate)
+                                                    }
+                                                    value={
+                                                        quantities.find(item => item.Item_Id === product.Product_Id)?.Bill_Qty || ''
+                                                    }
+                                                    placeholder="Quantity"
+                                                    keyboardType='number-pad'
+                                                />
                                             </View>
                                         </View>
-                                    ))}
-                                </View>
-                            ))
-                        ) : (
-                            null
-                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        ))
+                        }
 
                     </PagerView>
                 </ScrollView>
@@ -466,6 +479,24 @@ const SaleOrder = ({ route }) => {
                         </View>
                     </View>
                 </Modal>
+
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={isImageModalVisible}
+                    onRequestClose={() => setImageModalVisible(false)}
+                >
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+                        <TouchableOpacity onPress={() => setImageModalVisible(false)} style={{ position: 'absolute', top: 40, right: 20 }}>
+                            <Icon name="close" size={30} color="#fff" />
+                        </TouchableOpacity>
+                        <Image
+                            source={{ uri: currentImage }}
+                            style={{ width: '90%', height: '80%', resizeMode: 'contain' }}
+                        />
+                    </View>
+                </Modal>
+
             </View>
         </View>
     )
@@ -536,7 +567,7 @@ const styles = (colors) => StyleSheet.create({
     },
     pagerViewContainer: {
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
-        paddingHorizontal: 15,
+        // paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 10,
         margin: 10,
@@ -553,7 +584,7 @@ const styles = (colors) => StyleSheet.create({
     pagerViewContainerText: {
         ...typography.body1(colors),
         fontWeight: 'bold',
-        color: '#333',
+        // color: '#ccc',
         marginBottom: 4,
     },
     pagerViewContainerSubText: {

@@ -66,10 +66,6 @@ const Customers = () => {
                     <Icon name="location-outline" size={16} color={colors.primary} /> {item.AreaGet}, {item.StateGet}
                 </Text>
 
-                <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerDetail}>
-                    <Icon name="business-outline" size={16} color={colors.primary} /> {item.Company_Name}
-                </Text>
-
             </View>
             <Icon name="chevron-forward" size={24} color={colors.primary} style={styles(colors).chevronIcon} />
         </TouchableOpacity>

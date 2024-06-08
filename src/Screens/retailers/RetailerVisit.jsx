@@ -79,10 +79,6 @@ const RetailerVisit = () => {
 
     const handleSubmit = async () => {
         const formData = new FormData();
-        if (formValues.Mobile_No.trim() === '') {
-            ToastAndroid.show('Mobile Number cannot be empty', ToastAndroid.LONG);
-            return;
-        }
 
         formData.append("Mode", selectedValue === 'exist' ? 1 : 2);
 
@@ -99,6 +95,12 @@ const RetailerVisit = () => {
             formData.append("Contact_Person", formValues.Contact_Person);
             formData.append("Contact_Mobile", formValues.Mobile_No);
             formData.append("Location_Address", formValues.Location_Address);
+
+            if (formValues.Mobile_No.trim() === '') {
+                ToastAndroid.show('Mobile Number cannot be empty', ToastAndroid.LONG);
+                return;
+            }
+
             if (location.latitude && location.longitude) {
                 formData.append("Latitude", location.latitude);
                 formData.append("Longitude", location.longitude);
@@ -154,7 +156,7 @@ const RetailerVisit = () => {
             </View>
 
             {selectedValue === 'exist' &&
-                <View>
+                <ScrollView>
                     <Dropdown
                         data={retailerData}
                         labelField="Retailer_Name"
@@ -235,7 +237,7 @@ const RetailerVisit = () => {
                             }
                         </View>
                     </Modal>
-                </View>
+                </ScrollView>
             }
 
             {selectedValue === 'new' &&

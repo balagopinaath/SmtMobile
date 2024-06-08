@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
+import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,6 +16,8 @@ const AttendanceReport = () => {
     const [selectedFromDate, setSelectedFromDate] = useState(new Date());
     const [selectedToDate, setSelectedToDate] = useState(new Date());
     const [isSelectingFromDate, setIsSelectingFromDate] = useState(true);
+    const [isImageModalVisible, setImageModalVisible] = useState(false);
+    const [currentImage, setCurrentImage] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -75,6 +77,11 @@ const AttendanceReport = () => {
         </View>
     )
 
+    const handleImagePress = (imageUrl) => {
+        setCurrentImage(imageUrl);
+        setImageModalVisible(true);
+    };
+
     const renderContent = (item) => {
         const startKM = item.Start_KM;
         const endKM = item.End_KM;
@@ -91,7 +98,17 @@ const AttendanceReport = () => {
                     <Text style={styles(colors).contentText}>KM Difference: {kmDifference}</Text>
                 </View>
                 {item.startKmImageUrl && (
-                    <Image source={{ uri: item.startKmImageUrl }} style={styles(colors).image} />
+                    <TouchableOpacity
+                        onPress={() => handleImagePress(item.startKmImageUrl)}
+                        activeOpacity={0.9} // Set higher opacity to test if visibility changes on press
+                        style={{ width: 100, height: 200 }} // Ensure that TouchableOpacity has explicit dimensions
+                    >
+                        <Image
+                            source={{ uri: item.startKmImageUrl }}
+                            style={styles(colors).image} // Ensure the image fills the TouchableOpacity
+                            resizeMode="contain" // Optional: Adjust based on your design needs
+                        />
+                    </TouchableOpacity>
                 )}
             </View>
         )
@@ -151,6 +168,23 @@ const AttendanceReport = () => {
                 )}
 
             </ScrollView>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isImageModalVisible}
+                onRequestClose={() => setImageModalVisible(false)}
+            >
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
+                    <TouchableOpacity onPress={() => setImageModalVisible(false)} style={{ position: 'absolute', top: 40, right: 20 }}>
+                        <Icon name="close" size={30} color="#fff" />
+                    </TouchableOpacity>
+                    <Image
+                        source={{ uri: currentImage }}
+                        style={{ width: '90%', height: '80%', resizeMode: 'contain' }}
+                    />
+                </View>
+            </Modal>
 
 
         </View>
@@ -218,8 +252,8 @@ const styles = (colors) => StyleSheet.create({
         padding: 10,
     },
     image: {
-        width: '50%',
-        height: 200,
+        width: '100%',
+        height: "100%",
         resizeMode: 'contain',
     },
     contentText: {
