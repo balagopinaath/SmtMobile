@@ -137,7 +137,10 @@ const RetailerVisit = () => {
     };
 
     return (
-        <ScrollView style={styles(colors).container}>
+        <ScrollView style={styles(colors).container}
+            keyboardShouldPersistTaps="always"
+            nestedScrollEnabled={true}
+        >
 
             <LocationIndicator onLocationUpdate={(locationData) => setLocation(locationData)} />
 
@@ -156,7 +159,10 @@ const RetailerVisit = () => {
             </View>
 
             {selectedValue === 'exist' &&
-                <ScrollView>
+                <ScrollView
+                    keyboardShouldPersistTaps="always"
+                    nestedScrollEnabled={true}
+                >
                     <Dropdown
                         data={retailerData}
                         labelField="Retailer_Name"
@@ -375,9 +381,10 @@ const styles = (colors) => StyleSheet.create({
         color: colors.textSecondary,
     },
     selectedTextStyle: {
-        ...typography.h6(colors),
+        ...typography.body2(colors),
         fontWeight: '600',
         color: colors.textPrimary,
+        numberOfLines: 1,
     },
     inputSearchStyle: {
         ...typography.h6(colors),

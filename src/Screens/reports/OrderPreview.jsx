@@ -187,6 +187,11 @@ const OrderPreview = () => {
 
         const totalAmountWords = numberToWords(item.Total_Invoice_value);
 
+        // Wait until retailerInfo is populated before generating the PDF
+        // while (!retailerInfo) {
+        //     await new Promise(resolve => setTimeout(resolve, 100));
+        // }
+
         const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
@@ -340,7 +345,7 @@ const OrderPreview = () => {
 
         const options = {
             html: htmlContent,
-            fileName: 'orderPreview',
+            fileName: 'orders',
             directory: 'Documents',
         };
 

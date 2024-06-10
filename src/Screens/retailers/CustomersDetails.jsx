@@ -8,6 +8,7 @@ import { customColors, typography } from '../../Config/helper';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import LocationIndicator from '../../Components/LocationIndicator';
 
 const CustomersDetails = ({ route }) => {
     const navigation = useNavigation();
@@ -20,6 +21,8 @@ const CustomersDetails = ({ route }) => {
     const [userId, setUserId] = useState('');
     const [isImageModalVisible, setImageModalVisible] = useState(false);
     const [currentImage, setCurrentImage] = useState(null);
+    const [isLocationModalVisible, setLocationModalVisible] = useState(false);
+    const [location, setLocation] = useState(null);
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -56,63 +59,32 @@ const CustomersDetails = ({ route }) => {
         setImageModalVisible(true);
     };
 
-    const handleUpdateLocation = () => {
-        Alert.alert(
-            'Add location confirmation!',
-            'Are you sure you want to update the location?',
-            [
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel'
-                },
-                {
-                    text: 'OK',
-                    onPress: async () => {
-                        try {
-                            Geolocation.getCurrentPosition(
-                                async (position) => {
-                                    const { latitude, longitude } = position.coords;
+    const handleUpdateLocation = async (location) => {
+        console.log('location', location)
+        try {
+            const response = await fetch(API.retailerLocation, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    EntryBy: userId,
+                    Latitude: location.latitude.toString(),
+                    Longitude: location.longitude.toString(),
+                    Retailer_Id: item.Retailer_Id
+                })
+            });
+            const data = await response.json();
+            console.log('data', data)
 
-                                    const response = await fetch(API.retailerLocation, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                            EntryBy: userId,
-                                            Latitude: latitude.toString(),
-                                            Longitude: longitude.toString(),
-                                            Retailer_Id: item.Retailer_Id
-                                        })
-                                    });
-
-                                    if (!response.ok) {
-                                        throw new Error('Failed to update location');
-                                    }
-
-                                    const data = await response.json();
-                                    if (data.status === 'Success') {
-                                        Alert.alert(data.message);
-                                        ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG);
-                                        console.log('Successfully updated location');
-                                    } else {
-                                        Alert.alert(data.message);
-                                    }
-                                },
-                                error => {
-                                    console.error('Error getting location:', error);
-                                    Alert.alert('Error', 'Failed to get current location. Please try again later.');
-                                },
-                                { enableHighAccuracy: true, timeout: 30000, maximumAge: 10000 }
-                            );
-                        } catch (error) {
-                            console.error('Error updating location:', error);
-                            Alert.alert('Error', 'Failed to update location. Please try again later.');
-                        }
-                    }
-                }
-            ],
-            { cancelable: false }
-        );
+            if (data.status === 'Success') {
+                Alert.alert(data.message);
+                ToastAndroid.show('Geolocation Data is Updated', ToastAndroid.LONG);
+            } else {
+                Alert.alert(data.message);
+            }
+        } catch (error) {
+            console.error('Error updating location:', error);
+            Alert.alert('Error', 'Failed to update location. Please try again later.');
+        }
     };
 
     return (
@@ -130,7 +102,7 @@ const CustomersDetails = ({ route }) => {
                                 borderRadius: 8,
                                 resizeMode: 'cover'
                             }}
-                            source={{ uri: 'https://images.unsplash.com/photo-1717457779557-44f53661aa15' }}
+                            source={item.imageUrl ? { uri: item.imageUrl } : require('../../../assets/images/no_image.jpg')}
                         />
                     </TouchableOpacity>
                 </View>
@@ -138,12 +110,7 @@ const CustomersDetails = ({ route }) => {
                 <View style={styles(colors).retailersContainer}>
                     <View style={styles(colors).retailersInto}>
                         <IconEntypo name="shop" size={22} color={colors.primary} />
-                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerText}>{item.Retailer_Name}</Text>
-                    </View>
-
-                    <View style={styles(colors).retailersInto}>
-                        <IconEntypo name="home" size={22} color={colors.primary} />
-                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
+                        <Text maxFontSizeMultiplier={1.2} style={[styles(colors).retailerText, { marginTop: 15 }]}>{item.Retailer_Name}</Text>
                     </View>
 
                     <View style={styles(colors).retailersInto}>
@@ -151,6 +118,11 @@ const CustomersDetails = ({ route }) => {
                         <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerText}>
                             {item.Contact_Person ? item.Contact_Person : 'N/A'}
                         </Text>
+                    </View>
+
+                    <View style={styles(colors).retailersInto}>
+                        <IconEntypo name="home" size={22} color={colors.primary} />
+                        <Text maxFontSizeMultiplier={1.2} style={styles(colors).retailerText}>{`${item.Reatailer_Address}, ${item.Reatailer_City}, ${item.StateGet} - ${item.PinCode}`}</Text>
                     </View>
 
                     <View style={styles(colors).retailersInto}>
@@ -203,7 +175,7 @@ const CustomersDetails = ({ route }) => {
                     </TouchableOpacity>
                 )}
 
-                <TouchableOpacity style={styles(colors).button} onPress={() => handleUpdateLocation()}>
+                <TouchableOpacity style={styles(colors).button} onPress={() => setLocationModalVisible(true)}>
                     <Image
                         style={styles(colors).tinyLogo}
                         source={require('../../../assets/images/pin.png')}
@@ -212,6 +184,29 @@ const CustomersDetails = ({ route }) => {
                 </TouchableOpacity>
 
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isLocationModalVisible}
+                onRequestClose={() => setLocationModalVisible(false)}
+            >
+                <View style={styles(colors).modalContainer}>
+                    <View style={styles(colors).modalContent}>
+                        <Text style={styles(colors).modalHeading}>Are you sure you want to add the location!</Text>
+                        <LocationIndicator onLocationUpdate={setLocation} />
+                        <View style={styles(colors).modalButtonGroup}>
+                            <TouchableOpacity onPress={() => handleUpdateLocation(location)} style={[styles(colors).modalButton, { backgroundColor: colors.accent }]}>
+                                <Text style={[styles(colors).buttonText, { color: colors.white }]}>Update Location</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setLocationModalVisible(false)} style={styles(colors).modalButton}>
+                                <Text style={[styles(colors).buttonText, { color: colors.white }]}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+
+            </Modal>
 
             <Modal
                 animationType="slide"
@@ -294,5 +289,37 @@ const styles = (colors) => StyleSheet.create({
     tinyLogo: {
         width: 50,
         height: 50,
-    }
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalButtonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+    },
+    modalHeading: {
+        ...typography.h6(colors),
+        textAlign: 'left',
+        fontWeight: 'bold',
+        marginHorizontal: 15,
+        marginBottom: 10,
+    },
+    modalButton: {
+        backgroundColor: colors.primary,
+        borderRadius: 5,
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingTop: 5,
+        paddingBottom: 10,
+        margin: 20
+    },
 });

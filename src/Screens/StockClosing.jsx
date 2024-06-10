@@ -89,7 +89,7 @@ const StockClosing = ({ route }) => {
             .then(data => {
                 if (data.success) {
                     setProductData(data.data)
-                    filterProductDataByPack(0, data.data)
+                    filterProductDataByPack(selectedProductGroup, data.data)
                 }
             }).catch(e => console.error(e))
     };
@@ -394,8 +394,10 @@ const StockClosing = ({ route }) => {
                         <Text style={styles(colors).modalTitle}>Confirmation</Text>
                         {closingStockValues.map((stock, index) => (
                             <View key={index} style={styles(colors).confirmContainer}>
-                                <Text style={styles(colors).confirmText}>{productIdToNameMap[stock.Product_Id]}</Text>
-                                <Text style={styles(colors).confirmText}>Quantity: {stock.ST_Qty}</Text>
+                                <View style={styles(colors).confirmTextContainer}>
+                                    <Text style={styles(colors).productText}>{productIdToNameMap[stock.Product_Id]}</Text>
+                                    <Text style={styles(colors).quantityText}>Quantity: {stock.ST_Qty}</Text>
+                                </View>
                             </View>
                         ))}
                         <TextInput
@@ -574,7 +576,7 @@ const styles = (colors) => StyleSheet.create({
     modalContainer: {
         width: '80%',
         padding: 20,
-        backgroundColor: colors.white,
+        backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderRadius: 10,
         shadowColor: colors.black,
         shadowOffset: {
@@ -589,15 +591,24 @@ const styles = (colors) => StyleSheet.create({
         ...typography.h6(colors),
         fontWeight: 'bold',
         marginBottom: 15,
-        color: colors.text,
     },
     confirmContainer: {
-        padding: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
     },
-    confirmText: {
-        ...typography.body1(colors)
+    confirmTextContainer: {
+        flex: 1
+    },
+    productText: {
+        ...typography.body1(colors),
+        fontWeight: 'bold',
+    },
+    quantityText: {
+        ...typography.body2(colors),
+        color: '#888',
     },
     modalInputText: {
         ...typography.h6(colors),
