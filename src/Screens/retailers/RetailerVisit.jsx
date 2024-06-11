@@ -96,10 +96,10 @@ const RetailerVisit = () => {
             formData.append("Contact_Mobile", formValues.Mobile_No);
             formData.append("Location_Address", formValues.Location_Address);
 
-            if (formValues.Mobile_No.trim() === '') {
-                ToastAndroid.show('Mobile Number cannot be empty', ToastAndroid.LONG);
-                return;
-            }
+            // if (formValues.Mobile_No.trim() === '') {
+            //     ToastAndroid.show('Mobile Number cannot be empty', ToastAndroid.LONG);
+            //     return;
+            // }
 
             if (location.latitude && location.longitude) {
                 formData.append("Latitude", location.latitude);

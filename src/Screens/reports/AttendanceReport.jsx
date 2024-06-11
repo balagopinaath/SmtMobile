@@ -53,6 +53,7 @@ const AttendanceReport = () => {
     };
 
     const fetchAttendance = async (fromDay, toDay, id) => {
+        console.log(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`)
         try {
             const response = await fetch(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`, {
                 method: 'GET',
@@ -114,6 +115,13 @@ const AttendanceReport = () => {
         )
     }
 
+    const calculateDistance = (startKM, endKM) => {
+        if (endKM !== null) {
+            return endKM - startKM;
+        }
+        return 'N/A';
+    };
+
     return (
         <View style={styles(colors).container}>
 
@@ -155,6 +163,31 @@ const AttendanceReport = () => {
                         style={{ width: '100%' }}
                         testID="dateTimePicker"
                     />
+                )}
+            </View>
+
+            <View style={styles(colors).table}>
+                <View style={styles(colors).tableHeader}>
+                    <Text style={styles(colors).headerCell}>Date</Text>
+                    <Text style={styles(colors).headerCell}>Start KM</Text>
+                    <Text style={styles(colors).headerCell}>End KM</Text>
+                    <Text style={styles(colors).headerCell}>Distance</Text>
+                </View>
+                {attendanceData && attendanceData.length > 0 ? (
+                    <ScrollView>
+                        {attendanceData.map((item) => (
+                            <View style={styles(colors).tableRow} key={item.Id}>
+                                <Text style={styles(colors).cell}>{item.Start_Date ? new Intl.DateTimeFormat('en-GB').format(new Date(item.Start_Date)) : ""}</Text>
+                                <Text style={styles(colors).cell}>{item.Start_KM}</Text>
+                                <Text style={styles(colors).cell}>{item.End_KM !== null ? item.End_KM : 'N/A'}</Text>
+                                <Text style={styles(colors).cell}>{calculateDistance(item.Start_KM, item.End_KM)}</Text>
+                            </View>
+                        ))}
+                    </ScrollView>
+                ) : (
+                    <View style={styles(colors).tableRow}>
+                        <Text style={styles(colors).cell} colSpan={4}>No attendance data available.</Text>
+                    </View>
                 )}
             </View>
 
@@ -260,5 +293,38 @@ const styles = (colors) => StyleSheet.create({
         ...typography.body1(colors),
         fontWeight: '600',
         marginBottom: 5,
+    },
+
+    table: {
+        width: "90%",
+        height: 400,
+        justifyContent: 'center',
+        alignContent: 'center',
+        borderWidth: 1,
+        borderColor: colors.textSecondary,
+        margin: 20,
+        borderRadius: 2.5,
+    },
+    tableHeader: {
+        flexDirection: 'row',
+        backgroundColor: colors.secondary,
+        padding: 10,
+    },
+    headerCell: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: colors.headerText,
+        textAlign: 'center'
+    },
+    tableRow: {
+        flexDirection: 'row',
+        padding: 10,
+    },
+    cell: {
+        flex: 1,
+        fontSize: 16,
+        color: colors.text,
+        textAlign: 'center'
     },
 })

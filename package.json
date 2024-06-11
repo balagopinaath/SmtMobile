@@ -1,13 +1,14 @@
 {
-  "name": "Smt",
-  "version": "0.0.1",
+  "name": "pukalvirpanai",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "version": "react-native-version"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.23.1",
@@ -33,7 +34,6 @@
     "react-native-share": "^10.2.1",
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.0.3",
-    "react-native-version": "^4.0.0",
     "react-native-vision-camera": "^3.9.2",
     "react-native-webview": "^13.8.6"
   },
@@ -51,6 +51,7 @@
     "eslint": "^9.0.0",
     "jest": "^29.7.0",
     "prettier": "3.2.5",
+    "react-native-version": "^4.0.0",
     "react-test-renderer": "18.2.0",
     "typescript": "5.4.5"
   },

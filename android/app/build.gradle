@@ -78,13 +78,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.smt"
+    namespace "com.PukalVirpanai"
     defaultConfig {
-        applicationId "com.smt"
+        applicationId "com.PukalVirpanai"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.0.1"
     }
     signingConfigs {
         release {

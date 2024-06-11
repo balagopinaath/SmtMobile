@@ -34,7 +34,6 @@ const LoginScreen = () => {
                 });
 
                 const data = await response.json();
-                console.log('data', data)
 
                 if (data.success) {
                     await AsyncStorage.setItem('userToken', data.user.Autheticate_Id);

@@ -1,4 +1,4 @@
-package com.smt
+package com.PukalVirpanai
 
 import android.app.Application
 import com.facebook.react.PackageList

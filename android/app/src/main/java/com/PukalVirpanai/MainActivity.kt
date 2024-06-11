@@ -1,4 +1,4 @@
-package com.smt
+package com.PukalVirpanai
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
