@@ -2,6 +2,7 @@ import { Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity
 import React, { useState, useEffect } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { customColors, typography } from '../../Config/helper';
 import { API } from '../../Config/Endpoint';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -53,7 +54,6 @@ const AttendanceReport = () => {
     };
 
     const fetchAttendance = async (fromDay, toDay, id) => {
-        console.log(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`)
         try {
             const response = await fetch(`${API.attendanceHistory}From=${fromDay}&To=${toDay}&UserId=${id}`, {
                 method: 'GET',
@@ -122,6 +122,23 @@ const AttendanceReport = () => {
         return 'N/A';
     };
 
+    const calculateTotalKms = (data) => {
+        return data.reduce((total, item) => {
+            if (item.End_KM !== null) {
+                return total + (item.End_KM - item.Start_KM);
+            }
+            return total;
+        }, 0);
+    };
+
+    const countTotalAttendances = (data) => {
+        return data.length;
+    };
+
+    const countUnclosedAttendances = (data) => {
+        return data.filter(item => item.End_KM === null).length;
+    };
+
     return (
         <View style={styles(colors).container}>
 
@@ -166,6 +183,26 @@ const AttendanceReport = () => {
                 )}
             </View>
 
+            <View style={styles(colors).cardContainer}>
+                <View style={styles(colors).card}>
+                    <Ionicons name="speedometer" size={30} color={colors.accent} />
+                    <Text style={styles(colors).cardText}>Total KMs</Text>
+                    <Text style={styles(colors).cardValue}>{attendanceData ? calculateTotalKms(attendanceData) : 'N/A'}</Text>
+                </View>
+
+                <View style={styles(colors).card}>
+                    <Ionicons name="list" size={30} color={colors.accent} />
+                    <Text style={styles(colors).cardText}>Count</Text>
+                    <Text style={styles(colors).cardValue}>{attendanceData ? countTotalAttendances(attendanceData) : 'N/A'}</Text>
+                </View>
+
+                <View style={styles(colors).card}>
+                    <Ionicons name="alert-circle" size={30} color={colors.accent} />
+                    <Text style={styles(colors).cardText}>Unclosed</Text>
+                    <Text style={styles(colors).cardValue}>{attendanceData ? countUnclosedAttendances(attendanceData) : 'N/A'}</Text>
+                </View>
+            </View>
+
             <View style={styles(colors).table}>
                 <View style={styles(colors).tableHeader}>
                     <Text style={styles(colors).headerCell}>Date</Text>
@@ -191,7 +228,7 @@ const AttendanceReport = () => {
                 )}
             </View>
 
-            <ScrollView style={styles(colors).cardContainer}>
+            {/* <ScrollView style={styles(colors).cardContainer}>
                 {attendanceData && (
                     <Accordion
                         data={attendanceData}
@@ -200,7 +237,7 @@ const AttendanceReport = () => {
                     />
                 )}
 
-            </ScrollView>
+            </ScrollView> */}
 
             <Modal
                 animationType="slide"
@@ -273,9 +310,7 @@ const styles = (colors) => StyleSheet.create({
         color: colors.text,
         ...typography.body1(colors),
     },
-    cardContainer: {
-        padding: 15,
-    },
+
     contentContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -295,15 +330,60 @@ const styles = (colors) => StyleSheet.create({
         marginBottom: 5,
     },
 
+    cardContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+        marginBottom: 20,
+    },
+    card: {
+        flexDirection: 'column',
+        backgroundColor: colors.cardBackground,
+        borderRadius: 10,
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '30%',
+        shadowColor: 'rgba(0,0,0,0.5)',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        // elevation: 3,
+    },
+    cardText: {
+        textAlign: 'center',
+        color: colors.text,
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    cardValue: {
+        textAlign: 'center',
+        color: colors.text,
+        fontSize: 18,
+        fontWeight: 'bold'
+    },
+
     table: {
         width: "90%",
-        height: 400,
-        justifyContent: 'center',
+        height: 350,
+        justifyContent: 'flex-start',
         alignContent: 'center',
-        borderWidth: 1,
-        borderColor: colors.textSecondary,
         margin: 20,
-        borderRadius: 2.5,
+        borderWidth: 1,
+        borderColor: "#ccc",
+
+        shadowColor: "rgba(0,0,0,0.5)",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 3,
     },
     tableHeader: {
         flexDirection: 'row',
