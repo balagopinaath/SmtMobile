@@ -392,14 +392,18 @@ const StockClosing = ({ route }) => {
                 <View style={styles(colors).modalOverlay}>
                     <View style={styles(colors).modalContainer}>
                         <Text style={styles(colors).modalTitle}>Confirmation</Text>
-                        {closingStockValues.map((stock, index) => (
-                            <View key={index} style={styles(colors).confirmContainer}>
-                                <View style={styles(colors).confirmTextContainer}>
-                                    <Text style={styles(colors).productText}>{productIdToNameMap[stock.Product_Id]}</Text>
-                                    <Text style={styles(colors).quantityText}>Quantity: {stock.ST_Qty}</Text>
+                        <ScrollView contentContainerStyle={styles(colors).scrollViewContent}>
+                            {closingStockValues.map((stock, index) => (
+                                <View key={index} style={styles(colors).confirmContainer}>
+                                    <Text style={styles(colors).productText}>
+                                        {productIdToNameMap[stock.Product_Id]} -
+                                        <Text style={{ color: colors.accent }}>
+                                            &nbsp; {stock.ST_Qty} qty
+                                        </Text>
+                                    </Text>
                                 </View>
-                            </View>
-                        ))}
+                            ))}
+                        </ScrollView>
                         <TextInput
                             style={styles(colors).modalInputText}
                             placeholder='Narration'
@@ -574,7 +578,8 @@ const styles = (colors) => StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
-        width: '80%',
+        width: "85%",
+        height: "60%",
         padding: 20,
         backgroundColor: colors.background === "#000000" ? colors.black : colors.white,
         borderRadius: 10,
@@ -590,25 +595,21 @@ const styles = (colors) => StyleSheet.create({
     modalTitle: {
         ...typography.h6(colors),
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginBottom: 10,
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'flex-start',
     },
     confirmContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-    },
-    confirmTextContainer: {
-        flex: 1
+        marginBottom: 10,
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#ccc',
     },
     productText: {
         ...typography.body1(colors),
         fontWeight: 'bold',
-    },
-    quantityText: {
-        ...typography.body2(colors),
-        color: '#888',
+        flexWrap: 'nowrap'
     },
     modalInputText: {
         ...typography.h6(colors),
