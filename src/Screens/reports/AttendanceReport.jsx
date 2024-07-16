@@ -14,7 +14,9 @@ const AttendanceReport = () => {
     const [attendanceData, setAttendanceData] = useState(null)
 
     const [show, setShow] = useState(false);
-    const [selectedFromDate, setSelectedFromDate] = useState(new Date());
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const [selectedFromDate, setSelectedFromDate] = useState(firstDayOfMonth);
     const [selectedToDate, setSelectedToDate] = useState(new Date());
     const [isSelectingFromDate, setIsSelectingFromDate] = useState(true);
     const [isImageModalVisible, setImageModalVisible] = useState(false);

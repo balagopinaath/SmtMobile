@@ -63,6 +63,14 @@ const AttendanceInfo = () => {
     //     }
     // };
 
+    function convertTo12HourFormat(timeString) {
+        let [hours, minutes, seconds] = timeString.split(':');
+        hours = parseInt(hours, 10);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12; // Convert to 12-hour format
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
     const getAttendanceHistory = async (userId) => {
         try {
             const url = `${API.MyLastAttendance}${userId}`;
@@ -82,6 +90,7 @@ const AttendanceInfo = () => {
                 const lastStartDate = lastAttendance.Start_Date;
                 const [datePart, timePart] = lastStartDate.split('T');
                 setActiveStatus(attendanceHistory.data[0].Active_Status)
+                console.log("datePart", convertTo12HourFormat(timePart.substring(0, 8)))
                 setDate(datePart);
                 setTime(timePart.substring(0, 8));
             }

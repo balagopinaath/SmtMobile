@@ -60,6 +60,7 @@ const OrderPreview = () => {
     };
 
     const fetchSaleOrder = async (from, to, userId, company) => {
+        // console.log(`${API.saleOrder}?Fromdate=${from}&Todate=${to}&Company_Id=${company}&Created_by=${userId}&Sales_Person_Id=${userId}`)
         try {
             const response = await fetch(`${API.saleOrder}?Fromdate=${from}&Todate=${to}&Company_Id=${company}&Created_by=${userId}&Sales_Person_Id=${userId}`, {
                 method: 'GET',
@@ -96,13 +97,13 @@ const OrderPreview = () => {
                 <View style={styles(colors).invoiceContainer}>
                     <View style={styles(colors).invoiceHeader}>
                         <Text style={styles(colors).invoiceTitle}>Order Summary</Text>
-                        <Text style={styles(colors).invoiceDate}>Date: {new Date(item.So_Date).toLocaleDateString()}</Text>
+                        <Text style={styles(colors).invoiceDate}> {new Date(item.So_Date).toLocaleDateString()}</Text>
                     </View>
                 </View>
 
                 <View style={styles(colors).invoiceBody}>
                     <View style={styles(colors).invoiceRow}>
-                        <Text style={styles(colors).invoiceLabel}>Retailer:</Text>
+                        {/* <Text style={styles(colors).invoiceLabel}>Retailer:</Text> */}
                         <Text style={styles(colors).invoiceValue}>{item.Retailer_Name}</Text>
                     </View>
                     <View style={styles(colors).invoiceRow}>
@@ -119,7 +120,9 @@ const OrderPreview = () => {
                         </View>
                         {item.Products_List.map((product, index) => (
                             <View key={index} style={styles(colors).productRow}>
-                                <Text style={styles(colors).productCell}>{product.Product_Name}</Text>
+                                <Text style={styles(colors).productCell} numberOfLines={1} ellipsizeMode="tail">
+                                    {product.Product_Name}
+                                </Text>
                                 <Text style={styles(colors).productCell}>{product.Bill_Qty}</Text>
                                 <Text style={styles(colors).productCell}>₹ {product.Item_Rate}</Text>
                                 <Text style={styles(colors).productCell}>₹ {product.Amount}</Text>
@@ -188,160 +191,185 @@ const OrderPreview = () => {
         const totalAmountWords = numberToWords(item.Total_Invoice_value);
 
         // Wait until retailerInfo is populated before generating the PDF
-        // while (!retailerInfo) {
-        //     await new Promise(resolve => setTimeout(resolve, 100));
-        // }
+        while (!retailerInfo) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        console.log(retailerInfo.Retailer_Name)
 
         const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Sales Order</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
-            <style>
-                .header-text {
-                    font-size: 1.5rem;
-                    font-weight: bold;
-                }
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Sales Order</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    body {
+                        font-family: 'Roboto', sans-serif;
+                    }
 
-                .address,
-                .bank-details {
-                    font-size: 0.9rem;
-                }
+                    .header-text {
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                    }
 
-                .details-text {
-                    font-size: 1rem;
-                }
+                    .address,
+                    .bank-details {
+                        font-size: 0.9rem;
+                        font-family: 'Open Sans', sans-serif;
+                    }
 
-                .table th,
-                .table td {
-                    vertical-align: middle;
-                }
+                    .details-text {
+                        font-size: 1rem;
+                        font-family: 'Roboto', sans-serif;
+                    }
 
-                .total-text {
-                    font-size: 1.1rem;
-                    font-weight: bold;
-                }
+                    .table th,
+                    .table td {
+                        vertical-align: middle;
+                    }
 
-                .py-3 {
-                    padding-top: 1rem !important;
-                    padding-bottom: 1rem !important;
-                }
+                    .total-text {
+                        font-size: 1.1rem;
+                        font-weight: bold;
+                        font-family: 'Open Sans', sans-serif;
+                    }
 
-                .py-md-5 {
-                    padding-top: 3rem !important;
-                    padding-bottom: 3rem !important;
-                }
-            </style>
-        </head>
-        <body>
-            <section class="py-3 py-md-5">
-                <div class="container border border-black">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-9 col-xl-8 col-xxl-7">
-                            <div class="row gy-3 mb-3 align-items-center">
-                                <div class="col-auto">
-                                    <a href="#!" class="d-block">
-                                        <img src="https://www.shrifoodsindia.com/web/image/website/1/logo/shrifoodsindia?unique=1c9d31f" class="img-fluid" alt="BootstrapBrain Logo" width="135" height="44" />
-                                    </a>
-                                </div>
-                                <div class="col">
-                                    <div class="text-center">
-                                        <h4 class="mb-0">Sale Order</h4>
+                    .py-3 {
+                        padding-top: 1rem !important;
+                        padding-bottom: 1rem !important;
+                    }
+
+                    .py-md-5 {
+                        padding-top: 3rem !important;
+                        padding-bottom: 3rem !important;
+                    }
+
+                    .logo-title-container {
+                        text-align: center;
+                    }
+
+                    .logo-title-container img {
+                        margin-bottom: 2.5px;
+                    }
+
+                    .logo-title-container h5 {
+                        margin-top: 10px;
+                        font-family: 'Open Sans', sans-serif;
+                    }
+
+                    .border-black {
+                        border-color: black !important;
+                    }
+
+                    .order-details {
+                        font-family: 'Roboto', sans-serif;
+                    }
+                </style>
+            </head>
+            <body>
+                <section class="py-3 py-md-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-lg-9 col-xl-8 col-xxl-7">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <h4>From</h4>
+                                        <address class="address">
+                                            <strong>${item.Branch_Name}</strong><br />
+                                            153, Chitrakara Street, Valaiyal Kadai,<br />
+                                            Madurai, Tamil Nadu 625001.<br />
+                                            GSTIN: 33CDHPK1650E1ZZ<br />
+                                            Phone: (809) 822-2822<br />
+                                        </address>
+                                    </div>
+                                    <div class="col logo-title-container">
+                                        <a href="#!" class="d-block mt-3">
+                                            <img src="https://www.shrifoodsindia.com/web/image/website/1/logo/shrifoodsindia?unique=1c9d31f" class="img-fluid" alt="Logo" width="125" height="40" />
+                                        </a>
+                                        <h5 class="mb-0">Sale Order</h5>
+                                    </div>
+                                    <div class="col">
+                                        <h4>Bill To</h4>
+                                        <address class="address">
+                                            <strong>${retailerInfo.Retailer_Name}</strong><br />
+                                            ${retailerInfo.Reatailer_Address} <br />
+                                            ${retailerInfo.AreaGet} <br />
+                                            ${retailerInfo.StateGet} - ${retailerInfo.PinCode}<br />
+                                            GSTIN: ${retailerInfo.Gstno}<br />
+                                            Phone: ${retailerInfo.Mobile_No}<br />
+                                        </address>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col">
-                                    <h4>From</h4>
-                                    <address>
-                                        <strong>${item.Branch_Name}</strong><br />
-                                        153, Chitrakara Street, Valaiyal Kadai,<br />
-                                        Madurai, Tamil Nadu 625001.<br />
-                                        GSTIN: 33CDHPK1650E1ZZ<br />
-                                        Phone: (809) 822-2822<br />
-                                    </address>
-                                </div>
-                                <div class="col">
-                                    <h4>Bill To</h4>
-                                    <address>
-                                        <strong>${retailerInfo.Retailer_Name}</strong><br />
-                                        ${retailerInfo.Reatailer_Address} <br />
-                                        ${retailerInfo.AreaGet} <br />
-                                        ${retailerInfo.StateGet} - ${retailerInfo.PinCode}<br />
-                                        GSTIN: ${retailerInfo.Gstno}<br />
-                                        Phone: ${retailerInfo.Mobile_No}<br />
-                                    </address>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-12 col-md-8">
-                                    <h4>Order #Id</h4>
-                                    <div>
-                                        <span>Date:</span>
-                                        <span>${new Date(item.So_Date).toLocaleDateString()}</span>
-                                    </div>
-                                    <div>
-                                        <span>Order Taken:</span>
-                                        <span>${item.Created_BY_Name}</span>
+                                <div class="mb-3 order-details">
+                                    <div class="row">
+                                        <h4>Order #Id</h4>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span>Date:</span>
+                                                <span>${new Date(item.So_Date).toLocaleDateString()}</span>
+                                            </div>
+                                            <div>
+                                                <span>Order Taken:</span>
+                                                <span>${item.Created_BY_Name}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr class= "table-primary">
-                                                    <th scope="col">Sno</th>
-                                                    <th scope="col">Product</th>
-                                                    <th scope="col">Quantity</th>
-                                                    <th scope="col">Price</th>
-                                                    <th scope="col">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-group-divider">
-                                                ${item.Products_List.map((product, index) => `
-                                                    <tr>
-                                                        <td>${index + 1}</td>
-                                                        <td>${product.Product_Name}</td>
-                                                        <td>${product.Bill_Qty}</td>
-                                                        <td>${product.Item_Rate}</td>
-                                                        <td>₹ ${product.Amount}</td>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr class="table-primary">
+                                                        <th scope="col">Sno</th>
+                                                        <th scope="col">Product</th>
+                                                        <th scope="col">Quantity</th>
+                                                        <th scope="col">Price</th>
+                                                        <th scope="col">Total</th>
                                                     </tr>
-                                                `).join('')}
-                                                <tr>
-                                                    <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
-                                                    <td class="text-end">₹ ${item.Total_Invoice_value}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row" colspan="5" class="text-start">Total Amount in Words</th>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="5" class="text-start">${totalAmountWords}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody class="table-group-divider">
+                                                    ${item.Products_List.map((product, index) => `
+                                                        <tr>
+                                                            <td>${index + 1}</td>
+                                                            <td>${product.Product_Name}</td>
+                                                            <td>${product.Bill_Qty}</td>
+                                                            <td>${product.Item_Rate}</td>
+                                                            <td>₹ ${product.Amount}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                    <tr>
+                                                        <th scope="row" colspan="4" class="text-uppercase text-end">Total</th>
+                                                        <td class="text-end">₹ ${item.Total_Invoice_value}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row" colspan="5" class="text-start">Total Amount in Words</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="5" class="text-start">${totalAmountWords}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <p class="text-muted mt-5">
-                                This is an automatically generated bill. Please verify all details before making any payments.
-                            </p>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-muted mt-5">
+                                    This is an automatically generated bill. Please verify all details before making any payments.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-            </section>
-        </body>
-        </html>
-    `;
+                </section>
+            </body>
+            </html>
+        `;
 
         const options = {
             html: htmlContent,
@@ -358,7 +386,7 @@ const OrderPreview = () => {
             const pdfPath = await generateItemPDF(item);
             Share.open({
                 url: `file://${pdfPath}`,
-                title: 'Order Preview',
+                title: 'Sale order',
                 message: 'Here is your order preview in PDF format',
             });
         } catch (error) {
@@ -527,11 +555,17 @@ const styles = (colors) => StyleSheet.create({
         backgroundColor: colors.card,
         paddingVertical: 5,
         borderRadius: 5,
+        borderWidth: 1,
+        borderColor: colors.secondary,
+        padding: 10
     },
     productRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: colors.secondary,
+        padding: 10
     },
     productCell: {
         width: '25%',

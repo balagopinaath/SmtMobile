@@ -426,24 +426,46 @@ const SaleOrder = ({ route }) => {
                             <Text>{stockInputValue.Retailer_Name}</Text>
                             <ScrollView style={styles(colors).tableContainer}>
                                 <View style={styles(colors).tableHeader}>
-                                    <Text style={styles(colors).headerText}>Name</Text>
+                                    <Text style={styles(colors).headerText}></Text>
                                     <Text style={styles(colors).headerText}>Qty</Text>
-                                    <Text style={styles(colors).headerText}>UOM</Text>
+                                    {/* <Text style={styles(colors).headerText}>UOM</Text> */}
                                     <Text style={styles(colors).headerText}>Rate</Text>
                                     <Text style={styles(colors).headerText}>Amount</Text>
                                 </View>
                                 {productData.map((group, groupIndex) => (
                                     group.GroupedProductArray.map((product, pIndex) => {
+                                        const truncate = (str, maxLength) => {
+                                            return str.length > maxLength ? str.substring(0, maxLength - 3) + '...' : str;
+                                        };
+
                                         const quantityObj = quantities.find(item => item.Item_Id === product.Product_Id);
                                         if (quantityObj && quantityObj.Bill_Qty > 0) {
+                                            // console.log(product.Product_Name)
                                             const qty = quantityObj.Bill_Qty;
                                             const rate = quantityObj.Item_Rate || 0;
                                             const amount = qty * rate;
                                             return (
                                                 <View key={pIndex} style={styles(colors).tableRow}>
-                                                    <Text style={styles(colors).rowText}>{product.Product_Name}</Text>
+
+                                                    <View>
+                                                        <Image
+                                                            style={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                flex: 1,
+                                                            }}
+                                                            source={{ uri: product.productImageUrl }}
+
+                                                        />
+                                                        <Text numberOfLines={3} ellipsizeMode="tail" style={{
+                                                            width: 90,
+                                                        }}>
+                                                            {truncate(product.Product_Name, 20)}
+                                                        </Text>
+                                                    </View>
+
                                                     <Text style={styles(colors).rowText}>{qty}</Text>
-                                                    <Text style={styles(colors).rowText}>{product.UOM}</Text>
+                                                    {/* <Text style={styles(colors).rowText}>{product.UOM}</Text> */}
                                                     <Text style={styles(colors).rowText}>{rate}</Text>
                                                     <Text style={styles(colors).rowText}>{amount.toFixed(2)}</Text>
                                                 </View>

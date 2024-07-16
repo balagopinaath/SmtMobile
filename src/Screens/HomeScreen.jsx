@@ -120,6 +120,14 @@ const HomeScreen = () => {
                         />
                         <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>Attendance List</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity style={styles(colors).button} onPress={() => navigation.navigate("RetailerMapView")}>
+                        <Image
+                            style={styles(colors).tinyLogo}
+                            source={require('../../assets/images/pin.png')}
+                        />
+                        <Text style={styles(colors).buttonText} maxFontSizeMultiplier={1.2}>MapView</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
 

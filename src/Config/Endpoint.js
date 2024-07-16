@@ -6,7 +6,7 @@ export const API = {
     login: 'https://erpsmt.in/user/api/login',      // build time endpoint
     // login: 'https://api.smttask.in/user/api/login',  // test endpoint
     // login: 'http://192.168.1.3:7001/user/api/login',
-    changePassword: 'http://192.168.1.3:7001/user/api/users/changePassword',
+    changePassword: 'https://erpsmt.in/user/api/users/changePassword',
     delete: baseURL + 'api/deleteMyAccount',
 
     attendance: baseURL + 'api/attendance',
