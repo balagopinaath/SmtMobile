@@ -23,6 +23,8 @@ import OrderPreview from '../Screens/reports/OrderPreview';
 import { useColorScheme } from 'react-native';
 import ProfileScreen from '../Screens/ProfileScreen';
 import RetailerMapView from '../Screens/RetailerMapView';
+import SaleReturn from '../Screens/sales/SaleReturn';
+import Delivery from '../Screens/delivery/Delivery';
 
 const Stack = createStackNavigator();
 
@@ -71,6 +73,9 @@ const AppStack = () => {
             <Stack.Screen name="OrderPreview" component={OrderPreview} options={{ title: "My Sales" }} />
 
             <Stack.Screen name="RetailerMapView" component={RetailerMapView} options={{ title: "Retailers" }} />
+            <Stack.Screen name="SaleReturn" component={SaleReturn} options={{ title: "Sales Return" }} />
+
+            <Stack.Screen name="Delivery" component={Delivery} options={{ title: "Delivery" }} />
 
         </Stack.Navigator>
     );

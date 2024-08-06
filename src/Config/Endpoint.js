@@ -1,10 +1,10 @@
-const baseURL = "http://shrifoodsapi.erpsmt.in/"    // live api
-// const baseURL = "https://smttask.in/api/"        // test api
+// const baseURL = "http://shrifoodsapi.erpsmt.in/"    // live api
+const baseURL = "https://smttask.in/"        // test api
 // const baseURL = "http://192.168.1.3:9001/"
 
 export const API = {
-    login: 'https://erpsmt.in/user/api/login',      // build time endpoint
-    // login: 'https://api.smttask.in/user/api/login',  // test endpoint
+    // login: 'https://erpsmt.in/user/api/login',      // build time endpoint
+    login: 'https://api.smttask.in/user/api/login',  // test endpoint
     // login: 'http://192.168.1.3:7001/user/api/login',
     changePassword: 'https://erpsmt.in/user/api/users/changePassword',
     delete: baseURL + 'api/deleteMyAccount',
@@ -29,10 +29,12 @@ export const API = {
     productClosingStock: baseURL + 'api/masters/retailers/productClosingStock?Retailer_Id=',
     closingStock: baseURL + 'api/masters/retailers/closingStock',
     closingStockReport: baseURL + 'api/masters/retailers/closingStock/myEntry?UserId=',
+    closingStockReturn: baseURL + 'api/transaction/retailers/closingStock?Retailer_Id=',
 
     saleOrder: baseURL + 'api/sales/saleOrder',
     productPacks: baseURL + 'api/masters/products/packs?Company_Id=',
     productGroups: baseURL + 'api/masters/products/productGroups?Company_Id=',
+    salesReturn: baseURL + 'api/sales/areaBasedReport?Company_id=',
 
     visitedLog: baseURL + 'api/visitedPlaces',
 

@@ -54,13 +54,13 @@ const StockClosing = ({ route }) => {
                     ...prev,
                     Created_by: userId
                 }));
+                fetchGroupedproducts(item.Company_Id)
+                fetchProductClosingStock(item.Retailer_Id)
+
             } catch (err) {
                 console.log(err);
             }
         })();
-
-        fetchGroupedproducts(item.Company_Id)
-        fetchProductClosingStock(item.Retailer_Id)
     }, [stockInputValue.ST_Date, stockInputValue.Retailer_Id])
 
     useEffect(() => {

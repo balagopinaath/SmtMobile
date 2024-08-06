@@ -140,6 +140,7 @@ const RetailerMapView = () => {
             />
 
             <WebView
+                // pullToRefreshEnabled={true}
                 originWhitelist={['*']}
                 source={{ html: htmlContent }}
                 style={styles(colors).webview}

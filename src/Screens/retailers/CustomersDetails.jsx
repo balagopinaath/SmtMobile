@@ -15,8 +15,6 @@ const CustomersDetails = ({ route }) => {
     const { item } = route.params;
     const scheme = useColorScheme();
     const colors = customColors[scheme === 'dark' ? 'dark' : 'light'];
-    const latitude = item.Latitude;
-    const longitude = item.Longitude;
     const phoneNumber = item.Mobile_No;
     const [userId, setUserId] = useState('');
     const [isImageModalVisible, setImageModalVisible] = useState(false);
@@ -45,12 +43,23 @@ const CustomersDetails = ({ route }) => {
         }
     };
 
-    const handleLocation = () => {
-        if (latitude !== null && longitude !== null) {
-            const url = `${API.google_map}${latitude},${longitude}${item.Retailer_Name}${item.Reatailer_Address}`
+    const handleLocation = (item) => {
+        let latitude = item.Latitude;
+        let longitude = item.Longitude;
+
+        if (!latitude || !longitude) {
+            const location = item.AllLocations && item.AllLocations[0];
+            if (location) {
+                latitude = location.latitude;
+                longitude = location.longitude;
+            }
+        }
+
+        if (latitude && longitude) {
+            const url = `${API.google_map}${latitude},${longitude}`;
             Linking.openURL(url);
         } else {
-            ToastAndroid.show('Location not available', ToastAndroid.LONG)
+            ToastAndroid.show('Location not available', ToastAndroid.LONG);
         }
     };
 
@@ -165,8 +174,8 @@ const CustomersDetails = ({ route }) => {
                     <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>WhatsApp</Text>
                 </TouchableOpacity>
 
-                {latitude !== null && longitude !== null && (
-                    <TouchableOpacity style={styles(colors).button} onPress={handleLocation}>
+                {(item.Latitude || item.Longitude || (item.AllLocations && item.AllLocations[0] && item.AllLocations[0].latitude && item.AllLocations[0].longitude)) && (
+                    <TouchableOpacity style={styles(colors).button} onPress={() => handleLocation(item)}>
                         <Image
                             style={styles(colors).tinyLogo}
                             source={require('../../../assets/images/map.png')}
@@ -181,6 +190,14 @@ const CustomersDetails = ({ route }) => {
                         source={require('../../../assets/images/pin.png')}
                     />
                     <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Add Location</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles(colors).button} onPress={() => { navigation.navigate('SaleReturn', { item }) }} >
+                    <Image
+                        style={styles(colors).tinyLogo}
+                        source={require('../../../assets/images/bag.png')}
+                    />
+                    <Text maxFontSizeMultiplier={1.2} style={styles(colors).buttonText}>Sales Return</Text>
                 </TouchableOpacity>
 
             </View>
